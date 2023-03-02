@@ -1,0 +1,43 @@
+﻿<Window x:Class="DWBox.GlyphRunWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:DWBox"
+        Title="{Binding Name}" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" KeyDown="OnKeyDown">
+    <Window.Resources>
+        <Style TargetType="DataGridCell">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border  Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="OddCluster" TargetType="DataGridRow">
+            <Setter Property="Background" Value="AliceBlue" />
+        </Style>
+        <Style x:Key="EvenCluster" TargetType="DataGridRow">
+            <Setter Property="Background" Value="Ivory" />
+        </Style>
+        <local:AlternatingClusterRowStyleSelector x:Key="ClusterStyleSelector" OddStyle="{StaticResource OddCluster}" EvenStyle="{StaticResource EvenCluster}" />
+    </Window.Resources>
+    <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding}" IsReadOnly="True" VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver" CanUserSortColumns="False" RowStyleSelector="{StaticResource ClusterStyleSelector}">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Characters" Binding="{Binding String}" />
+            <DataGridTextColumn Header="Codepoints" Binding="{Binding CodepointsString}" />
+            <DataGridTemplateColumn Header="Glyph">
+                <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                        <Image Source="{Binding GlyphImage}" Stretch="None" />
+                    </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Header="Glyph ID" Binding="{Binding GlyphID}" />
+            <DataGridTextColumn Header="Advance" Binding="{Binding Advance}" />
+            <DataGridTextColumn Header="Offset Adv" Binding="{Binding AdvanceOffset}" />
+            <DataGridTextColumn Header="Offset Asc" Binding="{Binding AscenderOffset}" />
+        </DataGrid.Columns>
+    </DataGrid>
+</Window>

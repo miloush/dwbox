@@ -1,0 +1,62 @@
+﻿<Window x:Class="DWBox.TextAnalysisWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:DWBox"
+        Title="Text Analysis" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" KeyDown="OnKeyDown">
+    <Window.Resources>
+        <Style TargetType="DataGridCell">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border  Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="LeftToRight" TargetType="DataGridRow">
+            <Setter Property="Background" Value="White" />
+        </Style>
+        <Style x:Key="RightToLeft" TargetType="DataGridRow">
+            <Setter Property="Background" Value="Ivory" />
+        </Style>
+    </Window.Resources>
+    <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding}" IsReadOnly="True" VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver" CanUserSortColumns="False">
+        <DataGrid.Columns>
+            <DataGridTextColumn Header="Code" Binding="{Binding CharacterCode}" />
+            <DataGridTextColumn Header="Script" Binding="{Binding ScriptProperties.IsoScriptCodeString}" />
+            <DataGridTextColumn Header="Break before" Binding="{Binding LineBreakpoint.BreakConditionBefore}">
+                <DataGridTextColumn.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Background" Value="{Binding BreakBeforeBrush}" />
+                    </Style>
+                </DataGridTextColumn.CellStyle>
+            </DataGridTextColumn>
+            <DataGridTextColumn Header="Character" Binding="{Binding CharacterString}" />
+            <DataGridTextColumn Header="Break after" Binding="{Binding LineBreakpoint.BreakConditionAfter}">
+                <DataGridTextColumn.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Background" Value="{Binding BreakAfterBrush}" />
+                    </Style>
+                </DataGridTextColumn.CellStyle>
+            </DataGridTextColumn>
+            <DataGridCheckBoxColumn Header="Whitespace" Binding="{Binding LineBreakpoint.IsWhitespace}" /> 
+            <DataGridCheckBoxColumn Header="Soft hyphen" Binding="{Binding LineBreakpoint.IsSoftHyphen}" />
+            <DataGridTextColumn Header="Bidi explicit" Binding="{Binding BidiExplicitLevel}">
+                <DataGridTextColumn.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Background" Value="{Binding BidiExplicitBrush}" />
+                    </Style>
+                </DataGridTextColumn.CellStyle>
+            </DataGridTextColumn>
+            <DataGridTextColumn Header="Bidi resolved" Binding="{Binding BidiResolvedLevel}">
+                <DataGridTextColumn.CellStyle>
+                    <Style TargetType="DataGridCell">
+                        <Setter Property="Background" Value="{Binding BidiResolvedBrush}" />
+                    </Style>
+                </DataGridTextColumn.CellStyle>
+            </DataGridTextColumn>
+        </DataGrid.Columns>
+    </DataGrid>
+</Window>
