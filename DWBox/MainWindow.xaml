@@ -150,13 +150,8 @@
                                 <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
                                     <StackPanel>
                                         <TextBlock Text="{Binding NameVersion}" FontWeight="Bold" FontSize="14" />
-                                        <TextBlock Text="{Binding FilePath}" Margin="0,5" />
-                                        <uiwc:LabelGrid>
-                                            <TextBlock Text="Font file type:" /><TextBlock Text="{Binding FontFile.FontFileType}" />
-                                            <TextBlock Text="Font face type:" /><TextBlock Text="{Binding FontFace.FontFaceType}" />
-                                        </uiwc:LabelGrid>
-                                        <Separator />
-
+                                        <TextBlock Text="{Binding FilePath}" Margin="0,5" TextWrapping="Wrap" />
+                                        
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
@@ -165,22 +160,36 @@
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
                                                 <RowDefinition />
                                             </Grid.RowDefinitions>
-
-                                            <TextBlock Text="Names" FontWeight="Bold" Margin="0,0,0,2" />
-                                            <uiwc:LabelGrid Grid.Row="1">
-                                                <TextBlock Text="Typographic family:" /><TextBlock Text="{Binding FontFace.TypographicFamilyName}" />
-                                                <TextBlock Text="Typographic subfamily:" /><TextBlock Text="{Binding FontFace.TypographicSubfamilyName}" />
-                                                <TextBlock Text="Win32 family:" /><TextBlock Text="{Binding FontFace.Win32FamilyName}" />
-                                                <TextBlock Text="Win32 subfamily:" /><TextBlock Text="{Binding FontFace.Win32SubfamilyName}" />
-                                                <TextBlock Text="PostScript:" /><TextBlock Text="{Binding FontFace.PostScriptName}" />
-                                                <TextBlock Text="PostScript CID:" /><TextBlock Text="{Binding FontFace.PostScriptCidName}" />
-                                                <TextBlock Text="WSS name:" /><TextBlock Text="{Binding FontFace.WeightStretchStyleFamilyName}" />
+                                        
+                                            <uiwc:LabelGrid Grid.Column="0">
+                                                <TextBlock Text="Font file type:" /><TextBlock Text="{Binding FontFile.FontFileType}" />
+                                                <TextBlock Text="Font face type:" /><TextBlock Text="{Binding FontFace.FontFaceType}" />
+                                            </uiwc:LabelGrid>
+                                            
+                                            <uiwc:LabelGrid Grid.Column="2">
+                                                <TextBlock Text="Created:" /><TextBlock Text="{Binding FileInfo.CreationTime}" />
+                                                <TextBlock Text="Last modified:" /><TextBlock Text="{Binding FileInfo.LastWriteTime}" />
+                                            </uiwc:LabelGrid>
+                                            
+                                            <Separator Grid.Row="1" Grid.ColumnSpan="3" />
+                                            
+                                            <TextBlock Grid.Row="2" Text="Names" FontWeight="Bold" Margin="0,0,0,2" />
+                                            <uiwc:LabelGrid Grid.Row="3">
+                                                <TextBlock Text="Typographic family:" /><TextBlock Text="{Binding FontFace.TypographicFamilyName}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="Typographic subfamily:" /><TextBlock Text="{Binding FontFace.TypographicSubfamilyName}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="Win32 family:" /><TextBlock Text="{Binding FontFace.Win32FamilyName}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="Win32 subfamily:" /><TextBlock Text="{Binding FontFace.Win32SubfamilyName}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="PostScript:" /><TextBlock Text="{Binding FontFace.PostScriptName}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="PostScript CID:" /><TextBlock Text="{Binding FontFace.PostScriptCidName}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="WSS name:" /><TextBlock Text="{Binding FontFace.WeightStretchStyleFamilyName}" TextTrimming="CharacterEllipsis" />
                                             </uiwc:LabelGrid>
 
-                                            <TextBlock Grid.Column="2" Text="Axes" FontWeight="Bold" Margin="0,0,0,2" />
-                                            <ItemsControl Grid.Column="2" Grid.Row="1" ItemsSource="{Binding FontAxisValues}">
+                                            <TextBlock Grid.Row="2" Grid.Column="2" Text="Axes" FontWeight="Bold" Margin="0,0,0,2" />
+                                            <ItemsControl Grid.Column="2" Grid.Row="3" ItemsSource="{Binding FontAxisValues}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <TextBlock Margin="0,2">
@@ -218,7 +227,7 @@
                             <DockPanel>
                                 <Border DockPanel.Dock="Top" Background="WhiteSmoke" Padding="2,2,0,2" >
                                     <DockPanel>
-                                        <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove font (right click to remove multiple)" Click="OnRemove">
+                                        <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove" Click="OpenContextMenu">
                                             <Button.ContextMenu>
                                                 <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                                                     <MenuItem Click="OnRemove" Tag="T" Header="Remove _this one" />
@@ -237,6 +246,7 @@
                                             <Button.ContextMenu>
                                                 <ContextMenu>
                                                     <MenuItem Header="Copy _name and version" Click="OnCopyName" ToolTip="Copy the font name and version into clipboard" />
+                                                    <MenuItem Header="Copy _file path" Click="OnCopyPath" ToolTip="Copy the font file path into clipboard" />
                                                     <MenuItem Header="Copy _box bitmap" Click="OnCopyBitmap" ToolTip="Copy the whole box bitmap including font name into clipboard" />
                                                     <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard" />
                                                     <Separator />

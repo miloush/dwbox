@@ -446,6 +446,12 @@ namespace DWBox
                 Clipboard.SetText(item.NameVersion);
         }
 
+        private void OnCopyPath(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement { DataContext: BoxItem item })
+                Clipboard.SetText(item.FilePath);
+        }
+
         private void OnCopyGlyphRunBitmap(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement { DataContext: BoxItem item })

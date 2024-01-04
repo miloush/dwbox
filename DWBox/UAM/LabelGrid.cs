@@ -62,7 +62,7 @@ namespace UAM.InformatiX.Windows.Controls
             }
 
             double maxContentWidth = 0;
-            availableSize.Width -= _maxLabelWidth + HorizontalSpacing;
+            availableSize.Width = Math.Max(0, availableSize.Width - _maxLabelWidth + HorizontalSpacing);
 
             // The height must be tracked simultaneously for label and content as they need to be aligned.
             double desiredHeight = 0;

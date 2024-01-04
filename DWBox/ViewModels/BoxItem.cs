@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
@@ -76,6 +77,9 @@ namespace DWBox
                 }
             }
         }
+
+        private FileInfo _fileInfo;
+        public FileInfo FileInfo => _fileInfo ??= new FileInfo(FilePath);
 
         public string Version => FontFace.Version;
         public string NameVersion
