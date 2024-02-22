@@ -86,24 +86,45 @@ namespace DWBox
         }
         private void ApplyAndSelect(FontSet fontset)
         {
-            string selectedName = (_fontSelector.SelectedItem as FontSetEntry)?.FullName ?? "Segoe UI";
-
             ListCollectionView view = new ListCollectionView(fontset);
             view.SortDescriptions.Add(new SortDescription(nameof(FontSetEntry.FullName), ListSortDirection.Ascending));
             view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(FontSetEntry.TypographicFamilyName)));
 
+            string selectedName = (_fontSelector.SelectedItem as FontSetEntry)?.FullName;
+            string lastName = Settings.Default.LastAddedFont;
+
+            FontSetEntry bestEntry = null;
+            foreach (FontSetEntry entry in fontset)
+            {
+                if (bestEntry == null && entry.FullName == "Segoe UI")
+                    bestEntry = entry;
+
+                if (entry.FullName == lastName)
+                    bestEntry = entry;
+
+                if (entry.FullName == selectedName)
+                {
+                    bestEntry = entry;
+                    break;
+                }
+            }
+
             _fontSelector.ItemsSource = view;
-            _fontSelector.SelectedItem = fontset.FirstOrDefault(e => e.FullName == selectedName);
+            _fontSelector.SelectedItem = bestEntry ?? fontset.FirstOrDefault();
         }
 
         private void OnAdd(object sender, RoutedEventArgs e)
         {
+            if (_fontSelector.SelectedItem is FontSetEntry entry)
+            {
+                _items.Add(entry, AddEmSize);
+                Settings.Default.LastAddedFont = entry.FullName;
+            }
+
             try { Settings.Default.Save(); }
             catch { }
-
-            if (_fontSelector.SelectedItem is FontSetEntry entry)
-                _items.Add(entry, AddEmSize);
         }
+
 
         private async void OnAddInput(object sender, RoutedEventArgs e)
         {
