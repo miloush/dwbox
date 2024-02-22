@@ -3,13 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:uiwc="clr-namespace:UAM.InformatiX.Windows.Controls"
+        xmlns:dw="clr-namespace:Win32.DWrite;assembly=UAM.Interop.DirectWrite"
         xmlns:local="clr-namespace:DWBox"
         Title="DirectWrite Box" Height="600" Width="600" Loaded="OnLoaded">
     <Window.Resources>
         <local:FeaturesConverter x:Key="FeaturesConverter" />
+        <local:ScrollBarVisibilityConverter x:Key="ScrollBarVisibilityConverter" />
     </Window.Resources>
     <Border BorderThickness="0,0,0,5" BorderBrush="{DynamicResource InstanceBrush}">
         <DockPanel Margin="5,5,5,0">
+
+            <!--#region Loaded Modules -->
+
             <ItemsControl Name="_modules" DockPanel.Dock="Bottom" Margin="5">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -39,6 +44,10 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+
+            <!--#endregion-->
+
+            <!--#region Font Selection -->
 
             <DockPanel DockPanel.Dock="Bottom">
                 <Button DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAddInput" ToolTip="Add all installed fonts that map all the required characters">Add a_ll</Button>
@@ -77,6 +86,10 @@
                 </DockPanel>
             </DockPanel>
 
+            <!--#endregion-->
+
+            <!--#region Input Output -->
+
             <Grid DockPanel.Dock="Top">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -106,6 +119,10 @@
                 </DockPanel>
             </Grid>
 
+            <!--#endregion-->
+
+            <!--#region Parameters -->
+
             <GroupBox DockPanel.Dock="Top" Padding="0,5,0,0" Margin="0,5,0,0">
                 <UniformGrid DockPanel.Dock="Top">
                     <DockPanel>
@@ -127,141 +144,247 @@
                 </UniformGrid>
             </GroupBox>
 
-            <!--<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">-->
-            <ItemsControl Name="_renderings" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent" ToolTip="You can drag &amp; drop a font file here.">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <!--<ItemsControl.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
-                </ItemsControl.GroupStyle>-->
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="Silver" BorderThickness="1" Margin="5" Background="White">
-                            <Border.ToolTip>
-                                <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding NameVersion}" FontWeight="Bold" FontSize="14" />
-                                        <TextBlock Text="{Binding FilePath}" Margin="0,5" TextWrapping="Wrap" />
-                                        
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
-                                                <ColumnDefinition Width="5" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition Height="Auto" />
-                                                <RowDefinition />
-                                            </Grid.RowDefinitions>
-                                        
-                                            <uiwc:LabelGrid Grid.Column="0">
-                                                <TextBlock Text="Font file type:" /><TextBlock Text="{Binding FontFile.FontFileType}" />
-                                                <TextBlock Text="Font face type:" /><TextBlock Text="{Binding FontFace.FontFaceType}" />
-                                            </uiwc:LabelGrid>
-                                            
-                                            <uiwc:LabelGrid Grid.Column="2">
-                                                <TextBlock Text="Created:" /><TextBlock Text="{Binding FileInfo.CreationTime}" />
-                                                <TextBlock Text="Last modified:" /><TextBlock Text="{Binding FileInfo.LastWriteTime}" />
-                                            </uiwc:LabelGrid>
-                                            
-                                            <Separator Grid.Row="1" Grid.ColumnSpan="3" />
-                                            
-                                            <TextBlock Grid.Row="2" Text="Names" FontWeight="Bold" Margin="0,0,0,2" />
-                                            <uiwc:LabelGrid Grid.Row="3">
-                                                <TextBlock Text="Typographic family:" /><TextBlock Text="{Binding FontFace.TypographicFamilyName}" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Text="Typographic subfamily:" /><TextBlock Text="{Binding FontFace.TypographicSubfamilyName}" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Text="Win32 family:" /><TextBlock Text="{Binding FontFace.Win32FamilyName}" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Text="Win32 subfamily:" /><TextBlock Text="{Binding FontFace.Win32SubfamilyName}" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Text="PostScript:" /><TextBlock Text="{Binding FontFace.PostScriptName}" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Text="PostScript CID:" /><TextBlock Text="{Binding FontFace.PostScriptCidName}" TextTrimming="CharacterEllipsis" />
-                                                <TextBlock Text="WSS name:" /><TextBlock Text="{Binding FontFace.WeightStretchStyleFamilyName}" TextTrimming="CharacterEllipsis" />
-                                            </uiwc:LabelGrid>
+            <!--#endregion-->
 
-                                            <TextBlock Grid.Row="2" Grid.Column="2" Text="Axes" FontWeight="Bold" Margin="0,0,0,2" />
-                                            <ItemsControl Grid.Column="2" Grid.Row="3" ItemsSource="{Binding FontAxisValues}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock Margin="0,2">
+            <!--#region Toolbar -->
+
+            <ToolBarTray DockPanel.Dock="Top" Background="WhiteSmoke">
+                <ToolBar Background="WhiteSmoke" ToolTip="Layout options">
+                    <ToggleButton Name="_groupBy" ToolTip="Group by typographic family" Checked="RefreshItems" Unchecked="RefreshItems" Style="{StaticResource ImageButton}" Content="{StaticResource GroupBy}" />
+                    <Button ToolTip="Collapse All" Style="{StaticResource ImageButton}" Content="{StaticResource CollapseAll}" Click="OnCollapseAll" IsEnabled="{Binding IsGrouping, ElementName=_renderings}" />
+                    <Button ToolTip="Expand All" Style="{StaticResource ImageButton}" Content="{StaticResource ExpandAll}" Click="OnExpandAll" IsEnabled="{Binding IsGrouping, ElementName=_renderings}" />
+                    <Separator />
+                    <ListBox Name="_renderingsPanelSelector" SelectedIndex="0" SelectionChanged="OnRenderingsPanelChanged" Style="{StaticResource ToolbarButtonGroup}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Icon}" ToolTip="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <local:RenderingsLayoutViewModel Name="Uniform grid" Icon="{StaticResource GridPane}">
+                            <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid />
+                                </ItemsPanelTemplate>
+                            </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
+                        </local:RenderingsLayoutViewModel>
+                        <local:RenderingsLayoutViewModel Name="Stacking" Icon="{StaticResource StackPane}" VerticalScrollBarVisibility="Auto">
+                            <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
+                        </local:RenderingsLayoutViewModel>
+                        <local:RenderingsLayoutViewModel Name="Wrapping" Icon="{StaticResource WrapPane}" VerticalScrollBarVisibility="Auto">
+                            <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
+                        </local:RenderingsLayoutViewModel>
+                    </ListBox>
+                </ToolBar>
+                <ToolBar Background="WhiteSmoke" ToolTip="Format">
+                    <ListBox Name="_textAlignmentSelector" ToolTip="Text alignment" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
+                        <dw:TextAlignment>Leading</dw:TextAlignment>
+                        <dw:TextAlignment>Center</dw:TextAlignment>
+                        <dw:TextAlignment>Trailing</dw:TextAlignment>
+                        <dw:TextAlignment>Justified</dw:TextAlignment>
+                    </ListBox>
+                    <Separator />
+                    <ListBox Name="_paragraphAlignmentSelector" ToolTip="Paragraph alignment" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
+                        <dw:ParagraphAlignment>Near</dw:ParagraphAlignment>
+                        <dw:ParagraphAlignment>Center</dw:ParagraphAlignment>
+                        <dw:ParagraphAlignment>Far</dw:ParagraphAlignment>
+                    </ListBox>
+                    <Separator />
+                    <ComboBox Name="_wordWrappingSelector" ToolTip="Word wrapping" SelectedIndex="0">
+                        <dw:WordWrapping>Wrap</dw:WordWrapping>
+                        <dw:WordWrapping>NoWrap</dw:WordWrapping>
+                        <dw:WordWrapping>EmergencyBreak</dw:WordWrapping>
+                        <dw:WordWrapping>WholeWord</dw:WordWrapping>
+                        <dw:WordWrapping>Character</dw:WordWrapping>
+                    </ComboBox>
+                </ToolBar>
+                
+                <ToolBar Background="WhiteSmoke" ToolTip="Render options">
+                    
+                </ToolBar>
+            </ToolBarTray>
+
+            <!--#endregion-->
+
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer.VerticalScrollBarVisibility>
+                    <MultiBinding Converter="{StaticResource ScrollBarVisibilityConverter}">
+                        <Binding Path="SelectedItem.VerticalScrollBarVisibility" ElementName="_renderingsPanelSelector" />
+                        <Binding Path="IsGrouping" ElementName="_renderings" />
+                    </MultiBinding>
+                </ScrollViewer.VerticalScrollBarVisibility>
+                <ItemsControl Name="_renderings" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent" ToolTip="You can drag &amp; drop a font file here."
+                              ItemsPanel="{Binding SelectedItem.ItemsPanelTemplate, ElementName=_renderingsPanelSelector}" GroupStyleSelector="SelectRenderingsGroupStyle">
+                    <ItemsControl.Resources>
+                        <GroupStyle x:Key="GroupStyle">
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="GroupItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="GroupItem">
+                                                <Expander IsExpanded="True">
+                                                    <Expander.Header>
+                                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                                    </Expander.Header>
+                                                    <Expander.Content>
+                                                        <ItemsPresenter />
+                                                    </Expander.Content>
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                    </ItemsControl.Resources>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border BorderBrush="Silver" BorderThickness="1" Margin="5" Background="White">
+                                <Border.ToolTip>
+                                    <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding NameVersion}" FontWeight="Bold" FontSize="14" />
+                                            <TextBlock Text="{Binding FilePath}" Margin="0,5" TextWrapping="Wrap" />
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="5" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition />
+                                                </Grid.RowDefinitions>
+
+                                                <uiwc:LabelGrid Grid.Column="0">
+                                                    <TextBlock Text="Font file type:" />
+                                                    <TextBlock Text="{Binding FontFile.FontFileType}" />
+                                                    <TextBlock Text="Font face type:" />
+                                                    <TextBlock Text="{Binding FontFace.FontFaceType}" />
+                                                </uiwc:LabelGrid>
+
+                                                <uiwc:LabelGrid Grid.Column="2">
+                                                    <TextBlock Text="Created:" />
+                                                    <TextBlock Text="{Binding FileInfo.CreationTime}" />
+                                                    <TextBlock Text="Last modified:" />
+                                                    <TextBlock Text="{Binding FileInfo.LastWriteTime}" />
+                                                </uiwc:LabelGrid>
+
+                                                <Separator Grid.Row="1" Grid.ColumnSpan="3" />
+
+                                                <TextBlock Grid.Row="2" Text="Names" FontWeight="Bold" Margin="0,0,0,2" />
+                                                <uiwc:LabelGrid Grid.Row="3">
+                                                    <TextBlock Text="Typographic family:" />
+                                                    <TextBlock Text="{Binding FontFace.TypographicFamilyName}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="Typographic subfamily:" />
+                                                    <TextBlock Text="{Binding FontFace.TypographicSubfamilyName}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="Win32 family:" />
+                                                    <TextBlock Text="{Binding FontFace.Win32FamilyName}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="Win32 subfamily:" />
+                                                    <TextBlock Text="{Binding FontFace.Win32SubfamilyName}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="PostScript:" />
+                                                    <TextBlock Text="{Binding FontFace.PostScriptName}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="PostScript CID:" />
+                                                    <TextBlock Text="{Binding FontFace.PostScriptCidName}" TextTrimming="CharacterEllipsis" />
+                                                    <TextBlock Text="WSS name:" />
+                                                    <TextBlock Text="{Binding FontFace.WeightStretchStyleFamilyName}" TextTrimming="CharacterEllipsis" />
+                                                </uiwc:LabelGrid>
+
+                                                <TextBlock Grid.Row="2" Grid.Column="2" Text="Axes" FontWeight="Bold" Margin="0,0,0,2" />
+                                                <ItemsControl Grid.Column="2" Grid.Row="3" ItemsSource="{Binding FontAxisValues}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Margin="0,2">
                                                             <Run Text="{Binding AxisTagString, Mode=OneTime}" /><Run Text=":" />
                                                             <Run Text="{Binding Value, Mode=OneTime}" />
-                                                        </TextBlock>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </Grid>
-                                        <Separator />
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Grid>
+                                            <Separator />
 
-                                        <TextBlock Text="Informational strings" FontWeight="Bold" Margin="0,0,0,2" />
-                                        <uiwc:LabelGrid>
-                                            <TextBlock Text="Manufacturer:" /><TextBlock Text="{Binding FontFace.Manufacturer}" TextWrapping="Wrap" />
-                                            <TextBlock Text="Copyright notice:" /><TextBlock Text="{Binding FontFace.CopyrightNotice}" TextWrapping="Wrap" />
-                                            <TextBlock Text="Trademark:" /><TextBlock Text="{Binding FontFace.Trademark}" TextWrapping="Wrap" />
-                                            <TextBlock Text="Designer:" /><TextBlock Text="{Binding FontFace.Designer}" TextWrapping="Wrap" />
-                                            <TextBlock Text="Description:" /><TextBlock Text="{Binding FontFace.Description}" TextWrapping="Wrap" />
-                                            <TextBlock Text="Designer URL:" /><TextBlock><Hyperlink NavigateUri="{Binding FontFace.DesignerUri}"><Run Text="{Binding FontFace.DesignerUrl, Mode=OneTime}" /></Hyperlink></TextBlock>
-                                            <TextBlock Text="Font vendor URL:" /><TextBlock><Hyperlink NavigateUri="{Binding FontFace.FontVendorUri}"><Run Text="{Binding FontFace.FontVendorUrl, Mode=OneTime}" /></Hyperlink></TextBlock>
-                                            <TextBlock Text="License info URL:" /><TextBlock><Hyperlink NavigateUri="{Binding FontFace.LicenseInfoUri}"><Run Text="{Binding FontFace.LicenseInfoUrl, Mode=OneTime}" /></Hyperlink></TextBlock>
-                                            <TextBlock Text="License description:" /><TextBlock Text="{Binding FontFace.LicenseDescription}" TextWrapping="Wrap" />
-                                        </uiwc:LabelGrid>
-                                        <Separator />
+                                            <TextBlock Text="Informational strings" FontWeight="Bold" Margin="0,0,0,2" />
+                                            <uiwc:LabelGrid>
+                                                <TextBlock Text="Manufacturer:" />
+                                                <TextBlock Text="{Binding FontFace.Manufacturer}" TextWrapping="Wrap" />
+                                                <TextBlock Text="Copyright notice:" />
+                                                <TextBlock Text="{Binding FontFace.CopyrightNotice}" TextWrapping="Wrap" />
+                                                <TextBlock Text="Trademark:" />
+                                                <TextBlock Text="{Binding FontFace.Trademark}" TextWrapping="Wrap" />
+                                                <TextBlock Text="Designer:" />
+                                                <TextBlock Text="{Binding FontFace.Designer}" TextWrapping="Wrap" />
+                                                <TextBlock Text="Description:" />
+                                                <TextBlock Text="{Binding FontFace.Description}" TextWrapping="Wrap" />
+                                                <TextBlock Text="Designer URL:" />
+                                                <TextBlock><Hyperlink NavigateUri="{Binding FontFace.DesignerUri}"><Run Text="{Binding FontFace.DesignerUrl, Mode=OneTime}" /></Hyperlink></TextBlock>
+                                                <TextBlock Text="Font vendor URL:" />
+                                                <TextBlock><Hyperlink NavigateUri="{Binding FontFace.FontVendorUri}"><Run Text="{Binding FontFace.FontVendorUrl, Mode=OneTime}" /></Hyperlink></TextBlock>
+                                                <TextBlock Text="License info URL:" />
+                                                <TextBlock><Hyperlink NavigateUri="{Binding FontFace.LicenseInfoUri}"><Run Text="{Binding FontFace.LicenseInfoUrl, Mode=OneTime}" /></Hyperlink></TextBlock>
+                                                <TextBlock Text="License description:" />
+                                                <TextBlock Text="{Binding FontFace.LicenseDescription}" TextWrapping="Wrap" />
+                                            </uiwc:LabelGrid>
+                                            <Separator />
 
-                                        <TextBlock Text="Language tags" FontWeight="Bold" Margin="0,0,0,2" />
-                                        <uiwc:LabelGrid>
-                                            <TextBlock Text="Design script language:" /><TextBlock Text="{Binding FontFace.DesignScriptLanguageTag}" />
-                                            <TextBlock Text="Supported script language:" /><TextBlock Text="{Binding FontFace.SupportedScriptLanguageTag}" />
-                                        </uiwc:LabelGrid>
-                                    </StackPanel>
-                                </ToolTip>
-                            </Border.ToolTip>
-                            <DockPanel>
-                                <Border DockPanel.Dock="Top" Background="WhiteSmoke" Padding="2,2,0,2" >
-                                    <DockPanel>
-                                        <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove" Click="OpenContextMenu">
-                                            <Button.ContextMenu>
-                                                <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                                                    <MenuItem Click="OnRemove" Tag="T" Header="Remove _this one" />
-                                                    <MenuItem Click="OnRemove" Tag="F" Header="Remove this _family" />
-													<Separator />
-                                                    <MenuItem Click="OnRemove" Tag="M" Header="Remove all _machine ones" />
-                                                    <MenuItem Click="OnRemove" Tag="U" Header="Remove all _user ones" />
-                                                    <MenuItem Click="OnRemove" Tag="D" Header="Remove all _dropped ones" />
-													<Separator />
-                                                    <MenuItem Click="OnRemove" Tag="B" Header="Remove all _except this one" />
-                                                    <MenuItem Click="OnRemove" Tag="A" Header="Remove _all" />
-                                                </ContextMenu>
-                                            </Button.ContextMenu>
-                                        </Button>
-                                        <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource More}" Click="OpenContextMenu">
-                                            <Button.ContextMenu>
-                                                <ContextMenu>
-                                                    <MenuItem Header="Copy _name and version" Click="OnCopyName" ToolTip="Copy the font name and version into clipboard" />
-                                                    <MenuItem Header="Copy _file path" Click="OnCopyPath" ToolTip="Copy the font file path into clipboard" />
-                                                    <MenuItem Header="Copy _box bitmap" Click="OnCopyBitmap" ToolTip="Copy the whole box bitmap including font name into clipboard" />
-                                                    <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard" />
-                                                    <Separator />
-                                                    <MenuItem Header="_Text analysis" Click="OnTextAnalysis" ToolTip="Open text analysis" />
-                                                    <MenuItem Header="_GlyphRun details" Click="OnGlyphRunDetails" ToolTip="Open glyph run details" />
-                                                </ContextMenu>
-                                            </Button.ContextMenu>
-                                        </Button>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="{Binding SourceTypeImage}" Width="16" Height="16" Margin="0,0,2,0" />
-                                            <TextBlock Text="{Binding NameVersion}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                            <TextBlock Text="Language tags" FontWeight="Bold" Margin="0,0,0,2" />
+                                            <uiwc:LabelGrid>
+                                                <TextBlock Text="Design script language:" />
+                                                <TextBlock Text="{Binding FontFace.DesignScriptLanguageTag}" />
+                                                <TextBlock Text="Supported script language:" />
+                                                <TextBlock Text="{Binding FontFace.SupportedScriptLanguageTag}" />
+                                            </uiwc:LabelGrid>
                                         </StackPanel>
-                                    </DockPanel>
-                                </Border>
-                                <local:DirectWriteElement 
+                                    </ToolTip>
+                                </Border.ToolTip>
+                                <DockPanel>
+                                    <Border DockPanel.Dock="Top" Background="WhiteSmoke" Padding="2,2,0,2" >
+                                        <DockPanel>
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove" Click="OpenContextMenu">
+                                                <Button.ContextMenu>
+                                                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                                        <MenuItem Click="OnRemove" Tag="T" Header="Remove _this one" />
+                                                        <MenuItem Click="OnRemove" Tag="F" Header="Remove this _family" />
+                                                        <Separator />
+                                                        <MenuItem Click="OnRemove" Tag="M" Header="Remove all _machine ones" />
+                                                        <MenuItem Click="OnRemove" Tag="U" Header="Remove all _user ones" />
+                                                        <MenuItem Click="OnRemove" Tag="D" Header="Remove all _dropped ones" />
+                                                        <Separator />
+                                                        <MenuItem Click="OnRemove" Tag="B" Header="Remove all _except this one" />
+                                                        <MenuItem Click="OnRemove" Tag="A" Header="Remove _all" />
+                                                    </ContextMenu>
+                                                </Button.ContextMenu>
+                                            </Button>
+                                            <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource More}" Click="OpenContextMenu">
+                                                <Button.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Copy _name and version" Click="OnCopyName" ToolTip="Copy the font name and version into clipboard" />
+                                                        <MenuItem Header="Copy _file path" Click="OnCopyPath" ToolTip="Copy the font file path into clipboard" />
+                                                        <MenuItem Header="Copy _box bitmap" Click="OnCopyBitmap" ToolTip="Copy the whole box bitmap including font name into clipboard" />
+                                                        <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard" />
+                                                        <Separator />
+                                                        <MenuItem Header="_Text analysis" Click="OnTextAnalysis" ToolTip="Open text analysis" />
+                                                        <MenuItem Header="_GlyphRun details" Click="OnGlyphRunDetails" ToolTip="Open glyph run details" />
+                                                    </ContextMenu>
+                                                </Button.ContextMenu>
+                                            </Button>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="{Binding SourceTypeImage}" Width="16" Height="16" Margin="0,0,2,0" />
+                                                <TextBlock Text="{Binding NameVersion}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </Border>
+                                    <local:DirectWriteElement 
                                 FontSet="{Binding SingleFontSet}"
                                 FontFace="{Binding FontFace}" 
                                 FontSize="{Binding EmSize}"
@@ -269,16 +392,19 @@
                                 Text="{Binding Text, ElementName=_boxOutput}" 
                                 ParagraphReadingDirection="{Binding SelectedItem, ElementName=_readingSelector}" 
                                 ParagraphFlowDirection="{Binding SelectedItem, ElementName=_flowSelector}" 
+                                TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
+                                ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
+                                WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
                                 FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
                                 LocaleName="{Binding Text, ElementName=_boxLocale}" 
                                 local:BoxItem.OwningItem="{Binding}"
                                 />
-                            </DockPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <!--</ScrollViewer>-->
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
         </DockPanel>
     </Border>
 </Window>

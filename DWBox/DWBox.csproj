@@ -10,6 +10,7 @@
 		<RestoreAdditionalProjectSources>
 			https://nuget.miloush.net/nuget
 		</RestoreAdditionalProjectSources>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
 
 	<ItemGroup>

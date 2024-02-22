@@ -27,7 +27,9 @@ namespace DWBox
         public static readonly DependencyProperty FontFeaturesProperty = DependencyProperty.Register(nameof(FontFeatures), typeof(IList<FontFeatureTag>), typeof(DirectWriteElement), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender));
         public static readonly DependencyProperty ParagraphReadingDirectionProperty = DependencyProperty.Register(nameof(ParagraphReadingDirection), typeof(ReadingDirection), typeof(DirectWriteElement), new FrameworkPropertyMetadata(ReadingDirection.LeftToRight, InvalidateTextFormat));
         public static readonly DependencyProperty ParagraphFlowDirectionProperty = DependencyProperty.Register(nameof(ParagraphFlowDirection), typeof(Win32.DWrite.FlowDirection), typeof(DirectWriteElement), new FrameworkPropertyMetadata(Win32.DWrite.FlowDirection.TopToBottom, InvalidateTextFormat));
-
+        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register(nameof(TextAlignment), typeof(Win32.DWrite.TextAlignment), typeof(DirectWriteElement), new FrameworkPropertyMetadata(Win32.DWrite.TextAlignment.Leading, InvalidateTextFormat));
+        public static readonly DependencyProperty ParagraphAlignmentProperty = DependencyProperty.Register(nameof(ParagraphAlignment), typeof(ParagraphAlignment), typeof(DirectWriteElement), new FrameworkPropertyMetadata(ParagraphAlignment.Near, InvalidateTextFormat));
+        public static readonly DependencyProperty WordWrappingProperty = DependencyProperty.Register(nameof(WordWrapping), typeof(WordWrapping), typeof(DirectWriteElement), new FrameworkPropertyMetadata(WordWrapping.Wrap, InvalidateTextFormat));
 
         public FontSet FontSet
         {
@@ -57,6 +59,24 @@ namespace DWBox
         {
             get { return (string)GetValue(LocaleNameProperty); }
             set { SetValue(LocaleNameProperty, value); }
+        }
+
+        public WordWrapping WordWrapping
+        {
+            get { return (WordWrapping)GetValue(WordWrappingProperty); }
+            set { SetValue(WordWrappingProperty, value); }
+        }
+
+        public ParagraphAlignment ParagraphAlignment
+        {
+            get { return (ParagraphAlignment)GetValue(ParagraphAlignmentProperty); }
+            set { SetValue(ParagraphAlignmentProperty, value); }
+        }
+
+        public Win32.DWrite.TextAlignment TextAlignment
+        {
+            get { return (Win32.DWrite.TextAlignment)GetValue(TextAlignmentProperty); }
+            set { SetValue(TextAlignmentProperty, value); }
         }
 
         public Win32.DWrite.FlowDirection ParagraphFlowDirection
@@ -145,7 +165,10 @@ namespace DWBox
                 textFormat.SetFontFallback(_noFallback);
                 textFormat.SetFlowDirection(ParagraphFlowDirection);
                 textFormat.SetReadingDirection(ParagraphReadingDirection);
-
+                textFormat.SetTextAlignment(TextAlignment);
+                textFormat.SetParagraphAlignment(ParagraphAlignment);
+                textFormat.SetWordWrapping(WordWrapping);
+                
                 _textFormat = textFormat;
             }
 
@@ -241,6 +264,10 @@ namespace DWBox
 
             Int32Rect boundingRect = new Int32Rect(left, top, Math.Min(_bitmap.PixelWidth - left, width), Math.Min(_bitmap.PixelHeight - top, height));
             return new CroppedBitmap(_bitmap, boundingRect);
+        }
+        internal BitmapSource GetLastRenderedBitmap()
+        {
+            return _bitmap;
         }
 
         private void EnsureRenderTarget(uint width, uint height)

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -456,7 +457,14 @@ namespace DWBox
         {
             if (sender is FrameworkElement { DataContext: BoxItem item })
             {
-                if (item.RenderingElement?.GetLastRenderedBoundingBitmap() is BitmapSource bitmap)
+                BitmapSource bitmap = null;
+
+                if (Keyboard.Modifiers == ModifierKeys.Shift)
+                    bitmap = item.RenderingElement?.GetLastRenderedBitmap();
+                else
+                    bitmap = item.RenderingElement?.GetLastRenderedBoundingBitmap();
+
+                if (bitmap != null)
                     CopyBitmap(bitmap);
             }
         }
@@ -505,6 +513,45 @@ namespace DWBox
                     if (item.RenderingElement is DirectWriteElement el)
                         BindingOperations.GetBindingExpression(el, DirectWriteElement.FontSizeProperty).UpdateTarget();
                 }
+        }
+        
+        private GroupStyle SelectRenderingsGroupStyle(CollectionViewGroup group, int level)
+        {
+            // returning null still evaluates ItemsControl.GroupStyle so it has to be stored elsewhere
+            if (_groupBy.IsChecked == true)
+                return _renderings.FindResource("GroupStyle") as GroupStyle;
+
+            return null;
+        }
+
+        private void RefreshItems(object sender, RoutedEventArgs e)
+        {
+            if (_renderings.ItemsSource is ICollectionView view)
+                view.Refresh();
+        }
+
+        private void OnRenderingsPanelChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_renderings?.IsGrouping == true)
+                RefreshItems(sender, e); // this is called automatically when not grouping; bug?
+        }
+
+        private void OnCollapseAll(object sender, RoutedEventArgs e)
+        {
+            if (_renderings.IsGrouping)
+                foreach (CollectionViewGroup groupView in _renderings.ItemContainerGenerator.Items)
+                    if (_renderings.ItemContainerGenerator.ContainerFromItem(groupView) is GroupItem groupItem)
+                        if (VisualTreeHelper.GetChildrenCount(groupItem) > 0 && VisualTreeHelper.GetChild(groupItem, 0) is Expander expander)
+                            expander.IsExpanded = false;
+        }
+
+        private void OnExpandAll(object sender, RoutedEventArgs e)
+        {
+            if (_renderings.IsGrouping)
+                foreach (CollectionViewGroup groupView in _renderings.ItemContainerGenerator.Items)
+                    if (_renderings.ItemContainerGenerator.ContainerFromItem(groupView) is GroupItem groupItem)
+                        if (VisualTreeHelper.GetChildrenCount(groupItem) > 0 && VisualTreeHelper.GetChild(groupItem, 0) is Expander expander)
+                            expander.IsExpanded = true;
         }
     }
 }
