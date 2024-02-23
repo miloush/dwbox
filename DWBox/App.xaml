@@ -25,6 +25,7 @@
         </Style>
 
         <Style x:Key="ToolbarButtonGroup" TargetType="ListBox">
+            <Setter Property="IsTabStop" Value="False" />
             <Setter Property="Background" Value="{x:Null}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="ItemsPanel">
@@ -40,7 +41,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <RadioButton Style="{StaticResource {x:Static ToolBar.RadioButtonStyleKey}}" IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                    <RadioButton Style="{StaticResource {x:Static ToolBar.RadioButtonStyleKey}}" IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" IsTabStop="False">
                                         <ContentPresenter />
                                     </RadioButton>
                                 </ControlTemplate>

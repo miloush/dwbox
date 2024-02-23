@@ -409,6 +409,10 @@ namespace DWBox
                     item.EmSize = em;
                     if (item.RenderingElement is DirectWriteElement el)
                         BindingOperations.GetBindingExpression(el, DirectWriteElement.FontSizeProperty).UpdateTarget();
+                    
+                    Settings.Default.LastAddedSize = em;
+                    try { Settings.Default.Save(); }
+                    catch { }
                 }
         }
 

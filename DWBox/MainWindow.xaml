@@ -5,16 +5,17 @@
         xmlns:uiwc="clr-namespace:UAM.InformatiX.Windows.Controls"
         xmlns:dw="clr-namespace:Win32.DWrite;assembly=UAM.Interop.DirectWrite"
         xmlns:local="clr-namespace:DWBox"
-        Title="DirectWrite Box" Height="600" Width="600" Loaded="OnLoaded">
+        Title="DirectWrite Box" Height="600" Width="620" Loaded="OnLoaded">
     <Window.Resources>
         <local:FeaturesConverter x:Key="FeaturesConverter" />
         <local:ScrollBarVisibilityConverter x:Key="ScrollBarVisibilityConverter" />
 
         <Style TargetType="ToolBar">
+            <Setter Property="KeyboardNavigation.TabNavigation" Value="Local" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Mode=OneTime}" VerticalAlignment="Center" Margin="0,0,0,2" />
+                        <Label Content="{Binding Mode=OneTime}" VerticalAlignment="Center" Margin="0,0,0,2" Padding="0" Target="{Binding Items[0], RelativeSource={RelativeSource FindAncestor, AncestorType=ToolBar}}" />
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
@@ -25,7 +26,7 @@
 
             <!--#region Loaded Modules -->
 
-            <ItemsControl Name="_modules" DockPanel.Dock="Bottom" Margin="5">
+            <ItemsControl Name="_modules" DockPanel.Dock="Bottom" Margin="5" IsTabStop="False">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock  TextTrimming="CharacterEllipsis">
@@ -60,16 +61,16 @@
             <!--#region Font Selection -->
 
             <DockPanel DockPanel.Dock="Bottom" Background="WhiteSmoke">
-                <Button DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAddInput" ToolTip="Add all installed fonts that map all the required characters">Add a_ll</Button>
-                <Button DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAdd" IsDefault="True" ToolTip="Add the selected font">_Add</Button>
-                <Button DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnSetSize" IsDefault="True" ToolTip="Set all existing boxes to this size" Margin="0,0,5,0">Se_t</Button>
+                <Button TabIndex="13" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAddInput" ToolTip="Add all installed fonts that map all the required characters">Add a_ll</Button>
+                <Button TabIndex="12" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAdd" IsDefault="True" ToolTip="Add the selected font">_Add</Button>
+                <Button TabIndex="11" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnSetSize" IsDefault="True" ToolTip="Set all existing boxes to this size" Margin="0,0,5,0">Se_t</Button>
                 <DockPanel DockPanel.Dock="Right">
                     <Label DockPanel.Dock="Left" Target="{Binding ElementName=_sizeBox}">_Size:</Label>
-                    <TextBox Name="_sizeBox" Width="40" VerticalAlignment="Center" Padding="2" TextAlignment="Center" Text="{Binding AddEmSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="OnSizeKeyDown" />
+                    <TextBox Name="_sizeBox" TabIndex="10" Width="40" VerticalAlignment="Center" Padding="2" TextAlignment="Center" Text="{Binding AddEmSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="OnSizeKeyDown" />
                 </DockPanel>
                 <DockPanel>
                     <Label DockPanel.Dock="Left" Target="{Binding ElementName=_fontSelector}">_Font:</Label>
-                    <ComboBox Name="_fontSelector" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsEditable="True" VirtualizingPanel.IsVirtualizingWhenGrouping="True">
+                    <ComboBox Name="_fontSelector" TabIndex="9" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsEditable="True" VirtualizingPanel.IsVirtualizingWhenGrouping="True">
                         <ComboBox.GroupStyle>
                             <GroupStyle>
                                 <GroupStyle.HeaderTemplate>
@@ -115,17 +116,17 @@
 
                 <Label Grid.Row="0" Target="{Binding ElementName=_boxInput}">_Input:</Label>
                 <DockPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" >
-                    <ToggleButton Name="_decode" DockPanel.Dock="Right"  Margin="5,0,0,0" IsChecked="True" VerticalAlignment="Center" ToolTip="Check to allow hexadecimal codepoints (with or without U+ prefix) and acronyms (ZWJ RLM etc.) separated by space. Use two spaces to insert a space into the output text. Backslash escaping (\u \n etc.) also recognized inside text.&#xD;&#xA;&#xD;&#xA;Uncheck to map characters 1:1 including spaces and no decoding." Checked="InvalidateOutput" Unchecked="InvalidateOutput">
+                    <ToggleButton Name="_decode" TabIndex="14" DockPanel.Dock="Right"  Margin="5,0,0,0" IsChecked="True" VerticalAlignment="Center" ToolTip="Check to allow hexadecimal codepoints (with or without U+ prefix) and acronyms (ZWJ RLM etc.) separated by space. Use two spaces to insert a space into the output text. Backslash escaping (\u \n etc.) also recognized inside text.&#xD;&#xA;&#xD;&#xA;Uncheck to map characters 1:1 including spaces and no decoding." Checked="InvalidateOutput" Unchecked="InvalidateOutput">
                         <Image Source="{StaticResource DecreaseHorizontalSpacing}" Width="16" Height="16" />
                     </ToggleButton>
-                    <TextBox Name="_boxInput" VerticalAlignment="Center" TextChanged="InvalidateOutput" KeyDown="OnInputKeyDown" />
+                    <TextBox Name="_boxInput" TabIndex="0" VerticalAlignment="Center" TextChanged="InvalidateOutput" KeyDown="OnInputKeyDown" />
                 </DockPanel>
                 <Label Grid.Row="1" Target="{Binding ElementName=_boxOutput}">_Output:</Label>
                 <DockPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
-                    <Button DockPanel.Dock="Right" Margin="5,0,0,0" VerticalAlignment="Center" ToolTip="Run Text analysis" Click="OnTextAnalysis">
+                    <Button TabIndex="15" DockPanel.Dock="Right" Margin="5,0,0,0" VerticalAlignment="Center" ToolTip="Run Text analysis" Click="OnTextAnalysis">
                         <Image Source="{StaticResource Zoom}" Width="16" Height="16" />
                     </Button>
-                    <TextBox Name="_boxOutput"  VerticalAlignment="Center" IsReadOnlyCaretVisible="True" />
+                    <TextBox Name="_boxOutput" TabIndex="1" VerticalAlignment="Center" IsReadOnlyCaretVisible="True" />
                 </DockPanel>
             </Grid>
 
@@ -134,7 +135,7 @@
             <!--#region Toolbar -->
 
             <ToolBarTray DockPanel.Dock="Bottom" Background="WhiteSmoke">
-                <ToolBar Band="2" Background="WhiteSmoke" Header="Layout">
+                <ToolBar TabIndex="8" Band="2" Background="WhiteSmoke" Header="La_yout">
                     <ToggleButton Name="_groupBy" ToolTip="Group by typographic family" Checked="RefreshItems" Unchecked="RefreshItems" Style="{StaticResource ImageButton}" Content="{StaticResource GroupBy}" />
                     <Button ToolTip="Collapse All" Style="{StaticResource ImageButton}" Content="{StaticResource CollapseAll}" Click="OnCollapseAll" IsEnabled="{Binding IsGrouping, ElementName=_renderings}" />
                     <Button ToolTip="Expand All" Style="{StaticResource ImageButton}" Content="{StaticResource ExpandAll}" Click="OnExpandAll" IsEnabled="{Binding IsGrouping, ElementName=_renderings}" />
@@ -171,11 +172,11 @@
             </ToolBarTray>
 
             <ToolBarTray DockPanel.Dock="Top" Background="WhiteSmoke">
-                <ToolBar Background="WhiteSmoke" Header="Features">
+                <ToolBar TabIndex="3" Background="WhiteSmoke" Header="F_eatures">
                     <TextBox Name="_boxFeatures" MinWidth="100" ToolTip="Optional OpenType feature tags to apply (such as hlig) separated by space." />
                 </ToolBar>
 
-                <ToolBar Background="WhiteSmoke" Header="Locale">
+                <ToolBar TabIndex="4" Background="WhiteSmoke" Header="Lo_cale">
                     <ComboBox Name="_boxLocale" IsEditable="True" MinWidth="100" VerticalAlignment="Center" ToolTip="Optional BCP-47 tag to select particular language with set of features." TextSearch.TextPath="Name">
                         <ComboBox.GroupStyle>
                             <GroupStyle>
@@ -202,7 +203,7 @@
                     </ComboBox>
                 </ToolBar>
 
-                <ToolBar Band="1" Background="WhiteSmoke" Header="Format">
+                <ToolBar TabIndex="5" Band="1" Background="WhiteSmoke" Header="For_mat">
                     <ComboBox Name="_readingSelector" ToolTip="Reading direction" SelectedIndex="0">
                         <dw:ReadingDirection>LeftToRight</dw:ReadingDirection>
                         <dw:ReadingDirection>RightToLeft</dw:ReadingDirection>
@@ -233,7 +234,7 @@
                     </ComboBox>
                 </ToolBar>
                 
-                <ToolBar Band="1" Background="WhiteSmoke" Header="Rendering">
+                <ToolBar TabIndex="6" Band="1" Background="WhiteSmoke" Header="_Rendering">
                     <ListBox Name="_aliasingSelector" ToolTip="Text antialias mode" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
                         <dw:TextAntialiasMode>ClearType</dw:TextAntialiasMode>
                         <dw:TextAntialiasMode>Grayscale</dw:TextAntialiasMode>
@@ -250,8 +251,8 @@
                         <Binding Path="IsGrouping" ElementName="_renderings" />
                     </MultiBinding>
                 </ScrollViewer.VerticalScrollBarVisibility>
-                <ItemsControl Name="_renderings" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent" ToolTip="You can drag &amp; drop a font file here."
-                              ItemsPanel="{Binding SelectedItem.ItemsPanelTemplate, ElementName=_renderingsPanelSelector}" GroupStyleSelector="SelectRenderingsGroupStyle">
+                <ItemsControl Name="_renderings" TabIndex="7" IsTabStop="False" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent" ToolTip="You can drag &amp; drop a font file here."
+                              ItemsPanel="{Binding SelectedItem.ItemsPanelTemplate, ElementName=_renderingsPanelSelector}" GroupStyleSelector="SelectRenderingsGroupStyle" KeyboardNavigation.TabNavigation="Local">
                     <ItemsControl.Resources>
                         <GroupStyle x:Key="GroupStyle">
                             <GroupStyle.ContainerStyle>
