@@ -207,7 +207,10 @@
                 </ToolBar>
                 
                 <ToolBar Background="WhiteSmoke" ToolTip="Render options">
-                    
+                    <ListBox Name="_aliasingSelector" ToolTip="Text antialias mode" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
+                        <dw:TextAntialiasMode>ClearType</dw:TextAntialiasMode>
+                        <dw:TextAntialiasMode>Grayscale</dw:TextAntialiasMode>
+                    </ListBox>
                 </ToolBar>
             </ToolBarTray>
 
@@ -246,7 +249,7 @@
                     </ItemsControl.Resources>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="Silver" BorderThickness="1" Margin="5" Background="White">
+                            <Border BorderBrush="Silver" BorderThickness="1" Margin="5">
                                 <Border.ToolTip>
                                     <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
                                         <StackPanel>
@@ -385,20 +388,21 @@
                                         </DockPanel>
                                     </Border>
                                     <local:DirectWriteElement 
-                                FontSet="{Binding SingleFontSet}"
-                                FontFace="{Binding FontFace}" 
-                                FontSize="{Binding EmSize}"
-                                FontAxisValues="{Binding FontAxisValues}"
-                                Text="{Binding Text, ElementName=_boxOutput}" 
-                                ParagraphReadingDirection="{Binding SelectedItem, ElementName=_readingSelector}" 
-                                ParagraphFlowDirection="{Binding SelectedItem, ElementName=_flowSelector}" 
-                                TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
-                                ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
-                                WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
-                                FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
-                                LocaleName="{Binding Text, ElementName=_boxLocale}" 
-                                local:BoxItem.OwningItem="{Binding}"
-                                />
+                                        FontSet="{Binding SingleFontSet}"
+                                        FontFace="{Binding FontFace}" 
+                                        FontSize="{Binding EmSize}"
+                                        FontAxisValues="{Binding FontAxisValues}"
+                                        Text="{Binding Text, ElementName=_boxOutput}" 
+                                        ParagraphReadingDirection="{Binding SelectedItem, ElementName=_readingSelector}" 
+                                        ParagraphFlowDirection="{Binding SelectedItem, ElementName=_flowSelector}" 
+                                        TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
+                                        ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
+                                        WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
+                                        TextAntialiasMode="{Binding SelectedItem, ElementName=_aliasingSelector}"
+                                        FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
+                                        LocaleName="{Binding Text, ElementName=_boxLocale}" 
+                                        local:BoxItem.OwningItem="{Binding}"
+                                        />
                                 </DockPanel>
                             </Border>
                         </DataTemplate>

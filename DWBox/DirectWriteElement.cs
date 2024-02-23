@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using Win32;
 using Win32.DWrite;
 
 namespace DWBox
@@ -30,6 +26,14 @@ namespace DWBox
         public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register(nameof(TextAlignment), typeof(Win32.DWrite.TextAlignment), typeof(DirectWriteElement), new FrameworkPropertyMetadata(Win32.DWrite.TextAlignment.Leading, InvalidateTextFormat));
         public static readonly DependencyProperty ParagraphAlignmentProperty = DependencyProperty.Register(nameof(ParagraphAlignment), typeof(ParagraphAlignment), typeof(DirectWriteElement), new FrameworkPropertyMetadata(ParagraphAlignment.Near, InvalidateTextFormat));
         public static readonly DependencyProperty WordWrappingProperty = DependencyProperty.Register(nameof(WordWrapping), typeof(WordWrapping), typeof(DirectWriteElement), new FrameworkPropertyMetadata(WordWrapping.Wrap, InvalidateTextFormat));
+
+        public static readonly DependencyProperty TextAntialiasModeProperty = DependencyProperty.Register(nameof(TextAntialiasMode), typeof(TextAntialiasMode), typeof(DirectWriteElement), new FrameworkPropertyMetadata(TextAntialiasMode.ClearType, FrameworkPropertyMetadataOptions.AffectsRender, InvalidateRenderTarget));
+
+        public TextAntialiasMode TextAntialiasMode
+        {
+            get { return (TextAntialiasMode)GetValue(TextAntialiasModeProperty); }
+            set { SetValue(TextAntialiasModeProperty, value); }
+        }
 
         public FontSet FontSet
         {
@@ -111,6 +115,7 @@ namespace DWBox
         private DWrite.IDWriteBitmapRenderTarget _renderTarget;
         private BitmapRenderer _renderer;
         private BitmapSource _bitmap;
+        private PixelFormat _bitmapFormat = PixelFormats.Bgr32;
         private IntPtr hBitmapData;
 
         private DpiScale _dpiScale = new DpiScale(1, 1);
@@ -238,7 +243,7 @@ namespace DWBox
 
                 if (drawingContext != null && hBitmapData != IntPtr.Zero)
                 {
-                    _bitmap = BitmapSource.Create(scaledWidth, scaledHeight, 96, 96, PixelFormats.Bgr32, null, hBitmapData, scaledWidth * scaledHeight * 4, scaledWidth * 4);
+                    _bitmap = BitmapSource.Create(scaledWidth, scaledHeight, 96, 96, _bitmapFormat, null, hBitmapData, scaledWidth * scaledHeight * _bitmapFormat.BitsPerPixel / 8, scaledWidth * _bitmapFormat.BitsPerPixel / 8);
                     drawingContext.DrawImage(_bitmap, new Rect(0, 0, width, height));
                 }
             }
@@ -270,18 +275,30 @@ namespace DWBox
             return _bitmap;
         }
 
+        private void InvalidateRenderTarget()
+        {
+            _renderTarget = null;
+        }
+        private static void InvalidateRenderTarget(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((DirectWriteElement)d).InvalidateRenderTarget();
         private void EnsureRenderTarget(uint width, uint height)
         {
             if (_renderTarget == null)
             {
                 _renderTarget = _gdiInterop.CreateBitmapRenderTarget(IntPtr.Zero, width, height);
+                _bitmapFormat = PixelFormats.Bgr32;
+                if (TextAntialiasMode == TextAntialiasMode.Grayscale)
+                    if (_renderTarget is DWrite.IDWriteBitmapRenderTarget1 target1)
+                    {
+                        target1.SetTextAntialiasMode(TextAntialiasMode.Grayscale);
+                        _bitmapFormat = PixelFormats.Pbgra32;
+                    }
+
                 _renderer = new BitmapRenderer(_renderTarget, _factory.CreateRenderingParams());
             }
             else
             {
                 _renderTarget.Resize(width, height);
             }
-
             IntPtr hdc = _renderTarget.GetMemoryDC();
             IntPtr hBitmap = GetCurrentObject(hdc, 7);
 
@@ -290,10 +307,12 @@ namespace DWBox
 
             if (hBitmapData != IntPtr.Zero)
             {
-                // fill white
+                // fill white              
                 int pixels = bm.bmWidth * bm.bmHeight;
+                int color = _bitmapFormat == PixelFormats.Pbgra32 ? default : 0x00FFFFFF;
+
                 for (int i = 0; i < pixels; i++)
-                    Marshal.WriteInt32(hBitmapData, i * 4, 0x00FFFFFF);
+                    Marshal.WriteInt32(hBitmapData, i * 4, color);
             }
         }
 

@@ -125,7 +125,6 @@ namespace DWBox
             catch { }
         }
 
-
         private async void OnAddInput(object sender, RoutedEventArgs e)
         {
             try { Settings.Default.Save(); }
@@ -442,6 +441,23 @@ namespace DWBox
             MemoryStream pngStream = new MemoryStream();
             png.Save(pngStream);
             pngStream.Seek(0, SeekOrigin.Begin);
+
+            if (bitmap.Format == PixelFormats.Pbgra32)
+            {
+                // clipboard does not support transparent bitmaps, all pixels are black, alpha varies
+                byte[] bitmapData = new byte[bitmap.PixelWidth * bitmap.PixelHeight * 4];
+                bitmap.CopyPixels(bitmapData, bitmap.PixelWidth * 4, 0);
+
+                for (int i = 0; i < bitmapData.Length; i += 4)
+                {
+                    byte a = (byte)(255 - bitmapData[i + 3]);
+                    bitmapData[i + 0] = a;
+                    bitmapData[i + 1] = a;
+                    bitmapData[i + 2] = a;
+                }
+
+                bitmap = BitmapSource.Create(bitmap.PixelWidth, bitmap.PixelHeight, bitmap.DpiX, bitmap.DpiY, PixelFormats.Bgr32, null, bitmapData, bitmap.PixelWidth * 4);
+            }
 
             DataObject data = new DataObject();
             data.SetData("PNG", pngStream);

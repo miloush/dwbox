@@ -318,7 +318,28 @@
             </DrawingImage.Drawing>
         </DrawingImage>
         
+        <DrawingImage x:Key="TextAntialiasModeClearType">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16H0V0H16Z" />
+                    <GeometryDrawing Brush="#c00000" Geometry="F1 M 1,7  H5 V15 H1Z" />
+                    <GeometryDrawing Brush="#00c000" Geometry="F1 M 6,4 H10 V12 H6Z" />
+                    <GeometryDrawing Brush="#0000c0" Geometry="F1 M11,1 H15 V9  H11Z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="TextAntialiasModeGrayscale">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16H0V0H16Z" />
+                    <GeometryDrawing Brush="#FFFFFF" Geometry="F1 M 1,7  H5 V15 H1Z" />
+                    <GeometryDrawing Brush="#808080" Geometry="F1 M 6,4 H10 V12 H6Z" />
+                    <GeometryDrawing Brush="#000000" Geometry="F1 M11,1 H15 V9  H11Z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
         
+
         
 
     </Application.Resources>
