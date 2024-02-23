@@ -118,7 +118,7 @@
                     <ToggleButton Name="_decode" DockPanel.Dock="Right"  Margin="5,0,0,0" IsChecked="True" VerticalAlignment="Center" ToolTip="Check to allow hexadecimal codepoints (with or without U+ prefix) and acronyms (ZWJ RLM etc.) separated by space. Use two spaces to insert a space into the output text. Backslash escaping (\u \n etc.) also recognized inside text.&#xD;&#xA;&#xD;&#xA;Uncheck to map characters 1:1 including spaces and no decoding." Checked="InvalidateOutput" Unchecked="InvalidateOutput">
                         <Image Source="{StaticResource DecreaseHorizontalSpacing}" Width="16" Height="16" />
                     </ToggleButton>
-                    <TextBox Name="_boxInput" VerticalAlignment="Center" TextChanged="InvalidateOutput" />
+                    <TextBox Name="_boxInput" VerticalAlignment="Center" TextChanged="InvalidateOutput" KeyDown="OnInputKeyDown" />
                 </DockPanel>
                 <Label Grid.Row="1" Target="{Binding ElementName=_boxOutput}">_Output:</Label>
                 <DockPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">

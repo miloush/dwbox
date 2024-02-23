@@ -30,7 +30,7 @@
             <DataGridTemplateColumn Header="Glyph">
                 <DataGridTemplateColumn.CellTemplate>
                     <DataTemplate>
-                        <Image Source="{Binding GlyphImage}" Stretch="None" />
+                        <Image Source="{Binding GlyphImage}" Stretch="None" ToolTip="{Binding FontName}" />
                     </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
