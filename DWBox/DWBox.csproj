@@ -11,6 +11,7 @@
 			https://nuget.miloush.net/nuget
 		</RestoreAdditionalProjectSources>
 		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ApplicationManifest>App.manifest</ApplicationManifest>
 	</PropertyGroup>
 
 	<ItemGroup>

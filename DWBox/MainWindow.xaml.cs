@@ -162,9 +162,40 @@ namespace DWBox
                 ClearValue(CursorProperty);
             }
 
-            if (MessageBox.Show(this, $"Add {entries.Count} fonts?", Title, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                foreach (var entry in entries)
-                    _items.Add(entry, AddEmSize);
+            if (entries.Count < 1)
+            {
+                TaskDialog.Show(this, "No fonts containing requested characters found.", Title, "Add fonts", null, TaskDialogButtons.OK, TaskDialogImage.Warning, options: TaskDialogOptions.CenterOwner);
+                return;
+            }
+            else if (entries.Count == 1)
+            {
+                if (TaskDialog.Show(this, $"Only single font '{entries[0].FullName}' contains the requested characters.", Title, "Add fonts", TaskDialogButtons.OKCancel, TaskDialogImage.Information) == TaskDialogButtonResult.OK)
+                    _items.Add(entries[0], AddEmSize);
+                return;
+            }
+            else
+            {
+                HashSet<string> families = new(entries.Select(e => e.TypographicFamilyName));
+
+                var result = TaskDialog.Show(this, $"Found {entries.Count} matching font faces belonging to {families.Count} typographic families.", Title, "Add fonts", null, TaskDialogButtons.Cancel, TaskDialogImage.Information, [$"Add all {entries.Count} font faces", "Add one font face per family"]);
+
+                switch (result.CustomButtonIndex)
+                {
+                    case 0:
+                        foreach (var entry in entries)
+                            _items.Add(entry, AddEmSize);
+                        break;
+
+                    case 1:
+                        foreach (var entry in entries)
+                            if (families.Remove(entry.TypographicFamilyName))
+                                _items.Add(entry, AddEmSize);
+                        break;
+
+                    default:
+                        return;
+                }
+            }
         }
 
         Task GetMatchingEntries(IList<FontSetEntry> entries)
