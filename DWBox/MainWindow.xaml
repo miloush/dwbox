@@ -149,7 +149,7 @@
                         <local:RenderingsLayoutViewModel Name="Uniform grid" Icon="{StaticResource GridPane}">
                             <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                                 <ItemsPanelTemplate>
-                                    <UniformGrid />
+                                    <local:VerticalGrid />
                                 </ItemsPanelTemplate>
                             </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                         </local:RenderingsLayoutViewModel>
