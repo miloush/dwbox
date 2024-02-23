@@ -9,6 +9,16 @@
     <Window.Resources>
         <local:FeaturesConverter x:Key="FeaturesConverter" />
         <local:ScrollBarVisibilityConverter x:Key="ScrollBarVisibilityConverter" />
+
+        <Style TargetType="ToolBar">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Mode=OneTime}" VerticalAlignment="Center" Margin="0,0,0,2" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
     <Border BorderThickness="0,0,0,5" BorderBrush="{DynamicResource InstanceBrush}">
         <DockPanel Margin="5,5,5,0">
@@ -49,7 +59,7 @@
 
             <!--#region Font Selection -->
 
-            <DockPanel DockPanel.Dock="Bottom">
+            <DockPanel DockPanel.Dock="Bottom" Background="WhiteSmoke">
                 <Button DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAddInput" ToolTip="Add all installed fonts that map all the required characters">Add a_ll</Button>
                 <Button DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAdd" IsDefault="True" ToolTip="Add the selected font">_Add</Button>
                 <Button DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnSetSize" IsDefault="True" ToolTip="Set all existing boxes to this size" Margin="0,0,5,0">Se_t</Button>
@@ -90,7 +100,7 @@
 
             <!--#region Input Output -->
 
-            <Grid DockPanel.Dock="Top">
+            <Grid DockPanel.Dock="Top" Margin="0,0,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
@@ -121,35 +131,10 @@
 
             <!--#endregion-->
 
-            <!--#region Parameters -->
-
-            <GroupBox DockPanel.Dock="Top" Padding="0,5,0,0" Margin="0,5,0,0">
-                <UniformGrid DockPanel.Dock="Top">
-                    <DockPanel>
-                        <Label Target="{Binding ElementName=_readingSelector}">_Reading direction:</Label>
-                        <ComboBox Name="_readingSelector" VerticalAlignment="Center" SelectedIndex="0" />
-                    </DockPanel>
-                    <DockPanel>
-                        <Label Target="{Binding ElementName=_boxFeatures}">F_eatures:</Label>
-                        <TextBox Name="_boxFeatures" VerticalAlignment="Center" ToolTip="Optional OpenType feature tags to apply (such as hlig) separated by space." />
-                    </DockPanel>
-                    <DockPanel>
-                        <Label Target="{Binding ElementName=_flowSelector}">Flo_w direction:</Label>
-                        <ComboBox Name="_flowSelector" VerticalAlignment="Center" SelectedIndex="0" />
-                    </DockPanel>
-                    <DockPanel>
-                        <Label Target="{Binding ElementName=_boxLocale}">L_ocale:</Label>
-                        <TextBox Name="_boxLocale" VerticalAlignment="Center" ToolTip="Optional BCP-47 tag to select particular language with set of features." />
-                    </DockPanel>
-                </UniformGrid>
-            </GroupBox>
-
-            <!--#endregion-->
-
             <!--#region Toolbar -->
 
-            <ToolBarTray DockPanel.Dock="Top" Background="WhiteSmoke">
-                <ToolBar Background="WhiteSmoke" ToolTip="Layout options">
+            <ToolBarTray DockPanel.Dock="Bottom" Background="WhiteSmoke">
+                <ToolBar Band="2" Background="WhiteSmoke" Header="Layout">
                     <ToggleButton Name="_groupBy" ToolTip="Group by typographic family" Checked="RefreshItems" Unchecked="RefreshItems" Style="{StaticResource ImageButton}" Content="{StaticResource GroupBy}" />
                     <Button ToolTip="Collapse All" Style="{StaticResource ImageButton}" Content="{StaticResource CollapseAll}" Click="OnCollapseAll" IsEnabled="{Binding IsGrouping, ElementName=_renderings}" />
                     <Button ToolTip="Expand All" Style="{StaticResource ImageButton}" Content="{StaticResource ExpandAll}" Click="OnExpandAll" IsEnabled="{Binding IsGrouping, ElementName=_renderings}" />
@@ -183,7 +168,49 @@
                         </local:RenderingsLayoutViewModel>
                     </ListBox>
                 </ToolBar>
-                <ToolBar Background="WhiteSmoke" ToolTip="Format">
+            </ToolBarTray>
+
+            <ToolBarTray DockPanel.Dock="Top" Background="WhiteSmoke">
+                <ToolBar Background="WhiteSmoke" Header="Features">
+                    <TextBox Name="_boxFeatures" MinWidth="100" ToolTip="Optional OpenType feature tags to apply (such as hlig) separated by space." />
+                </ToolBar>
+
+                <ToolBar Background="WhiteSmoke" Header="Locale">
+                    <ComboBox Name="_boxLocale" IsEditable="True" MinWidth="100" VerticalAlignment="Center" ToolTip="Optional BCP-47 tag to select particular language with set of features." TextSearch.TextPath="Name">
+                        <ComboBox.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ComboBox.GroupStyle>
+                        <ComboBox.ItemContainerStyle>
+                            <Style TargetType="ComboBoxItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ComboBox.ItemContainerStyle>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <TextBlock Text="{Binding Name}" />
+                                    <TextBlock Text="{Binding EnglishName}" Margin="5,0,0,0" TextAlignment="Right" FontStyle="Italic" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </ToolBar>
+
+                <ToolBar Band="1" Background="WhiteSmoke" Header="Format">
+                    <ComboBox Name="_readingSelector" ToolTip="Reading direction" SelectedIndex="0">
+                        <dw:ReadingDirection>LeftToRight</dw:ReadingDirection>
+                        <dw:ReadingDirection>RightToLeft</dw:ReadingDirection>
+                    </ComboBox>
+                    <ComboBox Name="_flowSelector" ToolTip="Flow directoin" SelectedIndex="0">
+                        <dw:FlowDirection>TopToBottom</dw:FlowDirection>
+                        <dw:FlowDirection>BottomToTop</dw:FlowDirection>
+                    </ComboBox>
                     <ListBox Name="_textAlignmentSelector" ToolTip="Text alignment" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
                         <dw:TextAlignment>Leading</dw:TextAlignment>
                         <dw:TextAlignment>Center</dw:TextAlignment>
@@ -206,7 +233,7 @@
                     </ComboBox>
                 </ToolBar>
                 
-                <ToolBar Background="WhiteSmoke" ToolTip="Render options">
+                <ToolBar Band="1" Background="WhiteSmoke" Header="Rendering">
                     <ListBox Name="_aliasingSelector" ToolTip="Text antialias mode" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
                         <dw:TextAntialiasMode>ClearType</dw:TextAntialiasMode>
                         <dw:TextAntialiasMode>Grayscale</dw:TextAntialiasMode>

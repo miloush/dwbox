@@ -52,7 +52,7 @@ using System.Windows;
 [assembly: AssemblyVersion("2.3.0.0")]
 [assembly: AssemblyFileVersion("2.3.0.0")]
 
-// 2.3.0.0 layout options, text alignment, paragraph alignment, word wrapping, remember last added font, antialiasing mode
+// 2.3.0.0 layout options, text alignment, paragraph alignment, word wrapping, remember last added font, antialiasing mode, locale list
 // 2.2.0.0 copy image/box/name to clipboard, DirectWriteElement measuring, bitmap AV fix, empty GlyphRun analysis fix, remove all but this font, save settings on drop, \u U+ and acronyms decoding, core switch
 // 2.1.0.0 refactor DWrite into namespace & struct with properties, text analysis, remove filter, set size, font face strings, add all progress, remember last input
 // 2.0.0.1 instance brush

@@ -28,8 +28,6 @@ namespace DWBox
         public MainWindow()
         {
             InitializeComponent();
-            _readingSelector.ItemsSource = new[] { ReadingDirection.LeftToRight, ReadingDirection.RightToLeft };
-            _flowSelector.ItemsSource = new[] { Win32.DWrite.FlowDirection.TopToBottom, Win32.DWrite.FlowDirection.BottomToTop };
             _renderings.ItemsSource = _items.View;
 
             try { _boxInput.Text = Settings.Default.LastInput; }
@@ -42,6 +40,10 @@ namespace DWBox
                                    where module.ModuleName.StartsWith("dwrite", StringComparison.OrdinalIgnoreCase) || module.ModuleName.StartsWith("textshaping", StringComparison.OrdinalIgnoreCase)
                                    select new { module.ModuleName, module.FileVersionInfo, FileInfo = new FileInfo(module.FileName) };
 
+            ListCollectionView view = new ListCollectionView(CultureInfo.GetCultures(CultureTypes.AllCultures));
+            view.GroupDescriptions.Add(new CultureGroupDescription());
+            _boxLocale.ItemsSource = view;
+
             RefreshSystemFonts(sender, e);
 
             TaskbarItemInfo info = new TaskbarItemInfo();
@@ -51,6 +53,23 @@ namespace DWBox
             info.ThumbButtonInfos.Add(CreateThumbButton(new SolidColorBrush(Color.FromRgb(1, 165, 239))));
             //info.ThumbButtonInfos.Add(CreateThumbButton(new SolidColorBrush(Color.FromRgb(254, 185, 3))));
             TaskbarItemInfo = info;
+        }
+
+        class CultureGroupDescription : GroupDescription
+        {
+            public override object GroupNameFromItem(object item, int level, CultureInfo format)
+            {
+                CultureInfo culture = (CultureInfo)item;
+                while (culture.Parent is CultureInfo parent && parent.Name != "")
+                {
+                    if (culture == parent)
+                        break;
+                    else
+                        culture = parent;
+                }
+
+                return culture.EnglishName;
+            }
         }
 
         private ThumbButtonInfo CreateThumbButton(Brush brush)
