@@ -30,7 +30,11 @@ namespace DWBox
             InitializeComponent();
             _renderings.ItemsSource = _items.View;
 
-            try { _boxInput.Text = Settings.Default.LastInput; }
+            try
+            {
+                _boxInput.Text = Settings.Default.LastInput;
+                AddEmSize = Settings.Default.LastAddedSize;
+            }
             catch { }
         }
 
@@ -138,6 +142,7 @@ namespace DWBox
             {
                 _items.Add(entry, AddEmSize);
                 Settings.Default.LastAddedFont = entry.FullName;
+                Settings.Default.LastAddedSize = AddEmSize;
             }
 
             try { Settings.Default.Save(); }

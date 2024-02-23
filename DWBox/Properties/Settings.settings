@@ -6,7 +6,10 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="LastAddedFont" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">Segoe UI</Value>
+    </Setting>
+    <Setting Name="LastAddedSize" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">48</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -37,13 +37,25 @@ namespace DWBox.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Segoe UI")]
         public string LastAddedFont {
             get {
                 return ((string)(this["LastAddedFont"]));
             }
             set {
                 this["LastAddedFont"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("48")]
+        public float LastAddedSize {
+            get {
+                return ((float)(this["LastAddedSize"]));
+            }
+            set {
+                this["LastAddedSize"] = value;
             }
         }
     }
