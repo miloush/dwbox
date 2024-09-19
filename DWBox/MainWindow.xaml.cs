@@ -403,9 +403,15 @@ namespace DWBox
             if (sender is FrameworkElement { DataContext: BoxItem item })
                 if (ItemsControl.ContainerFromElement(_renderings, item.RenderingElement) is FrameworkElement el)
                 {
-                    RenderTargetBitmap bitmap = new RenderTargetBitmap((int)el.ActualWidth, (int)el.ActualHeight, 96, 96, PixelFormats.Pbgra32);
-                    bitmap.Render(el);
+                    Rect bounds = new Rect(default, el.RenderSize);
 
+                    DrawingVisual visual = new DrawingVisual();
+                    using (DrawingContext context = visual.RenderOpen())
+                        context.DrawRectangle(new VisualBrush(el), null, bounds);
+
+                    RenderTargetBitmap bitmap = new RenderTargetBitmap((int)Math.Ceiling(bounds.Width), (int)Math.Ceiling(bounds.Height), 96, 96, PixelFormats.Pbgra32);
+                    bitmap.Render(visual);
+                              
                     CopyBitmap(bitmap);
                 }
         }
