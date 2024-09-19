@@ -199,6 +199,31 @@ namespace DWBox
             }
         }
 
+        private void OnAddFamily(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement el)
+            {
+                BoxItem item = (BoxItem)el.DataContext;
+                string familyName = item.TypographicFamilyName;
+
+                if (string.IsNullOrEmpty(familyName))
+                {
+                    TaskDialog.Show(this, "This font does not have a typographic family name set.", Title, "Add font family", TaskDialogButtons.OK, TaskDialogImage.Error);
+                    return;
+                }
+
+                bool added = false;
+                var fontset = new FontSet(DWriteFactory.Shared6.GetSystemFontSet(includeDownloadableFonts: false));
+                foreach (var entry in fontset)
+                    if (entry.TypographicFamilyName == familyName)
+                        added |= _items.Add(entry, item.EmSize);
+
+                if (!added)
+                    TaskDialog.Show(this, "No other fonts of the same typographic family found in the system font set.", Title, "Add font family", TaskDialogButtons.OK, TaskDialogImage.Information);
+            }
+        }
+
+
         Task GetMatchingEntries(IList<FontSetEntry> entries)
         {
             TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Indeterminate;

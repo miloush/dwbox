@@ -406,6 +406,8 @@
                                                         <MenuItem Header="Copy _box bitmap" Click="OnCopyBitmap" ToolTip="Copy the whole box bitmap including font name into clipboard" />
                                                         <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard" />
                                                         <Separator />
+                                                        <MenuItem Header="Add whole f_amily" Click="OnAddFamily" ToolTip="Add all fonts from the same typographical family" />
+                                                        <Separator />
                                                         <MenuItem Header="_Text analysis" Click="OnTextAnalysis" ToolTip="Open text analysis" />
                                                         <MenuItem Header="_GlyphRun details" Click="OnGlyphRunDetails" ToolTip="Open glyph run details" />
                                                     </ContextMenu>
