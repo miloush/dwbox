@@ -100,6 +100,7 @@ namespace DWBox
         {
             switch (s)
             {
+                case "NBSP": return "\u00A0";
                 case "CGJ": return "\u034F";
                 case "ZWSP": return "\u200B";
                 case "ZWNJ": return "\u200C";
@@ -111,7 +112,7 @@ namespace DWBox
                 case "PDF": return "\u202C";
                 case "LRO": return "\u202D";
                 case "RLO": return "\u202E";
-                case "NBSP": return "\u202F";
+                case "NNBSP": return "\u202F";
                 case "LRI": return "\u2066";
                 case "RLI": return "\u2067";
                 case "FSI": return "\u2068";
@@ -122,6 +123,7 @@ namespace DWBox
                 case "AAFS": return "\u206D";
                 case "NADS": return "\u206E";
                 case "NODS": return "\u206F";
+                case "ZWNBSP": return "\uFEFF";
                 default: return null;
             }
         }
