@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -213,11 +214,15 @@ namespace DWBox
 
             for (int i = 0; i < count; i++)
             {
-                var face = set.CreateFontFace(i);
-                face.GetGlyphIndices(codepoints, codepoints.Length, glyphs);
+                try
+                {
+                    var face = set.CreateFontFace(i);
+                    face.GetGlyphIndices(codepoints, codepoints.Length, glyphs);
 
-                if (Array.IndexOf(glyphs, (ushort)0) < 0)
-                    entries.Add(new FontSetEntry(set, i));
+                    if (Array.IndexOf(glyphs, (ushort)0) < 0)
+                        entries.Add(new FontSetEntry(set, i));
+                }
+                catch (COMException) { }
 
                 if ((i % 100) == 0)
                     TaskbarItemInfo.ProgressValue = (double)i / count;
@@ -262,6 +267,12 @@ namespace DWBox
 
                         case "A":
                             _items.Clear();
+                            return;
+
+                        case "G":
+                            int[] codepoints = ToCodepoints(_boxOutput.Text).ToArray();
+                            ushort[] glyphs = new ushort[codepoints.Length];
+                            _items.Remove(item => Array.IndexOf(item.FontFace.GetGlyphIndices(codepoints), (ushort)0) >= 0);
                             return;
                     }
 

@@ -387,6 +387,8 @@
                                                         <MenuItem Click="OnRemove" Tag="T" Header="Remove _this one" />
                                                         <MenuItem Click="OnRemove" Tag="F" Header="Remove this _family" />
                                                         <Separator />
+                                                        <MenuItem Click="OnRemove" Tag="G" Header="Remove fonts with missing _glyphs" />
+                                                        <Separator />
                                                         <MenuItem Click="OnRemove" Tag="M" Header="Remove all _machine ones" />
                                                         <MenuItem Click="OnRemove" Tag="U" Header="Remove all _user ones" />
                                                         <MenuItem Click="OnRemove" Tag="D" Header="Remove all _dropped ones" />
