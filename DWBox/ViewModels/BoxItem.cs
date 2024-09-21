@@ -7,8 +7,30 @@ using Win32.DWrite;
 
 namespace DWBox
 {
-    public class BoxItem
+    public class BoxItem : DependencyObject
     {
+        public static readonly DependencyProperty EmSizeProperty = DependencyProperty.Register(nameof(EmSize), typeof(float), typeof(BoxItem), new PropertyMetadata(48f));
+        public static readonly DependencyProperty HeaderBrushProperty = DependencyProperty.Register(nameof(HeaderBrush), typeof(Brush), typeof(BoxItem), new PropertyMetadata(Brushes.WhiteSmoke));
+        public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Register(nameof(BorderBrush), typeof(Brush), typeof(BoxItem), new PropertyMetadata(Brushes.Silver));
+
+        public float EmSize
+        {
+            get { return (float)GetValue(EmSizeProperty); }
+            set { SetValue(EmSizeProperty, value); }
+        }
+
+        public Brush HeaderBrush
+        {
+            get { return (Brush)GetValue(HeaderBrushProperty); }
+            set { SetValue(HeaderBrushProperty, value); }
+        }
+
+        public Brush BorderBrush
+        {
+            get { return (Brush)GetValue(BorderBrushProperty); }
+            set { SetValue(BorderBrushProperty, value); }
+        }
+
         public BoxItem(FontSetEntry entry)
         {
             FontSetEntry = entry;
@@ -18,8 +40,6 @@ namespace DWBox
         public FontSet FontSet => FontSetEntry.FontSet;
         public string Name => FontSetEntry.FullName;
         public string TypographicFamilyName => FontSetEntry.TypographicFamilyName;
-
-        public float EmSize { get; set; } = 48;
 
         private FontSet _singleFontSet;
         public FontSet SingleFontSet
@@ -115,10 +135,11 @@ namespace DWBox
         private DirectWriteElement _el;
         public DirectWriteElement RenderingElement { get { return _el; } set { _el = value; } }
 
+        // Attached
 
-        public static readonly DependencyProperty OwningItemProperty = DependencyProperty.RegisterAttached("OwningItem", typeof(BoxItem), typeof(BoxItem), new PropertyMetadata(null, OnPropertyChanged));
+        public static readonly DependencyProperty OwningItemProperty = DependencyProperty.RegisterAttached("OwningItem", typeof(BoxItem), typeof(BoxItem), new PropertyMetadata(null, OnOwningItemChanged));
 
-        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnOwningItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             SetOwningItem((DirectWriteElement)d, (BoxItem)e.NewValue);
         }

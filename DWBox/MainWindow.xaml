@@ -20,6 +20,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Rectangle x:Key="RedIcon" x:Shared="False" Width="16" Height="16" Fill="#FFF0F0" Stroke="DarkRed" RadiusX="2" RadiusY="2" />
+        <Rectangle x:Key="GreenIcon" x:Shared="False" Width="16" Height="16" Fill="#F0FFF0" Stroke="DarkGreen" RadiusX="2" RadiusY="2" />
     </Window.Resources>
     <Border BorderThickness="0,0,0,5" BorderBrush="{DynamicResource InstanceBrush}">
         <DockPanel Margin="5,5,5,0">
@@ -277,7 +280,7 @@
                     </ItemsControl.Resources>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="Silver" BorderThickness="1" Margin="5">
+                            <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1" Margin="5">
                                 <Border.ToolTip>
                                     <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
                                         <StackPanel>
@@ -379,7 +382,7 @@
                                     </ToolTip>
                                 </Border.ToolTip>
                                 <DockPanel>
-                                    <Border DockPanel.Dock="Top" Background="WhiteSmoke" Padding="2,2,0,2" >
+                                    <Border DockPanel.Dock="Top" Background="{Binding HeaderBrush}" Padding="2,2,0,2" >
                                         <DockPanel>
                                             <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove" Click="OpenContextMenu">
                                                 <Button.ContextMenu>
@@ -405,6 +408,14 @@
                                                         <MenuItem Header="Copy _file path" Click="OnCopyPath" ToolTip="Copy the font file path into clipboard" />
                                                         <MenuItem Header="Copy _box bitmap" Click="OnCopyBitmap" ToolTip="Copy the whole box bitmap including font name into clipboard" />
                                                         <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard" />
+                                                        <Separator />
+                                                        <MenuItem Header="_Highlight">
+                                                            <MenuItem Click="OnHighlight" Tag="X" Header="C_lear" />
+                                                            <MenuItem Click="OnHighlight" Tag="XA" Header="Clear _All" />
+                                                            <Separator />
+                                                            <MenuItem Click="OnHighlight" Tag="R" Header="Red" Icon="{StaticResource RedIcon}" />
+                                                            <MenuItem Click="OnHighlight" Tag="G" Header="Green" Icon="{StaticResource GreenIcon}" />
+                                                        </MenuItem>
                                                         <Separator />
                                                         <MenuItem Header="Add whole f_amily" Click="OnAddFamily" ToolTip="Add all fonts from the same typographical family" />
                                                         <Separator />

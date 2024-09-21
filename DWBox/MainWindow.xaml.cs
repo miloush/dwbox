@@ -480,8 +480,6 @@ namespace DWBox
                 foreach (BoxItem item in _items)
                 {
                     item.EmSize = em;
-                    if (item.RenderingElement is DirectWriteElement el)
-                        BindingOperations.GetBindingExpression(el, DirectWriteElement.FontSizeProperty).UpdateTarget();
                     
                     Settings.Default.LastAddedSize = em;
                     try { Settings.Default.Save(); }
@@ -540,6 +538,47 @@ namespace DWBox
             {
                 menu.PlacementTarget = sender as UIElement;
                 menu.IsOpen = true;
+            }
+        }
+
+        private static readonly Brush RedHeaderBrush = new SolidColorBrush(Color.FromRgb(0xFF, 0xF0, 0xF0));
+        private static readonly Brush RedBorderBrush = Brushes.DarkRed;
+
+        private static readonly Brush GreenHeaderBrush = new SolidColorBrush(Color.FromRgb(0xF0, 0xFF, 0xF0));
+        private static readonly Brush GreenBorderBrush = Brushes.DarkGreen;
+
+        private void OnHighlight(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement el)
+            {
+                BoxItem targetItem = (BoxItem)el.DataContext;
+
+                if (el.Tag is string tag)
+                    switch (tag)
+                    {
+                        case "X":
+                            targetItem.ClearValue(BoxItem.HeaderBrushProperty);
+                            targetItem.ClearValue(BoxItem.BorderBrushProperty);
+                            return;
+
+                        case "XA":
+                            foreach (var item in _items)
+                            {
+                                item.ClearValue(BoxItem.HeaderBrushProperty);
+                                item.ClearValue(BoxItem.BorderBrushProperty);
+                            }
+                            return;
+
+                        case "R":
+                            targetItem.HeaderBrush = RedHeaderBrush;
+                            targetItem.BorderBrush = RedBorderBrush;
+                            return;
+                        
+                        case "G":
+                            targetItem.HeaderBrush = GreenHeaderBrush;
+                            targetItem.BorderBrush = GreenBorderBrush;
+                            return;
+                    }
             }
         }
     }
