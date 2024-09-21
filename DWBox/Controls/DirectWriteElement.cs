@@ -151,7 +151,8 @@ namespace DWBox
         private void InvalidateTextFormat()
         {
             _textFormat = null;
-            InvalidateMeasure();
+            InvalidateMeasure(); // needed for flow layouts
+            InvalidateVisual(); // needed for fixed layouts
         }
         private static void InvalidateTextFormat(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((DirectWriteElement)d).InvalidateTextFormat();
         private DWrite.IDWriteTextFormat GetOrCreateTextFormat()
