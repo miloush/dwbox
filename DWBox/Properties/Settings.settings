@@ -11,5 +11,8 @@
     <Setting Name="LastAddedSize" Type="System.Single" Scope="User">
       <Value Profile="(Default)">48</Value>
     </Setting>
+    <Setting Name="LastUnits" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

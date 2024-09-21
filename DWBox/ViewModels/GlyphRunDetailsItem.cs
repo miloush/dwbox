@@ -21,6 +21,10 @@ namespace DWBox
         public float AdvanceOffset { get; set; }
         public float AscenderOffset { get; set; }
 
+        public int DesignAdvance => (int)(Advance / _details.EmSize * _details.DesignUnitsPerEm);
+        public int DesignAdvanceOffset => (int)(AdvanceOffset / _details.EmSize * _details.DesignUnitsPerEm);
+        public int DesignAscenderOffset => (int)(AscenderOffset / _details.EmSize * _details.DesignUnitsPerEm);
+
         public string FontName { get; set; }
 
         public List<int> Codepoints { get; } = new List<int>();

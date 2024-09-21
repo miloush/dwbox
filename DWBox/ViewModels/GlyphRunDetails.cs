@@ -6,14 +6,17 @@ namespace DWBox
     public class GlyphRunDetails : Collection<GlyphRunDetailsItem>
     {
         private BoxItem _item;
+        private ushort _upm;
 
-        public GlyphRunDetails(BoxItem item)
+        public GlyphRunDetails(BoxItem item, ushort designUnitsPerEm)
         {
             _item = item;
+            _upm = designUnitsPerEm;
         }
 
         public string Name => _item.NameVersion;
         public float EmSize => _item.RenderingElement?.FontSize ?? 48f;
+        public ushort DesignUnitsPerEm => _upm;
 
         private bool _noTypeface;
         private GlyphTypeface _typeface;

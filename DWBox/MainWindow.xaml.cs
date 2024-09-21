@@ -356,7 +356,7 @@ namespace DWBox
                 if (item.RenderingElement == null)
                     return;
 
-                GlyphRunDetails details = new GlyphRunDetails(item);
+                GlyphRunDetails details = new GlyphRunDetails(item, item.FontFace.Metrics.DesignUnitsPerEm);
                 RecordingRenderer renderer = new RecordingRenderer(details);
                 item.RenderingElement.Render(renderer);
                 new GlyphRunWindow { DataContext = renderer.Details }.Show();
@@ -411,7 +411,7 @@ namespace DWBox
 
                     RenderTargetBitmap bitmap = new RenderTargetBitmap((int)Math.Ceiling(bounds.Width), (int)Math.Ceiling(bounds.Height), 96, 96, PixelFormats.Pbgra32);
                     bitmap.Render(visual);
-                              
+
                     CopyBitmap(bitmap);
                 }
         }
@@ -480,7 +480,7 @@ namespace DWBox
                 foreach (BoxItem item in _items)
                 {
                     item.EmSize = em;
-                    
+
                     Settings.Default.LastAddedSize = em;
                     try { Settings.Default.Save(); }
                     catch { }

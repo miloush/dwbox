@@ -24,6 +24,14 @@
         <local:AlternatingClusterRowStyleSelector x:Key="ClusterStyleSelector" OddStyle="{StaticResource OddCluster}" EvenStyle="{StaticResource EvenCluster}" />
     </Window.Resources>
     <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding}" IsReadOnly="True" VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver" CanUserSortColumns="False" RowStyleSelector="{StaticResource ClusterStyleSelector}">
+        <DataGrid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Units">
+                    <MenuItem Click="Scale" Header="Em Scaled"  />
+                    <MenuItem Click="Scale" Header="Design Units" Tag="Design" />
+                </MenuItem>
+            </ContextMenu>
+        </DataGrid.ContextMenu>
         <DataGrid.Columns>
             <DataGridTextColumn Header="Characters" Binding="{Binding String}" />
             <DataGridTextColumn Header="Codepoints" Binding="{Binding CodepointsString}" />
@@ -35,9 +43,9 @@
                 </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTextColumn Header="Glyph ID" Binding="{Binding GlyphID}" />
-            <DataGridTextColumn Header="Advance" Binding="{Binding Advance}" />
-            <DataGridTextColumn Header="Offset Adv" Binding="{Binding AdvanceOffset}" />
-            <DataGridTextColumn Header="Offset Asc" Binding="{Binding AscenderOffset}" />
+            <DataGridTextColumn x:Name="_advance" Header="Advance" Binding="{Binding Advance}" />
+            <DataGridTextColumn x:Name="_advanceOffset" Header="Offset Adv" Binding="{Binding AdvanceOffset}" />
+            <DataGridTextColumn x:Name="_ascenderOffset" Header="Offset Asc" Binding="{Binding AscenderOffset}" />
         </DataGrid.Columns>
     </DataGrid>
 </Window>
