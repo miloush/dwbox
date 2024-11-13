@@ -298,6 +298,59 @@ namespace DWBox
                         e.Handled = true;
                         break;
 
+                    case Key.U:
+                        {
+                            // change between UTF-16 and UTF-32
+                            // this is only applicable to hex values
+                            if (_decode.IsChecked == true)
+                            {
+                                ExpandToken(textbox);
+                            }
+
+                            string selection = textbox.SelectedText.Trim();
+                            if (string.IsNullOrEmpty(selection))
+                                return;
+
+                            // for simplicity, only do this if a single codepoint is selected
+                            string decoded = Decode(selection);
+                            if (decoded.Length > 2)
+                                break;
+                            
+                            // nothing changes for BMP characters
+                            if (!char.IsSurrogatePair(decoded, 0))
+                                break;
+
+                            bool from16to32 = selection.IndexOf(' ') > 0 ||
+                                              selection.IndexOf('+') != selection.LastIndexOf('+') ||
+                                              selection.IndexOf('\\') != selection.LastIndexOf('\\');
+
+                            if (from16to32) // from UTF-16 to UTF-32
+                            {
+                                string hex = char.ConvertToUtf32(decoded, 0).ToString("X4");
+
+                                if (selection.StartsWith("U+"))
+                                    textbox.SelectedText = "U+" + hex;
+                                else if (selection.StartsWith("\\u"))
+                                    textbox.SelectedText = "\\u" + hex;
+                                else
+                                    textbox.SelectedText = hex;
+                            }
+                            else // from UTF-32 to UTF-16
+                            {
+                                int high = decoded[0];
+                                int low = decoded[1];
+
+                                if (selection.StartsWith("U+"))
+                                    textbox.SelectedText = $"U+{high:X4} U+{low:X4}";
+                                else if (selection.StartsWith("\\u"))
+                                    textbox.SelectedText = $"\\u{high:X4}\\u{low:X4}";
+                                else
+                                    textbox.SelectedText = $"{high:X4} {low:X4}";
+                            }
+
+                            e.Handled = true;
+                        }
+                        break;
                 }
             }            
         }
