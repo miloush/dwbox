@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -331,14 +332,52 @@ namespace DWBox
                 try { Settings.Default.Save(); }
                 catch { }
 
+                SortedList<string, DWrite.Result> errors = new();
+                SortedSet<string> duplicates = new();
+
                 var builder = DWriteFactory.Shared6.CreateFontSetBuilder2();
                 foreach (string path in paths)
-                    builder.AddFontFile(path);
+                {
+                    DWrite.Result result = builder.AddFontFile(path);
+                    if (result != DWrite.Result.OK)
+                        errors[path] = result;
+                }
 
                 var set = new FontSet(builder.CreateFontSet());
 
                 foreach (var entry in set)
-                    _items.Add(entry, AddEmSize);
+                    if (!_items.Add(entry, AddEmSize))
+                    {
+                        string name = entry.FullName;
+                        if (entry.CreateFontResource().GetFontFile().TryGetLocalFilePath(out string path))
+                            name += $" [{path}]";
+
+                        duplicates.Add(name);
+                    }
+
+                if (errors.Count > 0 || duplicates.Count > 0)
+                {
+                    StringBuilder msg = new StringBuilder();
+                    if (errors.Count > 0)
+                    {
+                        msg.AppendLine("The following files could not be loaded:");
+                        foreach (var error in errors)
+                            msg.AppendLine($"\u00a0-\u00a0{error.Key} [{error.Value}]");
+
+                        msg.AppendLine();
+                    }
+
+                    if (duplicates.Count > 0)
+                    {
+                        msg.AppendLine("The following font faces are already present:");
+                        foreach (var duplicate in duplicates)
+                            msg.AppendLine("\u00a0-\u00a0" + duplicate);
+                    }
+
+                    TaskDialog.Show(this, msg.ToString(), Title, "Some fonts were not added.", null, TaskDialogButtons.OK, TaskDialogImage.Warning, null, TaskDialogOptions.SizeToContent);
+                }
+            }
+        }
             }
         }
 
