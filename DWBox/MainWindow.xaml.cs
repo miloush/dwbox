@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -378,7 +379,17 @@ namespace DWBox
                 }
             }
         }
-            }
+
+        private void OnItemMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+                if (sender is FrameworkElement el)
+                    if (el.DataContext is BoxItem item && item.FilePath is string path)
+                    {
+                        DataObject data = new DataObject();
+                        data.SetFileDropList(new StringCollection { path });
+                        DragDrop.DoDragDrop(el, data, DragDropEffects.Copy);
+                    }
         }
 
         private void OnTextAnalysis(object sender, RoutedEventArgs e)

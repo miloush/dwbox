@@ -382,7 +382,7 @@
                                     </ToolTip>
                                 </Border.ToolTip>
                                 <DockPanel>
-                                    <Border DockPanel.Dock="Top" Background="{Binding HeaderBrush}" Padding="2,2,0,2" >
+                                    <Border DockPanel.Dock="Top" Background="{Binding HeaderBrush}" Padding="2,2,0,2" MouseMove="OnItemMouseMove">
                                         <DockPanel>
                                             <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove" Click="OpenContextMenu">
                                                 <Button.ContextMenu>
