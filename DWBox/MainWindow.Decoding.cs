@@ -20,10 +20,10 @@ namespace DWBox
             {
                 if (string.IsNullOrEmpty(token))
                     output.Append(' ');
-                else if (token.Length >= 3 && uint.TryParse(token, NumberStyles.HexNumber, null, out cp) && IsValidCodepoint(cp))
-                    output.Append(char.ConvertFromUtf32((int)cp));
-                else if (token.StartsWith("U+") && uint.TryParse(token.Substring(2), NumberStyles.HexNumber, null, out cp) && IsValidCodepoint(cp))
-                    output.Append(char.ConvertFromUtf32((int)cp));
+                else if (token.Length >= 3 && uint.TryParse(token, NumberStyles.HexNumber, null, out cp) && IsValidCodepointOrSurrogate(cp))
+                    output.Append(ToString(cp));
+                else if (token.StartsWith("U+") && uint.TryParse(token.Substring(2), NumberStyles.HexNumber, null, out cp) && IsValidCodepointOrSurrogate(cp))
+                    output.Append(ToString(cp));
                 else if (DecodeAcronym(token) is string acronym)
                     output.Append(acronym);
                 else
@@ -57,7 +57,7 @@ namespace DWBox
                         if (hexLength >= 2)
                         {
                             uint startCode = uint.Parse(text.Substring(index + 2, hexLength), NumberStyles.HexNumber);
-                            if (IsValidCodepoint(startCode))
+                            if (IsValidCodepointOrSurrogate(startCode))
                             {
                                 output.Append(text.Substring(chunkStart, index - chunkStart));
                                 index += 1 + hexLength;
@@ -73,7 +73,7 @@ namespace DWBox
                                     if (hexLength >= 2)
                                     {
                                         endCode = uint.Parse(text.Substring(index + 5, hexLength), NumberStyles.HexNumber);
-                                        if (endCode < startCode || !IsValidCodepoint(endCode))
+                                        if (endCode < startCode || !IsValidCodepointOrSurrogate(endCode))
                                             endCode = startCode;
                                         else
                                             index += 4 + hexLength;
@@ -81,8 +81,8 @@ namespace DWBox
                                 }
 
                                 for (cp = startCode; cp <= endCode; cp++)
-                                    if (IsValidCodepoint(cp)) // TODO: deal with surrogates
-                                        output.Append(char.ConvertFromUtf32((int)cp));
+                                    if (ToString(cp) is string su)
+                                        output.Append(su);
 
                                 chunkStart = index + 1;
                             }
@@ -155,6 +155,22 @@ namespace DWBox
             const uint LowSurrogateEnd = 0xDFFF;
 
             return cp < Plane16End && (cp < HighSurrogateStart || cp > LowSurrogateEnd);
+        }
+        private static bool IsValidCodepointOrSurrogate(uint cp)
+        {
+            const uint Plane16End = 0x10FFFF;
+            return cp < Plane16End;
+        }
+
+        private static string ToString(uint cp)
+        {
+            if (IsValidCodepoint(cp))
+                return char.ConvertFromUtf32((int)cp);
+            
+            else if (cp < char.MaxValue) // surrogate
+                return ((char)cp).ToString();
+
+            return null;
         }
 
         private static IEnumerable<int> ToCodepoints(string s)
