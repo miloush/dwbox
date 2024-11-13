@@ -10,7 +10,7 @@ namespace DWBox
     {
         private BoxItem _item;
 
-        public GlyphRunWindow()
+        private GlyphRunWindow()
         {
             InitializeComponent();
 

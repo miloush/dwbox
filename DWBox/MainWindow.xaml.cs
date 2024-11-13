@@ -394,9 +394,7 @@ namespace DWBox
 
         private void OnTextAnalysis(object sender, RoutedEventArgs e)
         {
-            var analysis = TextAnalysis.Analyze(_boxOutput.Text, (ReadingDirection)_readingSelector.SelectedItem, _boxLocale.Text);
-
-            new TextAnalysisWindow { DataContext = analysis, Title = "Text Analysis: " + analysis.Text }.Show();
+            new TextAnalysisWindow(this).Show();
         }
 
         private void OnGlyphRunDetails(object sender, RoutedEventArgs e)

@@ -23,6 +23,11 @@
         </Style>
     </Window.Resources>
     <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding}" IsReadOnly="True" VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver" CanUserSortColumns="False">
+        <DataGrid.ContextMenu>
+            <ContextMenu>
+                <MenuItem IsCheckable="True" Header="Live updates" Checked="OnLiveUpdatesChecked" Unchecked="OnLiveUpdatesUnchecked" />
+            </ContextMenu>
+        </DataGrid.ContextMenu>
         <DataGrid.Columns>
             <DataGridTextColumn Header="Code" Binding="{Binding CharacterCode}" />
             <DataGridTextColumn Header="Script" Binding="{Binding ScriptProperties.IsoScriptCodeString}" />
