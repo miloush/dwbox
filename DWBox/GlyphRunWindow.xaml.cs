@@ -1,23 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
-using Win32;
 
 namespace DWBox
 {
     public partial class GlyphRunWindow : Window
     {
+        private BoxItem _item;
+
         public GlyphRunWindow()
         {
             InitializeComponent();
 
             if (!string.IsNullOrEmpty(Properties.Settings.Default.LastUnits))
                 Scale(Properties.Settings.Default.LastUnits);
+        }
+
+        public GlyphRunWindow(BoxItem item) : this()
+        {
+            _item = item;
+            OnLiveUpdate();
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -42,6 +46,31 @@ namespace DWBox
             _advance.Binding = new Binding(prefix + nameof(GlyphRunDetailsItem.Advance));
             _advanceOffset.Binding = new Binding(prefix + nameof(GlyphRunDetailsItem.AdvanceOffset));
             _ascenderOffset.Binding = new Binding(prefix + nameof(GlyphRunDetailsItem.AscenderOffset));
+        }
+
+        private void OnLiveUpdatesChecked(object sender, RoutedEventArgs e)
+        {
+            if (_item?.RenderingElement is DirectWriteElement el)
+            {
+                el.TextLayoutInvalidated += OnLiveUpdate;
+                OnLiveUpdate(sender);
+            }
+        }
+
+        private void OnLiveUpdatesUnchecked(object sender, RoutedEventArgs e)
+        {
+            if (_item?.RenderingElement is DirectWriteElement el)
+            {
+                el.TextLayoutInvalidated -= OnLiveUpdate;
+            }
+        }
+
+        private void OnLiveUpdate(object sender = null, EventArgs e = null)
+        {
+            GlyphRunDetails details = new GlyphRunDetails(_item, _item.FontFace.Metrics.DesignUnitsPerEm);
+            RecordingRenderer renderer = new RecordingRenderer(details);
+            _item.RenderingElement.Render(renderer);
+            DataContext = renderer.Details;
         }
     }
 

@@ -219,6 +219,8 @@ namespace DWBox
             try
             {
                 _textLayout = CreateTextLayout(finalSize);
+                TextLayoutInvalidated?.Invoke(this, EventArgs.Empty);
+                
                 return finalSize;
             }
             catch
@@ -256,6 +258,8 @@ namespace DWBox
                 drawingContext.DrawText(new FormattedText(e.Message, CultureInfo.CurrentUICulture, FlowDirection, new Typeface("Segoe UI"), 11, Brushes.Red, _dpiScale.PixelsPerDip) { MaxTextWidth = width }, default);
             }
         }
+
+        public EventHandler TextLayoutInvalidated;
 
         internal BitmapSource GetLastRenderedBoundingBitmap()
         {

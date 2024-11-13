@@ -30,6 +30,8 @@
                     <MenuItem Click="Scale" Header="Em Scaled"  />
                     <MenuItem Click="Scale" Header="Design Units" Tag="Design" />
                 </MenuItem>
+                <Separator />
+                <MenuItem IsCheckable="True" Header="Live updates" Checked="OnLiveUpdatesChecked" Unchecked="OnLiveUpdatesUnchecked" />
             </ContextMenu>
         </DataGrid.ContextMenu>
         <DataGrid.Columns>

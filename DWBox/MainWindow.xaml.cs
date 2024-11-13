@@ -402,15 +402,8 @@ namespace DWBox
         private void OnGlyphRunDetails(object sender, RoutedEventArgs e)
         {
             if (sender is FrameworkElement { DataContext: BoxItem item })
-            {
-                if (item.RenderingElement == null)
-                    return;
-
-                GlyphRunDetails details = new GlyphRunDetails(item, item.FontFace.Metrics.DesignUnitsPerEm);
-                RecordingRenderer renderer = new RecordingRenderer(details);
-                item.RenderingElement.Render(renderer);
-                new GlyphRunWindow { DataContext = renderer.Details }.Show();
-            }
+                if (item.RenderingElement != null)
+                    new GlyphRunWindow(item).Show();
         }
 
         #region Clipboard
