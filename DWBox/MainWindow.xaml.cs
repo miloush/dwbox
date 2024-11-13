@@ -179,6 +179,7 @@ namespace DWBox
             else
             {
                 HashSet<string> families = new(entries.Select(e => e.TypographicFamilyName));
+                SortedList<string, FontSetEntry> bestPerFamily = new SortedList<string, FontSetEntry>(families.Count);
 
                 var result = TaskDialog.Show(this, $"Found {entries.Count} matching font faces belonging to {families.Count} typographic families.", Title, "Add fonts", null, TaskDialogButtons.Cancel, TaskDialogImage.Information, [$"Add all {entries.Count} font faces", "Add one font face per family"]);
 
@@ -191,14 +192,42 @@ namespace DWBox
 
                     case 1:
                         foreach (var entry in entries)
-                            if (families.Remove(entry.TypographicFamilyName))
-                                _items.Add(entry, AddEmSize);
+                            if (!bestPerFamily.TryGetValue(entry.TypographicFamilyName, out var currentBest) || IsBetter(entry, currentBest))
+                                bestPerFamily[entry.TypographicFamilyName] = entry;
+
+                        foreach (var entry in bestPerFamily.Values)
+                            _items.Add(entry, AddEmSize);
+                        
                         break;
 
                     default:
                         return;
                 }
             }
+        }
+
+        private static bool IsBetter(FontSetEntry proposed, FontSetEntry current)
+        {
+            var aValues = current.GetFontFaceReference().GetFontAxisValues().ToDictionary(av => av.AxisTag, av => av.Value);
+            var bValues = proposed.GetFontFaceReference().GetFontAxisValues().ToDictionary(av => av.AxisTag, av => av.Value);
+
+            if (aValues.TryGetValue(FontAxisTag.Weight, out var aWeight) && bValues.TryGetValue(FontAxisTag.Weight, out var bWeight))
+                if (aWeight != bWeight)
+                    return bWeight == (float)Win32.DWrite.FontWeight.Regular;
+
+            if (aValues.TryGetValue(FontAxisTag.Italic, out var aItalic) && bValues.TryGetValue(FontAxisTag.Italic, out var bItalic))
+                if (aItalic != bItalic)
+                    return bItalic < aItalic;
+
+            if (aValues.TryGetValue(FontAxisTag.Width, out var aWidth) && bValues.TryGetValue(FontAxisTag.Width, out var bWidth))
+                if (aWidth != bWidth)
+                    return Math.Abs(bWidth - 100) < Math.Abs(aWidth - 100);
+
+            if (aValues.TryGetValue(FontAxisTag.Slant, out var aSlant) && bValues.TryGetValue(FontAxisTag.Slant, out var bSlant))
+                if (aSlant != bSlant)
+                    return Math.Abs(bSlant) < Math.Abs(aSlant);
+
+            return false;
         }
 
         private void OnAddFamily(object sender, RoutedEventArgs e)
