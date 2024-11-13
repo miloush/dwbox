@@ -197,93 +197,155 @@ namespace DWBox
 
         private void OnInputKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.SystemKey == Key.X && sender is TextBox textbox)
+            if (sender is TextBox textbox)
             {
-                if (_decode.IsChecked == true)
+                switch (e.SystemKey)
                 {
-                    // we already know that hex values must be on their own (space separated)
-                    // if we are in between spaces, Alt+X ought to do nothing
-                    // if there are characters either side, we are in a token
-                    //   if the token is a valid codepoint or codepoint range, we convert it to characters
-                    //   otherwise, we convert it to hex
-                    // if there is multiple tokens in selection
-                    //   if they are all encoded, convert to characters
-                    //   otherwise, convert unencoded to hex
-
-                    ExpandToken(textbox);
-
-                    if (string.IsNullOrWhiteSpace(textbox.SelectedText))
-                        return;
-
-                    string[] tokens = textbox.SelectedText.Split();
-                    string[] decodedTokens = new string[tokens.Length];
-
-                    bool hasDecodedTokens = false;
-                    for (int i = 0; i < tokens.Length; i++)
-                    {
-                        decodedTokens[i] = Decode(tokens[i]);
-                        if (decodedTokens[i] == tokens[i])
-                            hasDecodedTokens = true;
-                    }
-
-                    if (!hasDecodedTokens) // all tokens are hex or otherwise encoded, so we convert to characters
-                    {
-                        textbox.SelectedText = string.Join(" ", decodedTokens); // normalizes whitespace, might be undesirable
-                        e.Handled = true;
-                        return;
-                    }
-
-                    // at least one token is characters, convert them to hex, but leave encoded as they are
-                    for (int i = 0; i < tokens.Length; i++)
-                    {
-                        if (tokens[i] == decodedTokens[i])
-                            tokens[i] = string.Join(" ", ToCodepoints(tokens[i]).Select(cp => cp.ToString("x3")));
-                    }
-
-                    textbox.SelectedText = string.Join(" ", tokens);
-                    e.Handled = true;
-                    return;
-                }
-                else
-                {
-                    // if decoding is disabled
-                    //    if nothing is selected, select as much to the left as it makes a valid cp
-                    // if selection is a valid hex number, convert to character
-                    // if selection is a single codepoint or acronym, convert to hex
-                    // otherwise do nothing
-
-                    if (textbox.SelectedText.Length < 1)
-                        if (!ExpandCodepointLeft(textbox))
-                            ExpandCharacterLeft(textbox);
-
-                    if (textbox.SelectedText.Length < 1)
-                        return;
-
-                    if (uint.TryParse(textbox.SelectedText, NumberStyles.HexNumber, null, out uint cp))
-                    {
-                        if (IsValidCodepoint(cp))
+                    case Key.X:
+                        if (_decode.IsChecked == true)
                         {
-                            textbox.SelectedText = char.ConvertFromUtf32((int)cp);
+                            // we already know that hex values must be on their own (space separated)
+                            // if we are in between spaces, Alt+X ought to do nothing
+                            // if there are characters either side, we are in a token
+                            //   if the token is a valid codepoint or codepoint range, we convert it to characters
+                            //   otherwise, we convert it to hex
+                            // if there is multiple tokens in selection
+                            //   if they are all encoded, convert to characters
+                            //   otherwise, convert unencoded to hex
+
+                            ExpandToken(textbox);
+
+                            if (string.IsNullOrWhiteSpace(textbox.SelectedText))
+                                return;
+
+                            string[] tokens = textbox.SelectedText.Split();
+                            string[] decodedTokens = new string[tokens.Length];
+
+                            bool hasDecodedTokens = false;
+                            for (int i = 0; i < tokens.Length; i++)
+                            {
+                                decodedTokens[i] = Decode(tokens[i]);
+                                if (decodedTokens[i] == tokens[i])
+                                    hasDecodedTokens = true;
+                            }
+
+                            if (!hasDecodedTokens) // all tokens are hex or otherwise encoded, so we convert to characters
+                            {
+                                textbox.SelectedText = string.Join(" ", decodedTokens); // normalizes whitespace, might be undesirable
+                                e.Handled = true;
+                                return;
+                            }
+
+                            // at least one token is characters, convert them to hex, but leave encoded as they are
+                            for (int i = 0; i < tokens.Length; i++)
+                            {
+                                if (tokens[i] == decodedTokens[i])
+                                    tokens[i] = string.Join(" ", ToCodepoints(tokens[i]).Select(cp => cp.ToString("x3")));
+                            }
+
+                            textbox.SelectedText = string.Join(" ", tokens);
                             e.Handled = true;
+                            return;
                         }
+                        else
+                        {
+                            // if decoding is disabled
+                            //    if nothing is selected, select as much to the left as it makes a valid cp
+                            // if selection is a valid hex number, convert to character
+                            // if selection is a single codepoint or acronym, convert to hex
+                            // otherwise do nothing
 
-                        return;
-                    }
+                            if (textbox.SelectedText.Length < 1)
+                                if (!ExpandCodepointLeft(textbox))
+                                    ExpandCharacterLeft(textbox);
 
-                    if (textbox.SelectedText.Length == 1 ||
-                        (textbox.SelectedText.Length == 2 && char.IsSurrogatePair(textbox.SelectedText, 0)))
-                    {
-                        textbox.SelectedText = char.ConvertToUtf32(textbox.SelectedText, 0).ToString("X4");
+                            if (textbox.SelectedText.Length < 1)
+                                return;
+
+                            if (uint.TryParse(textbox.SelectedText, NumberStyles.HexNumber, null, out uint cp))
+                            {
+                                if (IsValidCodepoint(cp))
+                                {
+                                    textbox.SelectedText = char.ConvertFromUtf32((int)cp);
+                                    e.Handled = true;
+                                }
+
+                                return;
+                            }
+
+                            if (textbox.SelectedText.Length == 1 ||
+                                (textbox.SelectedText.Length == 2 && char.IsSurrogatePair(textbox.SelectedText, 0)))
+                            {
+                                textbox.SelectedText = char.ConvertToUtf32(textbox.SelectedText, 0).ToString("X4");
+                                e.Handled = true;
+                            }
+
+                            if (DecodeAcronym(textbox.SelectedText) is string acronym)
+                            {
+                                textbox.SelectedText = acronym;
+                                e.Handled = true;
+                            }
+                        }
+                        break;
+
+                    case Key.D:
+                        NormalizeTokens(textbox, NormalizationForm.FormD, _decode.IsChecked == true);
                         e.Handled = true;
-                    }
+                        break;
 
-                    if (DecodeAcronym(textbox.SelectedText) is string acronym)
-                    {
-                        textbox.SelectedText = acronym;
+                    case Key.C:
+                        NormalizeTokens(textbox, NormalizationForm.FormC, _decode.IsChecked == true);
                         e.Handled = true;
-                    }
+                        break;
+
                 }
+            }            
+        }
+
+        private void NormalizeTokens(TextBox textbox, NormalizationForm form, bool isEncoded)
+        {
+            if (!isEncoded)
+            {
+                textbox.SelectedText = textbox.SelectedText.Normalize(form);
+                return;
             }
+
+            ExpandToken(textbox);
+            string[] tokens = textbox.SelectedText.Split();
+            string[] decodedTokens = new string[tokens.Length];
+
+            for (int t = 0; t < tokens.Length; t++)
+                decodedTokens[t] = Decode(tokens[t]);
+
+            string decoded = Decode(textbox.SelectedText);
+            string normalized = decoded.Normalize(form);
+
+            // preserve as much encoded/decoded from right as we can
+            int i;
+            for (i = 1; i <= decodedTokens.Length && i <= normalized.Length; i++)
+            {
+                if (decodedTokens[decodedTokens.Length - i] != normalized[normalized.Length - i].ToString())
+                    break;
+            }
+            i--;
+            
+            int copyStart = decodedTokens.Length - i;
+            int prefixLength = normalized.Length - i;
+
+            string normalizedPrefix = normalized.Substring(0, prefixLength);
+            
+            bool prefixEncoded = tokens[0] != decodedTokens[0];
+            bool copyStartEncoded = copyStart < decodedTokens.Length && tokens[copyStart] != decodedTokens[copyStart];
+
+            // if first token is encoded, encode the beginning
+            if (prefixEncoded)
+                normalizedPrefix = string.Join(" ", ToCodepoints(normalizedPrefix).Select(cp => cp.ToString("x3")));
+
+            // if either prefix or rest is hex, we need to insert space
+            if (prefixEncoded || copyStartEncoded)
+                normalizedPrefix += " ";
+
+            textbox.SelectedText = normalizedPrefix + string.Join(" ", decodedTokens.Skip(copyStart));
         }
 
         private static bool ExpandToken(TextBox textbox)
