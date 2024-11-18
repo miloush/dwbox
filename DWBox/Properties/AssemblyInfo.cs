@@ -49,9 +49,10 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.4.0.0")]
-[assembly: AssemblyFileVersion("2.4.0.0")]
+[assembly: AssemblyVersion("2.5.0.0")]
+[assembly: AssemblyFileVersion("2.5.0.0")]
 
+// 2.5.0.0 warn when fonts not added on drop, allow surrogate chars, Alt+D/C for Unicode normalization, Alt+U for UTF16/32, drag&drop fonts out of dwbox, live glyph analysis, live text analysis, prefer regular face
 // 2.4.0.0 fixed NBSP, added NNBSP, remeasure after set, remove missing glyphs, add family, copy box bitmap bounds, box highlighting, design units
 // 2.3.0.0 layout options, text alignment, paragraph alignment, word wrapping, remember last added font, antialiasing mode, locale list, Alt+X, add one per family font, less uniform grid
 // 2.2.0.0 copy image/box/name to clipboard, DirectWriteElement measuring, bitmap AV fix, empty GlyphRun analysis fix, remove all but this font, save settings on drop, \u U+ and acronyms decoding, core switch
