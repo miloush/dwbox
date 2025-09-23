@@ -406,16 +406,36 @@ namespace DWBox
             }
         }
 
+        private Point _itemMouseDown;
+
         private void OnItemMouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
+            {
                 if (sender is FrameworkElement el)
+                {
+                    if (_itemMouseDown == default)
+                    {
+                        _itemMouseDown = e.GetPosition(el);
+                        return;
+                    }
+
+                    Vector movement = e.GetPosition(el) - _itemMouseDown;
+
+                    if (Math.Abs(movement.X) < SystemParameters.MinimumHorizontalDragDistance &&
+                        Math.Abs(movement.Y) < SystemParameters.MinimumVerticalDragDistance)
+                        return;
+
                     if (el.DataContext is BoxItem item && item.FilePath is string path)
                     {
                         DataObject data = new DataObject();
                         data.SetFileDropList(new StringCollection { path });
                         DragDrop.DoDragDrop(el, data, DragDropEffects.Copy);
                     }
+                }
+            }
+
+            _itemMouseDown = default;
         }
 
         private void OnTextAnalysis(object sender, RoutedEventArgs e)
