@@ -52,11 +52,11 @@ namespace DWBox
                         return _singleFontSet = FontSet;
                     else
                     {
-                        var builder = DWriteFactory.Shared6.CreateFontSetBuilder2();
-                        var reference = FontSetEntry.NativeObject.GetFontFaceReference(FontSetEntry.Index);
-                        builder.AddFontFaceReference(reference);
+                        var builder = DWriteFactory.Shared.CreateFontSetBuilder();
+                        var reference = FontSetEntry.GetFontFaceReference();
+                        builder.Add(reference);
 
-                        _singleFontSet = new FontSet(builder.CreateFontSet());
+                        _singleFontSet = builder.CreateFontSet();
                     }
                 }
 

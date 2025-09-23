@@ -45,7 +45,7 @@ namespace DWBox
 
             var propertiesCache = new Dictionary<int, ScriptProperties>();
 
-            var analyzer = (DWrite.IDWriteTextAnalyzer1)DWriteFactory.Shared.CreateTextAnalyzer();
+            var analyzer = DWriteFactory.Shared.CreateTextAnalyzer();
             var source = new StringAnalysisSource(text, readingDirection, cultureName);
 
             var sink = new TextAnalysisSink();

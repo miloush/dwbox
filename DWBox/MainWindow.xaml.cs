@@ -102,7 +102,7 @@ namespace DWBox
             if (sender is FontSet oldSet)
                 oldSet.Expired -= RefreshSystemFonts;
 
-            var fontset = new FontSet(DWriteFactory.Shared6.GetSystemFontSet(includeDownloadableFonts: false));
+            var fontset = DWriteFactory.Shared.GetSystemFontSet(includeDownloadableFonts: false);
             fontset.Expired += RefreshSystemFonts;
 
             Dispatcher.BeginInvoke(ApplyAndSelect, fontset);
@@ -244,7 +244,7 @@ namespace DWBox
                 }
 
                 bool added = false;
-                var fontset = new FontSet(DWriteFactory.Shared6.GetSystemFontSet(includeDownloadableFonts: false));
+                var fontset = DWriteFactory.Shared.GetSystemFontSet(includeDownloadableFonts: false);
                 foreach (var entry in fontset)
                     if (entry.TypographicFamilyName == familyName)
                         added |= _items.Add(entry, item.EmSize);
@@ -262,8 +262,8 @@ namespace DWBox
             int[] codepoints = ToCodepoints(_boxOutput.Text).ToArray();
             ushort[] glyphs = new ushort[codepoints.Length];
 
-            var set = DWriteFactory.Shared6.GetSystemFontSet(includeDownloadableFonts: false);
-            int count = set.GetFontCount();
+            var set = DWriteFactory.Shared.GetSystemFontSet(includeDownloadableFonts: false);
+            int count = set.Count;
 
             TaskbarItemInfo.ProgressState = 0;
             TaskbarItemInfo.ProgressState = TaskbarItemProgressState.Normal;
@@ -273,10 +273,10 @@ namespace DWBox
                 try
                 {
                     var face = set.CreateFontFace(i);
-                    face.GetGlyphIndices(codepoints, codepoints.Length, glyphs);
+                    face.GetGlyphIndices(codepoints, glyphs);
 
                     if (Array.IndexOf(glyphs, (ushort)0) < 0)
-                        entries.Add(new FontSetEntry(set, i));
+                        entries.Add(set[i]);
                 }
                 catch (COMException) { }
 
@@ -365,15 +365,12 @@ namespace DWBox
                 SortedList<string, DWrite.Result> errors = new();
                 SortedSet<string> duplicates = new();
 
-                var builder = DWriteFactory.Shared6.CreateFontSetBuilder2();
+                var builder = DWriteFactory.Shared.CreateFontSetBuilder();
                 foreach (string path in paths)
-                {
-                    DWrite.Result result = builder.AddFontFile(path);
-                    if (result != DWrite.Result.OK)
+                    if (!builder.TryAdd(path, out var result))
                         errors[path] = result;
-                }
 
-                var set = new FontSet(builder.CreateFontSet());
+                var set = builder.CreateFontSet();
 
                 foreach (var entry in set)
                     if (!_items.Add(entry, AddEmSize))
