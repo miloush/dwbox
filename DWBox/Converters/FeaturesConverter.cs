@@ -14,7 +14,7 @@ namespace DWBox
                 return null;
 
             string[] tags = s.Split();
-            List<FontFeatureTag> parsed = new List<FontFeatureTag>(tags.Length);
+            List<FontFeature> parsed = new List<FontFeature>(tags.Length);
 
             foreach (string tag in tags)
                 if (TryParse(tag, out var t))
@@ -28,17 +28,33 @@ namespace DWBox
             throw new NotImplementedException();
         }
 
-        public static bool TryParse(string s, out FontFeatureTag tag)
+        public static bool TryParse(string s, out FontFeature feature)
         {
-            tag = default;
+            feature = default;
             
             if (s == null) 
                 return false;
 
-            if (s.Length != 4)
-                return Enum.TryParse(s, out tag);
+            int parameter = 1;
+            
+            int equalIndex = s.LastIndexOf('=');
+            if (equalIndex >= 0)
+            {
+                if (!int.TryParse(s.Substring(equalIndex + 1), out parameter))
+                    return false;
+                
+                s = s.Substring(0, equalIndex);
+            }
 
-            tag = (FontFeatureTag)DWrite.StringToTag(s);
+            FontFeatureTag tag = default;
+            if (s.Length != 4)
+                if (!Enum.TryParse(s, out tag))
+                    return false;
+
+            if (tag == default)
+                tag = (FontFeatureTag)DWrite.StringToTag(s);
+
+            feature = new FontFeature { NameTag = tag, Parameter = parameter };
             return true;
         }
     }

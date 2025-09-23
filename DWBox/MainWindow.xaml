@@ -176,7 +176,7 @@
 
             <ToolBarTray DockPanel.Dock="Top" Background="WhiteSmoke">
                 <ToolBar TabIndex="3" Background="WhiteSmoke" Header="F_eatures">
-                    <TextBox Name="_boxFeatures" MinWidth="100" ToolTip="Optional OpenType feature tags to apply (such as hlig) separated by space." />
+                    <TextBox Name="_boxFeatures" MinWidth="100" ToolTip="Optional OpenType feature tags to apply (such as hlig) separated by space. Feature parameters can be specified using equal sign (e.g. cv01=123)." />
                 </ToolBar>
 
                 <ToolBar TabIndex="4" Background="WhiteSmoke" Header="Lo_cale">

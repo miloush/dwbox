@@ -20,7 +20,7 @@ namespace DWBox
         public static readonly DependencyProperty FontSetProperty = DependencyProperty.Register(nameof(FontSet), typeof(FontSet), typeof(DirectWriteElement), new FrameworkPropertyMetadata(null, InvalidateTextFormat));
 
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(DirectWriteElement), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender));
-        public static readonly DependencyProperty FontFeaturesProperty = DependencyProperty.Register(nameof(FontFeatures), typeof(IList<FontFeatureTag>), typeof(DirectWriteElement), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender));
+        public static readonly DependencyProperty FontFeaturesProperty = DependencyProperty.Register(nameof(FontFeatures), typeof(IList<FontFeature>), typeof(DirectWriteElement), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender));
         public static readonly DependencyProperty ParagraphReadingDirectionProperty = DependencyProperty.Register(nameof(ParagraphReadingDirection), typeof(ReadingDirection), typeof(DirectWriteElement), new FrameworkPropertyMetadata(ReadingDirection.LeftToRight, InvalidateTextFormat));
         public static readonly DependencyProperty ParagraphFlowDirectionProperty = DependencyProperty.Register(nameof(ParagraphFlowDirection), typeof(Win32.DWrite.FlowDirection), typeof(DirectWriteElement), new FrameworkPropertyMetadata(Win32.DWrite.FlowDirection.TopToBottom, InvalidateTextFormat));
         public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register(nameof(TextAlignment), typeof(Win32.DWrite.TextAlignment), typeof(DirectWriteElement), new FrameworkPropertyMetadata(Win32.DWrite.TextAlignment.Leading, InvalidateTextFormat));
@@ -53,9 +53,9 @@ namespace DWBox
             set { SetValue(FontFaceProperty, value); }
         }
 
-        public IList<FontFeatureTag> FontFeatures
+        public IList<FontFeature> FontFeatures
         {
-            get { return (IList<FontFeatureTag>)GetValue(FontFeaturesProperty); }
+            get { return (IList<FontFeature>)GetValue(FontFeaturesProperty); }
             set { SetValue(FontFeaturesProperty, value); }
         }
 
@@ -124,7 +124,7 @@ namespace DWBox
 
         static DirectWriteElement()
         {
-            _factory = DWriteFactory.Shared7;
+            _factory = (DWrite.IDWriteFactory7)DWriteFactory.Shared.NativeObject;
             _gdiInterop = _factory.GetGdiInterop();
 
             var fallbackBuilder = _factory.CreateFontFallbackBuilder();
@@ -188,11 +188,11 @@ namespace DWBox
             var textLayout = _factory.CreateTextLayout(Text, Text?.Length ?? 0, textFormat, (float)size.Width, (float)size.Height);
 
             var wholeRange = new TextRange { Length = Text?.Length ?? 0 };
-            if (FontFeatures is IEnumerable<FontFeatureTag> features)
+            if (FontFeatures is IEnumerable<FontFeature> features)
             {
                 var typography = _factory.CreateTypography();
                 foreach (var feature in features)
-                    typography.AddFontFeature(new FontFeature { NameTag = feature, Parameter = 1 });
+                    typography.AddFontFeature(feature);
 
                 textLayout.SetTypography(typography, wholeRange);
             }
