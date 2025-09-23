@@ -348,6 +348,76 @@
                                             </Grid>
                                             <Separator />
 
+                                            <TextBlock Text="Metrics" FontWeight="Bold" Margin="0,0,0,2" />
+                                            <StackPanel Orientation="Horizontal">
+                                                <uiwc:LabelGrid Margin="0,0,10,0" VerticalAlignment="Top">
+                                                    <TextBlock Text="Units per em: " />
+                                                    <TextBlock Text="{Binding FontFace.Metrics.DesignUnitsPerEm}" />
+                                                    <TextBlock Text="Ascent:" />
+                                                    <TextBlock Text="{Binding FontFace.Metrics.Ascent}" />
+                                                    <TextBlock Text="Descent:" />
+                                                    <TextBlock Text="{Binding FontFace.Metrics.Descent}" />
+                                                    <TextBlock Text="Line gap:" />
+                                                    <TextBlock Text="{Binding FontFace.Metrics.LineGap}" />
+                                                    <TextBlock Text="Cap height:" />
+                                                    <TextBlock Text="{Binding FontFace.Metrics.CapHeight}" />
+                                                    <TextBlock Text="X-height:" />
+                                                    <TextBlock Text="{Binding FontFace.Metrics.XHeight}" />
+                                                </uiwc:LabelGrid>
+
+                                                <uiwc:LabelGrid Margin="0,0,10,0" VerticalAlignment="Top">
+                                                    <TextBlock Text="Underline:" />
+                                                    <TextBlock>
+                                                        <Run Text="{Binding FontFace.Metrics1.UnderlineThickness}" />
+                                                        <Run Text="at" />
+                                                        <Run Text="{Binding FontFace.Metrics1.UnderlinePosition}" />
+                                                    </TextBlock>
+                                                    <TextBlock Text="Strikethrough: " />
+                                                    <TextBlock>
+                                                        <Run Text="{Binding FontFace.Metrics1.StrikethroughThickness}" />
+                                                        <Run Text="at" />
+                                                        <Run Text="{Binding FontFace.Metrics1.StrikethroughPosition}" />
+                                                    </TextBlock>
+                                                    <TextBlock Text="Glyph box:" />
+                                                    <TextBlock>
+                                                        <Run Text="{Binding FontFace.Metrics1.GlyphBoxLeft}" />,
+                                                        <Run Text="{Binding FontFace.Metrics1.GlyphBoxTop}" />,
+                                                        <Run Text="{Binding FontFace.Metrics1.GlyphBoxRight}" />,
+                                                        <Run Text="{Binding FontFace.Metrics1.GlyphBoxBottom}" />
+                                                    </TextBlock>
+                                                    <TextBlock Text="Subscript:" />
+                                                    <TextBlock>
+                                                        <Run Text="{Binding FontFace.Metrics1.SubscriptSizeX}" />,
+                                                        <Run Text="{Binding FontFace.Metrics1.SubscriptSizeY}" />
+                                                        <Run Text="at" />
+                                                        <Run Text="{Binding FontFace.Metrics1.SubscriptPositionX}" />,
+                                                        <Run Text="{Binding FontFace.Metrics1.SubscriptPositionY}" />
+                                                    </TextBlock>
+                                                    <TextBlock Text="Superscript:" />
+                                                    <TextBlock>
+                                                        <Run Text="{Binding FontFace.Metrics1.SuperscriptSizeX}" />,
+                                                        <Run Text="{Binding FontFace.Metrics1.SuperscriptSizeY}" />
+                                                        <Run Text="at" />
+                                                        <Run Text="{Binding FontFace.Metrics1.SuperscriptPositionX}" />,
+                                                        <Run Text="{Binding FontFace.Metrics1.SuperscriptPositionY}" />
+                                                    </TextBlock>
+                                                    <TextBlock Text="Typographic:" />
+                                                    <TextBlock Text="{Binding FontFace.Metrics1.HasTypographicMetrics}" />
+                                                </uiwc:LabelGrid>
+
+                                                <uiwc:LabelGrid Margin="0,0,10,0" VerticalAlignment="Top">
+                                                    <TextBlock Text="Caret slope: " />
+                                                    <TextBlock>
+                                                        <Run Text="{Binding FontFace.CaretMetrics.SlopeRise}" />
+                                                        <Run Text="/" />
+                                                        <Run Text="{Binding FontFace.CaretMetrics.SlopeRun}" />
+                                                    </TextBlock>
+                                                    <TextBlock Text="Caret offset:" />
+                                                    <TextBlock Text="{Binding FontFace.CaretMetrics.Offset}" />
+                                                </uiwc:LabelGrid>
+                                            </StackPanel>
+                                            <Separator />
+
                                             <TextBlock Text="Informational strings" FontWeight="Bold" Margin="0,0,0,2" />
                                             <uiwc:LabelGrid>
                                                 <TextBlock Text="Manufacturer:" />
