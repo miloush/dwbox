@@ -27,14 +27,6 @@ namespace DWBox
         public static readonly DependencyProperty ParagraphAlignmentProperty = DependencyProperty.Register(nameof(ParagraphAlignment), typeof(ParagraphAlignment), typeof(DirectWriteElement), new FrameworkPropertyMetadata(ParagraphAlignment.Near, InvalidateTextFormat));
         public static readonly DependencyProperty WordWrappingProperty = DependencyProperty.Register(nameof(WordWrapping), typeof(WordWrapping), typeof(DirectWriteElement), new FrameworkPropertyMetadata(WordWrapping.Wrap, InvalidateTextFormat));
 
-        public static readonly DependencyProperty TextAntialiasModeProperty = DependencyProperty.Register(nameof(TextAntialiasMode), typeof(TextAntialiasMode), typeof(DirectWriteElement), new FrameworkPropertyMetadata(TextAntialiasMode.ClearType, FrameworkPropertyMetadataOptions.AffectsRender, InvalidateRenderTarget));
-
-        public TextAntialiasMode TextAntialiasMode
-        {
-            get { return (TextAntialiasMode)GetValue(TextAntialiasModeProperty); }
-            set { SetValue(TextAntialiasModeProperty, value); }
-        }
-
         public FontSet FontSet
         {
             get { return (FontSet)GetValue(FontSetProperty); }
@@ -107,105 +99,118 @@ namespace DWBox
             set { SetValue(FontSizeProperty, value); }
         }
 
-        public DWrite.IDWriteTextRenderer AdditionalRenderer;
-
-        private static readonly DWrite.IDWriteFactory7 _factory;
-        private static readonly DWrite.IDWriteGdiInterop _gdiInterop;
+        protected static readonly DWrite.IDWriteFactory7 DWriteFactory;
         private static readonly DWrite.IDWriteFontFallback _noFallback;
-        private DWrite.IDWriteBitmapRenderTarget _renderTarget;
-        private BitmapRenderer _renderer;
-        private BitmapSource _bitmap;
-        private PixelFormat _bitmapFormat = PixelFormats.Bgr32;
-        private IntPtr hBitmapData;
-
-        private DpiScale _dpiScale = new DpiScale(1, 1);
-        public DpiScale DpiScale => _dpiScale;
-        protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi) => _dpiScale = newDpi;
 
         static DirectWriteElement()
         {
-            _factory = (DWrite.IDWriteFactory7)DWriteFactory.Shared.NativeObject;
-            _gdiInterop = _factory.GetGdiInterop();
+            DWriteFactory = (DWrite.IDWriteFactory7)Win32.DWrite.DWriteFactory.Shared.NativeObject;
 
-            var fallbackBuilder = _factory.CreateFontFallbackBuilder();
+            var fallbackBuilder = DWriteFactory.CreateFontFallbackBuilder();
             _noFallback = fallbackBuilder.CreateFontFallback();
         }
 
-        protected override void OnVisualParentChanged(DependencyObject oldParent)
+        #region TextFormat
+
+        private TextFormat _textFormat;
+        public TextFormat TextFormat
         {
-            if (PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice is System.Windows.Media.Matrix matrix)
-                _dpiScale = new DpiScale(matrix.M11, matrix.M22);
+            get { return _textFormat; }
+            private set
+            {
+                if (_textFormat != value)
+                {
+                    _textFormat = value;
+                    TextFormatChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
         }
-
-        public void Render(DWrite.IDWriteTextRenderer renderer) => OnRender(null, renderer);
-        protected override void OnRender(DrawingContext drawingContext)
-        {
-            int scaledWidth = (int)(RenderSize.Width * _dpiScale.DpiScaleX);
-            int scaledHeight = (int)(RenderSize.Height * _dpiScale.DpiScaleY);
-
-            EnsureRenderTarget((uint)scaledWidth, (uint)scaledHeight);
-            OnRender(drawingContext, _renderer);
-        }
-
-        private DWrite.IDWriteTextFormat _textFormat;
+        private static void InvalidateTextFormat(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((DirectWriteElement)d).InvalidateTextFormat();
         private void InvalidateTextFormat()
         {
-            _textFormat = null;
+            TextFormat = null;
             InvalidateMeasure(); // needed for flow layouts
             InvalidateVisual(); // needed for fixed layouts
         }
-        private static void InvalidateTextFormat(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((DirectWriteElement)d).InvalidateTextFormat();
-        private DWrite.IDWriteTextFormat GetOrCreateTextFormat()
+
+        private TextFormat GetOrCreateTextFormat()
         {
-            if (_textFormat == null)
+            if (TextFormat == null)
             {
                 string familyName = FontFace.TypographicFamilyName;
-
                 FontAxisValue[] axisValues = FontAxisValues as FontAxisValue[] ?? FontAxisValues?.ToArray();
 
                 DWrite.IDWriteFontCollection collection = null;
                 if (FontSet != null)
-                    collection = _factory.CreateFontCollectionFromFontSet(FontSet.NativeObject, FontFamilyModel.Typographic);
+                    collection = DWriteFactory.CreateFontCollectionFromFontSet(FontSet.NativeObject, FontFamilyModel.Typographic);
 
-                var textFormat = _factory.CreateTextFormat(familyName, collection, axisValues, axisValues?.Length ?? 0, FontSize, LocaleName);
+                var textFormat = DWriteFactory.CreateTextFormat(familyName, collection, axisValues, axisValues?.Length ?? 0, FontSize, LocaleName);
                 textFormat.SetFontFallback(_noFallback);
                 textFormat.SetFlowDirection(ParagraphFlowDirection);
                 textFormat.SetReadingDirection(ParagraphReadingDirection);
                 textFormat.SetTextAlignment(TextAlignment);
                 textFormat.SetParagraphAlignment(ParagraphAlignment);
                 textFormat.SetWordWrapping(WordWrapping);
-                
-                _textFormat = textFormat;
+
+                TextFormat = new TextFormat(textFormat);
             }
 
-            return _textFormat;
+            return TextFormat;
         }
 
-        private DWrite.IDWriteTextLayout _textLayout;
-        private DWrite.IDWriteTextLayout CreateTextLayout(Size size)
+        public EventHandler TextFormatChanged;
+
+        #endregion
+
+        #region Text Layout
+
+        private TextLayout _textLayout;
+        public TextLayout TextLayout
+        {
+            get { return _textLayout; }
+            private set
+            {
+                if (_textLayout != value)
+                {
+                    _textLayout = value;
+                    TextLayoutChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        private TextLayout CreateTextLayout(Size size)
         {
             var textFormat = GetOrCreateTextFormat();
-            var textLayout = _factory.CreateTextLayout(Text, Text?.Length ?? 0, textFormat, (float)size.Width, (float)size.Height);
+            var textLayout = DWriteFactory.CreateTextLayout(Text, Text?.Length ?? 0, textFormat.NativeObject, (float)size.Width, (float)size.Height);
 
             var wholeRange = new TextRange { Length = Text?.Length ?? 0 };
             if (FontFeatures is IEnumerable<FontFeature> features)
             {
-                var typography = _factory.CreateTypography();
+                var typography = DWriteFactory.CreateTypography();
                 foreach (var feature in features)
                     typography.AddFontFeature(feature);
 
                 textLayout.SetTypography(typography, wholeRange);
             }
 
-            return textLayout;
+            return new TextLayout(textLayout);
         }
+
+        public void Render(DWrite.IDWriteTextRenderer renderer)
+        {
+            TextLayout.NativeObject.Draw(IntPtr.Zero, renderer, 0, 0);
+        }
+
+        public EventHandler TextLayoutChanged;
+
+        #endregion
 
         protected override Size MeasureOverride(Size availableSize)
         {
             try
             {
                 var textLayout = CreateTextLayout(availableSize);
-                var metrics = textLayout.GetMetrics();
+                var metrics = textLayout.TextMetrics;
 
                 return new Size(Math.Ceiling(metrics.Width), Math.Ceiling(metrics.Height)); // bitmap requires integer pixels, when we switch to geometry we can remove
             }
@@ -218,128 +223,14 @@ namespace DWBox
         {
             try
             {
-                _textLayout = CreateTextLayout(finalSize);
-                TextLayoutInvalidated?.Invoke(this, EventArgs.Empty);
-                
+                TextLayout = CreateTextLayout(finalSize); // PERF: we could cache for finalSize = availableSize
                 return finalSize;
             }
             catch
             {
-                _textLayout = null;
+                TextLayout = null;
                 return base.ArrangeOverride(finalSize);
             }
-        }
-
-        private void OnRender(DrawingContext drawingContext, DWrite.IDWriteTextRenderer renderer)
-        {
-            if (_textLayout == null)
-                return;
-
-            int width = (int)RenderSize.Width;
-            int height = (int)RenderSize.Height;
-            int scaledWidth = (int)(RenderSize.Width * _dpiScale.DpiScaleX);
-            int scaledHeight = (int)(RenderSize.Height * _dpiScale.DpiScaleY);
-
-            try
-            {
-                _textLayout.Draw(IntPtr.Zero, renderer, 0, 0);
-
-                if (drawingContext != null && hBitmapData != IntPtr.Zero)
-                {
-                    _bitmap = BitmapSource.Create(scaledWidth, scaledHeight, 96, 96, _bitmapFormat, null, hBitmapData, scaledWidth * scaledHeight * _bitmapFormat.BitsPerPixel / 8, scaledWidth * _bitmapFormat.BitsPerPixel / 8);
-                    drawingContext.DrawImage(_bitmap, new Rect(0, 0, width, height));
-                }
-            }
-            catch (Exception e)
-            {
-                if (drawingContext == null)
-                    throw;
-
-                drawingContext.DrawText(new FormattedText(e.Message, CultureInfo.CurrentUICulture, FlowDirection, new Typeface("Segoe UI"), 11, Brushes.Red, _dpiScale.PixelsPerDip) { MaxTextWidth = width }, default);
-            }
-        }
-
-        public EventHandler TextLayoutInvalidated;
-
-        internal BitmapSource GetLastRenderedBoundingBitmap()
-        {
-            if (_textLayout == null)
-                return null;
-
-            var metrics = _textLayout.GetMetrics();
-            int left = (int)(metrics.Left * _dpiScale.DpiScaleX);
-            int top = (int)(metrics.Top * _dpiScale.DpiScaleY);
-            int width = (int)Math.Ceiling(metrics.Width * _dpiScale.DpiScaleX);
-            int height = (int)Math.Ceiling(metrics.Height * _dpiScale.DpiScaleY);
-
-            Int32Rect boundingRect = new Int32Rect(left, top, Math.Min(_bitmap.PixelWidth - left, width), Math.Min(_bitmap.PixelHeight - top, height));
-            return new CroppedBitmap(_bitmap, boundingRect);
-        }
-        internal BitmapSource GetLastRenderedBitmap()
-        {
-            return _bitmap;
-        }
-
-        private void InvalidateRenderTarget()
-        {
-            _renderTarget = null;
-        }
-        private static void InvalidateRenderTarget(DependencyObject d, DependencyPropertyChangedEventArgs e) => ((DirectWriteElement)d).InvalidateRenderTarget();
-        private void EnsureRenderTarget(uint width, uint height)
-        {
-            if (_renderTarget == null)
-            {
-                _renderTarget = _gdiInterop.CreateBitmapRenderTarget(IntPtr.Zero, width, height);
-                _bitmapFormat = PixelFormats.Bgr32;
-                if (TextAntialiasMode == TextAntialiasMode.Grayscale)
-                    if (_renderTarget is DWrite.IDWriteBitmapRenderTarget1 target1)
-                    {
-                        target1.SetTextAntialiasMode(TextAntialiasMode.Grayscale);
-                        _bitmapFormat = PixelFormats.Pbgra32;
-                    }
-
-                _renderer = new BitmapRenderer(_renderTarget, _factory.CreateRenderingParams());
-            }
-            else
-            {
-                _renderTarget.Resize(width, height);
-            }
-            IntPtr hdc = _renderTarget.GetMemoryDC();
-            IntPtr hBitmap = GetCurrentObject(hdc, 7);
-
-            GetObjectW(hBitmap, Marshal.SizeOf<tagBITMAP>(), out tagBITMAP bm);
-            hBitmapData = bm.bmBits == IntPtr.Zero ? IntPtr.Zero : bm.bmBits;
-
-            if (hBitmapData != IntPtr.Zero)
-            {
-                // fill white              
-                int pixels = bm.bmWidth * bm.bmHeight;
-                int color = _bitmapFormat == PixelFormats.Pbgra32 ? default : 0x00FFFFFF;
-
-                for (int i = 0; i < pixels; i++)
-                    Marshal.WriteInt32(hBitmapData, i * 4, color);
-            }
-        }
-
-        [DllImport("gdi32.dll")]
-        private static extern IntPtr GetCurrentObject(IntPtr hdc, int objectType);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        static extern int GetObjectW(IntPtr h, int c, out tagBITMAP pv);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        static extern int GetObjectW(IntPtr h, int c, IntPtr pv);
-
-        [StructLayout(LayoutKind.Sequential, Size = 0x20)]
-        struct tagBITMAP
-        {
-            public int bmType;
-            public int bmWidth;
-            public int bmHeight;
-            public int bmWidthBytes;
-            public short bmPlanes;
-            public short bmBitsPixel;
-            public IntPtr bmBits;
         }
     }
 }

@@ -52,7 +52,7 @@ namespace DWBox
         {
             if (_item?.RenderingElement is DirectWriteElement el)
             {
-                el.TextLayoutInvalidated += OnLiveUpdate;
+                el.TextLayoutChanged += OnLiveUpdate;
                 OnLiveUpdate(sender);
             }
         }
@@ -61,7 +61,7 @@ namespace DWBox
         {
             if (_item?.RenderingElement is DirectWriteElement el)
             {
-                el.TextLayoutInvalidated -= OnLiveUpdate;
+                el.TextLayoutChanged -= OnLiveUpdate;
             }
         }
 

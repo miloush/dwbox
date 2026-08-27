@@ -517,14 +517,14 @@ namespace DWBox
 
         private void OnCopyGlyphRunBitmap(object sender, RoutedEventArgs e)
         {
-            if (sender is FrameworkElement { DataContext: BoxItem item })
+            if (sender is FrameworkElement { DataContext: BoxItem item } && item.RenderingElement is DirectWriteBitmapElement renderingElement)
             {
                 BitmapSource bitmap = null;
 
                 if (Keyboard.Modifiers == ModifierKeys.Shift)
-                    bitmap = item.RenderingElement?.GetLastRenderedBitmap();
+                    bitmap = renderingElement?.GetLastRenderedBitmap();
                 else
-                    bitmap = item.RenderingElement?.GetLastRenderedBoundingBitmap();
+                    bitmap = renderingElement?.GetLastRenderedBoundingBitmap();
 
                 if (bitmap != null)
                     CopyBitmap(bitmap);

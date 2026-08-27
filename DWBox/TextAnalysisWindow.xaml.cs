@@ -32,7 +32,7 @@ namespace DWBox
             if (_owner != null)
             {
                 _owner._boxOutput.TextChanged += OnLiveUpdate;
-                _owner._readingSelector.SelectionChanged += OnLiveUpdate;
+                _owner._directionSelector.SelectionChanged += OnLiveUpdate;
                 DependencyPropertyDescriptor.FromProperty(ComboBox.TextProperty, _owner._boxLocale.GetType()).AddValueChanged(_owner._boxLocale, OnLiveUpdate);
                 OnLiveUpdate();
             }
@@ -43,14 +43,14 @@ namespace DWBox
             if (_owner != null)
             {
                 _owner._boxOutput.TextChanged -= OnLiveUpdate;
-                _owner._readingSelector.SelectionChanged -= OnLiveUpdate;
+                _owner._directionSelector.SelectionChanged -= OnLiveUpdate;
                 DependencyPropertyDescriptor.FromProperty(ComboBox.TextProperty, _owner._boxLocale.GetType()).RemoveValueChanged(_owner._boxLocale, OnLiveUpdate);
             }
         }
 
         private void OnLiveUpdate(object sender = null, EventArgs e = null)
         {
-            var analysis = TextAnalysis.Analyze(_owner._boxOutput.Text, (ReadingDirection)_owner._readingSelector.SelectedItem, _owner._boxLocale.Text);
+            var analysis = TextAnalysis.Analyze(_owner._boxOutput.Text, ((BoxDirection)_owner._directionSelector.SelectedItem).ReadingDirection, _owner._boxLocale.Text);
             Title = "Text Analysis: " + analysis.Text;
             DataContext = analysis;
         }

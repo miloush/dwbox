@@ -500,7 +500,7 @@
                                             </StackPanel>
                                         </DockPanel>
                                     </Border>
-                                    <local:DirectWriteElement 
+                                    <local:DirectWriteBitmapElement 
                                         FontSet="{Binding SingleFontSet}"
                                         FontFace="{Binding FontFace}" 
                                         FontSize="{Binding EmSize}"

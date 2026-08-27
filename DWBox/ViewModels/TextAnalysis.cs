@@ -6,19 +6,6 @@ namespace DWBox
 {
     public class TextAnalysis : Collection<TextAnalysisItem>
     {
-        //private string _text;
-        //private BoxItem _item;
-
-        //public TextAnalysis(string text, BoxItem item)
-        //{
-        //    _text = text;
-        //    _item = item;
-        //}
-
-        //public string Name => _item.NameVersion;
-        //public float EmSize => _item.RenderingElement?.FontSize ?? 48f;
-
-
         public string Text { get; }
 
         public TextAnalysis(string text)
