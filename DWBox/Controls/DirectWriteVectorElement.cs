@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -15,14 +16,13 @@ namespace DWBox
             set { SetValue(FillProperty, value); }
         }
 
-        private PathGeometry _geometry;
-        private Path _path;
+        private List<Path> _paths = new();
 
         protected override void OnTextLayoutChanged()
         {
-            base.OnTextLayoutChanged();
-
             InvalidateGeometry();
+
+            base.OnTextLayoutChanged();
         }
 
         private void InvalidateGeometry()
@@ -32,38 +32,49 @@ namespace DWBox
 
             VectorRenderer renderer = new();
             Render(renderer);
-            _geometry = renderer.Geometry;
 
-            if (_path != null)
-                RemoveVisualChild(_path);
-
-            _path = new Path
+            for (int i = _paths.Count - 1; i >= 0; i--)
             {
-                Data = _geometry,
-                Fill = Fill
-            };
+                Path path = _paths[i];
+                _paths.RemoveAt(i); // Remove queries current count
+                RemoveVisualChild(path);
+            }
 
-            AddVisualChild(_path);
+            foreach (var geometry in renderer.RunGeometries)
+            {
+                Path path = new()
+                {
+                    Data = geometry,
+                    Fill = Fill
+                };
+
+                _paths.Add(path);
+                AddVisualChild(path);
+            }
         }
 
         protected override Visual GetVisualChild(int index)
         {
-            return _path;
+            return _paths[index];
         }
 
-        protected override int VisualChildrenCount => _path == null ? 0 : 1;
+        protected override int VisualChildrenCount => _paths.Count;
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            Size size = base.MeasureOverride(availableSize);
-            _path?.Measure(availableSize);
-            return size;
+            foreach (var path in _paths)
+                path.Measure(availableSize);
+            
+            return base.MeasureOverride(availableSize);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
             Size size = base.ArrangeOverride(finalSize); // sets TextLayout
-            _path?.Arrange(new Rect(default, finalSize));
+            
+            foreach (var path in _paths)
+                path.Arrange(new Rect(default, finalSize));
+
             return size;
         }
     }

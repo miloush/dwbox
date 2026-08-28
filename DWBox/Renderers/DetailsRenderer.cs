@@ -5,17 +5,20 @@ using Win32.DWrite;
 
 namespace DWBox
 {
-    public class RecordingRenderer : DWrite.IDWriteTextRenderer
+    public class DetailsRenderer : DWrite.IDWriteTextRenderer
     {
-        public GlyphRunDetails Details { get; }
+        public RenderDetails Details { get; }
+        private bool _isPixelSnappingDisabled;
+        private int _runIndex = 0;
 
-        public RecordingRenderer(GlyphRunDetails details)
+        public DetailsRenderer(RenderDetails details, bool isPixelSnappingDisabled)
         {
             Details = details;
+            _isPixelSnappingDisabled = isPixelSnappingDisabled;
         }
 
-        public bool IsPixelSnappingDisabled(IntPtr clientDrawingContext) => false;
-        public Matrix GetCurrentTransform(IntPtr clientDrawingContext) => new Matrix { M11 = 1, M22 = 1 };
+        public bool IsPixelSnappingDisabled(IntPtr clientDrawingContext) => _isPixelSnappingDisabled;
+        public Matrix GetCurrentTransform(IntPtr clientDrawingContext) => Matrix.Identity;
         public float GetPixelsPerDip(IntPtr clientDrawingContext) => 96f;
 
         public void DrawGlyphRun(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, MeasuringMode measuringMode, IntPtr glyphRun, IntPtr glyphRunDescription, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect)
@@ -23,28 +26,55 @@ namespace DWBox
             GlyphRun run = Marshal.PtrToStructure<GlyphRun>(glyphRun);
             GlyphRunDescription desc = Marshal.PtrToStructure<GlyphRunDescription>(glyphRunDescription);
 
+            RenderRunDetails runDetails = new()
+            {
+                BaselineOriginX = baselineOriginX,
+                BaselineOriginY = baselineOriginY,
+                Index = _runIndex,
+                LocaleName = desc.LocaleName,
+                Text = desc.Text,
+                TextPosition = desc.TextPosition,
+                FontName = run.FontFace.FullName
+            };
+
+            float x = baselineOriginX;
+            float y = baselineOriginY;
+
             float[] advances = run.GetGlyphAdvances();
             ushort[] glyphIndices = run.GetGlyphIndices();
             GlyphOffset[] glyphOffsets = run.GetGlyphOffsets();
 
-            GlyphRunDetailsItem[] items = new GlyphRunDetailsItem[run.GlyphCount];
+            RenderGlyphDetails[] items = new RenderGlyphDetails[run.GlyphCount];
 
             for (int i = 0; i < run.GlyphCount; i++)
-                items[i] = new GlyphRunDetailsItem(Details)
+            {
+                float advanceX = glyphOffsets[i].AdvanceOffset;
+                float advanceY = glyphOffsets[i].AscenderOffset;
+
+                items[i] = new RenderGlyphDetails(Details)
                 {
+                    RunDetails = runDetails,
                     GlyphID = glyphIndices[i],
                     Advance = advances[i],
-                    AdvanceOffset = glyphOffsets[i].AdvanceOffset,
-                    AscenderOffset = glyphOffsets[i].AscenderOffset,
-                    FontName = run.FontFace.FullName,
+                    AdvanceOffset = advanceX,
+                    AscenderOffset = advanceY,
+                    X = x,
+                    Y = y,
                 };
+
+                x += advanceX;
+                y += advanceY;
+
+                StreamGeometrySink sink = new();
+                run.FontFace.GetGlyphRunOutline(run, i, sink);
+                items[i].GlyphGeometry = sink.Geometry;
+            }
 
             short[] clusterMap = desc.GetClusterMap();
             for (int i = 0; i < clusterMap.Length; i++)
             {
                 int index = clusterMap[i];
                 int codepoint = desc.Text[i];
-
                 items[index].Codepoints.Add(codepoint);
             }
 
@@ -57,10 +87,13 @@ namespace DWBox
                 if (item.Codepoints.Count > 0)
                     clusterIndex++;
 
+                item.RunIndex = _runIndex;
                 item.Index = Details.Count;
                 item.ClusterIndex = clusterIndex;
                 Details.Add(item);
             }
+
+            _runIndex++;
         }
 
         public void DrawUnderline(IntPtr clientDrwaingContext, float baselineOriginX, float baselineOriginY, IntPtr underline, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }

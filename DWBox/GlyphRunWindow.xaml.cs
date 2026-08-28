@@ -13,9 +13,7 @@ namespace DWBox
         private GlyphRunWindow()
         {
             InitializeComponent();
-
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.LastUnits))
-                Scale(Properties.Settings.Default.LastUnits);
+            Scale(Properties.Settings.Default.LastUnits);
         }
 
         public GlyphRunWindow(BoxItem item) : this()
@@ -43,9 +41,14 @@ namespace DWBox
 
         private void Scale(string prefix)
         {
-            _advance.Binding = new Binding(prefix + nameof(GlyphRunDetailsItem.Advance));
-            _advanceOffset.Binding = new Binding(prefix + nameof(GlyphRunDetailsItem.AdvanceOffset));
-            _ascenderOffset.Binding = new Binding(prefix + nameof(GlyphRunDetailsItem.AscenderOffset));
+            _advance.Binding = new Binding(prefix + nameof(RenderGlyphDetails.Advance));
+            _advanceOffset.Binding = new Binding(prefix + nameof(RenderGlyphDetails.AdvanceOffset));
+            _ascenderOffset.Binding = new Binding(prefix + nameof(RenderGlyphDetails.AscenderOffset));
+
+            if (prefix == "Design")
+                _designScale.IsChecked = true;
+            else 
+                _emScale.IsChecked = true;
         }
 
         private void OnLiveUpdatesChecked(object sender, RoutedEventArgs e)
@@ -67,10 +70,30 @@ namespace DWBox
 
         private void OnLiveUpdate(object sender = null, EventArgs e = null)
         {
-            GlyphRunDetails details = new GlyphRunDetails(_item, _item.FontFace.Metrics.DesignUnitsPerEm);
-            RecordingRenderer renderer = new RecordingRenderer(details);
+            RenderDetails details = new RenderDetails(_item, _item.FontFace.Metrics.DesignUnitsPerEm);
+            DetailsRenderer renderer = new DetailsRenderer(details, App.ViewModel.IsVectorMode);
             _item.RenderingElement.Render(renderer);
-            DataContext = renderer.Details;
+
+            ListCollectionView view = (ListCollectionView)CollectionViewSource.GetDefaultView(renderer.Details);
+            view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(RenderGlyphDetails.RunDetails)));
+
+            DataContext = view;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            OnLiveUpdatesUnchecked(null, null);
+            base.OnClosed(e);
+        }
+
+        private void OnEmScaleChecked(object sender, RoutedEventArgs e)
+        {
+            Scale("");
+        }
+
+        private void OnDesignScaleChecked(object sender, RoutedEventArgs e)
+        {
+            Scale("Design");
         }
     }
 
@@ -81,7 +104,7 @@ namespace DWBox
 
         public override Style SelectStyle(object item, DependencyObject container)
         {
-            if (item is GlyphRunDetailsItem detail)
+            if (item is RenderGlyphDetails detail)
             {
                 if (detail.ClusterIndex % 2 == 0)
                     return EvenStyle;

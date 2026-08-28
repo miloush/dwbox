@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:DWBox"
-        Title="{Binding Name}" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" KeyDown="OnKeyDown">
+        Title="{Binding Source.Name}" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow" KeyDown="OnKeyDown">
     <Window.Resources>
         <Style TargetType="DataGridCell">
             <Setter Property="Template">
@@ -23,31 +23,55 @@
         </Style>
         <local:AlternatingClusterRowStyleSelector x:Key="ClusterStyleSelector" OddStyle="{StaticResource OddCluster}" EvenStyle="{StaticResource EvenCluster}" />
     </Window.Resources>
-    <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding}" IsReadOnly="True" VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver" CanUserSortColumns="False" RowStyleSelector="{StaticResource ClusterStyleSelector}">
-        <DataGrid.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Units">
-                    <MenuItem Click="Scale" Header="Em Scaled"  />
-                    <MenuItem Click="Scale" Header="Design Units" Tag="Design" />
-                </MenuItem>
-                <Separator />
-                <MenuItem IsCheckable="True" Header="Live updates" Checked="OnLiveUpdatesChecked" Unchecked="OnLiveUpdatesUnchecked" />
-            </ContextMenu>
-        </DataGrid.ContextMenu>
-        <DataGrid.Columns>
-            <DataGridTextColumn Header="Characters" Binding="{Binding String}" />
-            <DataGridTextColumn Header="Codepoints" Binding="{Binding CodepointsString}" />
-            <DataGridTemplateColumn Header="Glyph">
-                <DataGridTemplateColumn.CellTemplate>
-                    <DataTemplate>
-                        <Image Source="{Binding GlyphImage}" Stretch="None" ToolTip="{Binding FontName}" />
-                    </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridTextColumn Header="Glyph ID" Binding="{Binding GlyphID}" />
-            <DataGridTextColumn x:Name="_advance" Header="Advance" Binding="{Binding Advance}" />
-            <DataGridTextColumn x:Name="_advanceOffset" Header="Offset Adv" Binding="{Binding AdvanceOffset}" />
-            <DataGridTextColumn x:Name="_ascenderOffset" Header="Offset Asc" Binding="{Binding AscenderOffset}" />
-        </DataGrid.Columns>
-    </DataGrid>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <CheckBox Content="_Live updates" Checked="OnLiveUpdatesChecked" Unchecked="OnLiveUpdatesUnchecked" />
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <RadioButton Name="_emScale" Content="_Em Scaled" Checked="OnEmScaleChecked" />
+                <RadioButton Name="_designScale" Content="_Design Units" Margin="5,0,0,0" Checked="OnDesignScaleChecked" />
+            </StackPanel>
+        </Grid>
+        <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding}" IsReadOnly="True" VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver" CanUserSortColumns="False" RowStyleSelector="{StaticResource ClusterStyleSelector}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Characters" Binding="{Binding String}" />
+                <DataGridTextColumn Header="Codepoints" Binding="{Binding CodepointsString}" />
+                <DataGridTemplateColumn Header="Glyph">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding GlyphImage}" Stretch="None" ToolTip="{Binding RunDetails.FontName}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Glyph ID" Binding="{Binding GlyphID}" />
+                <DataGridTextColumn x:Name="_advance" Header="Advance" Binding="{Binding Advance}" />
+                <DataGridTextColumn x:Name="_advanceOffset" Header="Offset Adv" Binding="{Binding AdvanceOffset}" />
+                <DataGridTextColumn x:Name="_ascenderOffset" Header="Offset Asc" Binding="{Binding AscenderOffset}" />
+            </DataGrid.Columns>
+            <DataGrid.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid Margin="2,5,2,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock FontWeight="Bold">
+                                    <Run Text="GlyphRun" />
+                                    <Run Text="{Binding Name.Index, Mode=OneTime}" />
+                                    <Run Text="at [" /><Run Text="{Binding Name.TextPosition, Mode=OneTime}" /><Run Text="]:" />
+                                    <Run Text="{Binding Name.Text, Mode=OneTime}" />
+                                </TextBlock>
+                                <TextBlock Grid.Column="1" HorizontalAlignment="Right" Text="{Binding Name.LocaleName, Mode=OneTime}" />
+                            </Grid>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </DataGrid.GroupStyle>
+        </DataGrid>
+    </DockPanel>
 </Window>

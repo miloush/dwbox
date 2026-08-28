@@ -3,20 +3,20 @@ using System.Windows.Media;
 
 namespace DWBox
 {
-    public class GlyphRunDetails : Collection<GlyphRunDetailsItem>
+    public class RenderDetails : Collection<RenderGlyphDetails>
     {
         private BoxItem _item;
-        private ushort _upm;
+        private ushort _designUnitsPerEm;
 
-        public GlyphRunDetails(BoxItem item, ushort designUnitsPerEm)
+        public RenderDetails(BoxItem item, ushort designUnitsPerEm)
         {
             _item = item;
-            _upm = designUnitsPerEm;
+            _designUnitsPerEm = designUnitsPerEm;
         }
 
         public string Name => _item.NameVersion;
         public float EmSize => _item.RenderingElement?.FontSize ?? 48f;
-        public ushort DesignUnitsPerEm => _upm;
+        public ushort DesignUnitsPerEm => _designUnitsPerEm;
 
         private bool _noTypeface;
         private GlyphTypeface _typeface;

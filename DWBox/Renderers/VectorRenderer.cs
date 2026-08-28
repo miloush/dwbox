@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Win32.DWrite;
 
@@ -6,14 +7,7 @@ namespace DWBox
 {
     public class VectorRenderer : DWrite.IDWriteTextRenderer
     {
-        public System.Windows.Media.PathGeometry Geometry => _sink.Geometry;
-
-        private StreamGeometrySink _sink;
-
-        public VectorRenderer()
-        {
-            _sink = new StreamGeometrySink();
-        }
+        public List<System.Windows.Media.PathGeometry> RunGeometries { get; private set; } = new();
 
         public bool IsPixelSnappingDisabled(IntPtr clientDrawingContext) => true;
         public Matrix GetCurrentTransform(IntPtr clientDrawingContext) => Matrix.Identity;
@@ -22,8 +16,11 @@ namespace DWBox
         public void DrawGlyphRun(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, MeasuringMode measuringMode, IntPtr pGlyphRun, IntPtr glyphRunDescription, object clientDrawingEffect)
         {
             GlyphRun glyphRun = Marshal.PtrToStructure<GlyphRun>(pGlyphRun);
-            glyphRun.FontFace.GetGlyphRunOutline(glyphRun, _sink);
-            _sink.Geometry.Transform = new System.Windows.Media.TranslateTransform(baselineOriginX, baselineOriginY);
+            
+            StreamGeometrySink sink = new();
+            glyphRun.FontFace.GetGlyphRunOutline(glyphRun, sink);
+            sink.Geometry.Transform = new System.Windows.Media.TranslateTransform(baselineOriginX, baselineOriginY);
+            RunGeometries.Add(sink.Geometry);
         }
 
         public void DrawUnderline(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, IntPtr underline, object clientDrawingEffect) { }

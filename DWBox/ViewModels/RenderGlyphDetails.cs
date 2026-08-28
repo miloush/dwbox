@@ -5,16 +5,19 @@ using System.Windows.Media;
 
 namespace DWBox
 {
-    public class GlyphRunDetailsItem
+    public class RenderGlyphDetails
     {
-        private GlyphRunDetails _details;
+        private RenderDetails _details;
 
-        public GlyphRunDetailsItem(GlyphRunDetails details)
+        public RenderGlyphDetails(RenderDetails details)
         {
             _details = details;
         }
 
+        public RenderRunDetails RunDetails { get; set; }
+
         public int Index { get; set; }
+        public int RunIndex { get; set; }
         public int ClusterIndex { get; set; }
         public ushort GlyphID { get; set; }
         public float Advance { get; set; }
@@ -25,7 +28,8 @@ namespace DWBox
         public int DesignAdvanceOffset => (int)(AdvanceOffset / _details.EmSize * _details.DesignUnitsPerEm);
         public int DesignAscenderOffset => (int)(AscenderOffset / _details.EmSize * _details.DesignUnitsPerEm);
 
-        public string FontName { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
 
         public List<int> Codepoints { get; } = new List<int>();
         public string CodepointsString => string.Join(" ", Codepoints.Select(c => c.ToString("X4")));
@@ -44,12 +48,14 @@ namespace DWBox
         {
             get
             {
-                Geometry geometry = _details?.GlyphTypeface?.GetGlyphOutline(GlyphID, _details.EmSize, _details.EmSize);
+                Geometry geometry = GlyphGeometry ?? _details?.GlyphTypeface?.GetGlyphOutline(GlyphID, _details.EmSize, _details.EmSize);
                 if (geometry == null)
                     return null;
 
                 return new DrawingImage(new GeometryDrawing(Brushes.Black, null, geometry));
             }
         }
+
+        public PathGeometry GlyphGeometry { get; set; }
     }
 }
