@@ -121,7 +121,7 @@ namespace DWBox
                 if (_textFormat != value)
                 {
                     _textFormat = value;
-                    TextFormatChanged?.Invoke(this, EventArgs.Empty);
+                    OnTextFormatChanged();
                 }
             }
         }
@@ -135,6 +135,9 @@ namespace DWBox
 
         private TextFormat GetOrCreateTextFormat()
         {
+            if (FontFace == null)
+                return null;
+
             if (TextFormat == null)
             {
                 string familyName = FontFace.TypographicFamilyName;
@@ -158,6 +161,10 @@ namespace DWBox
             return TextFormat;
         }
 
+        protected virtual void OnTextFormatChanged()
+        {
+            TextFormatChanged?.Invoke(this, EventArgs.Empty);
+        }
         public EventHandler TextFormatChanged;
 
         #endregion
@@ -173,7 +180,7 @@ namespace DWBox
                 if (_textLayout != value)
                 {
                     _textLayout = value;
-                    TextLayoutChanged?.Invoke(this, EventArgs.Empty);
+                    OnTextLayoutChanged();
                 }
             }
         }
@@ -181,6 +188,9 @@ namespace DWBox
         private TextLayout CreateTextLayout(Size size)
         {
             var textFormat = GetOrCreateTextFormat();
+            if (textFormat == null)
+                return null;
+
             var textLayout = DWriteFactory.CreateTextLayout(Text, Text?.Length ?? 0, textFormat.NativeObject, (float)size.Width, (float)size.Height);
 
             var wholeRange = new TextRange { Length = Text?.Length ?? 0 };
@@ -201,6 +211,10 @@ namespace DWBox
             TextLayout.NativeObject.Draw(IntPtr.Zero, renderer, 0, 0);
         }
 
+        protected virtual void OnTextLayoutChanged()
+        {
+            TextLayoutChanged?.Invoke(this, EventArgs.Empty);
+        }
         public EventHandler TextLayoutChanged;
 
         #endregion
@@ -210,14 +224,15 @@ namespace DWBox
             try
             {
                 var textLayout = CreateTextLayout(availableSize);
-                var metrics = textLayout.TextMetrics;
+                if (textLayout != null)
+                {
+                    var metrics = textLayout.TextMetrics;
+                    return new Size(Math.Ceiling(metrics.Width), Math.Ceiling(metrics.Height)); // bitmap requires integer pixels, when we switch to geometry we can remove
+                }
+            }
+            catch { }
 
-                return new Size(Math.Ceiling(metrics.Width), Math.Ceiling(metrics.Height)); // bitmap requires integer pixels, when we switch to geometry we can remove
-            }
-            catch
-            {
-                return base.MeasureOverride(availableSize);
-            }
+            return base.MeasureOverride(availableSize);
         }
         protected override Size ArrangeOverride(Size finalSize)
         {
@@ -226,11 +241,10 @@ namespace DWBox
                 TextLayout = CreateTextLayout(finalSize); // PERF: we could cache for finalSize = availableSize
                 return finalSize;
             }
-            catch
-            {
-                TextLayout = null;
-                return base.ArrangeOverride(finalSize);
-            }
+            catch { }
+
+            TextLayout = null;
+            return base.ArrangeOverride(finalSize);
         }
     }
 }

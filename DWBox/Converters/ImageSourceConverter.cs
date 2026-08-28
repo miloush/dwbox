@@ -11,12 +11,16 @@ namespace DWBox
             if (value == null)
                 return null;
 
-            Type valueType = value.GetType();
-            string typeName = valueType.Name;
-            string valueName = null;
+            string valueName = value as string;
+            string typeName = null;
+            if (valueName == null)
+            {
+                Type valueType = value.GetType();
+                typeName = valueType.Name;
 
-            if (valueType.IsEnum)
-                valueName = Enum.GetName(value.GetType(), value);
+                if (valueType.IsEnum)
+                    valueName = Enum.GetName(value.GetType(), value);
+            }
 
             return App.Current.FindResource(typeName + valueName);
         }

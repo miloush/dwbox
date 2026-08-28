@@ -23,6 +23,24 @@
 
         <Rectangle x:Key="RedIcon" x:Shared="False" Width="16" Height="16" Fill="#FFF0F0" Stroke="DarkRed" RadiusX="2" RadiusY="2" />
         <Rectangle x:Key="GreenIcon" x:Shared="False" Width="16" Height="16" Fill="#F0FFF0" Stroke="DarkGreen" RadiusX="2" RadiusY="2" />
+
+        <CollectionViewSource x:Key="BoxDirections">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="IsVertical" />
+            </CollectionViewSource.GroupDescriptions>
+            <CollectionViewSource.Source>
+                <x:Array Type="local:BoxDirection">
+                    <local:BoxDirection ReadingDirection="LeftToRight" FlowDirection="TopToBottom" />
+                    <local:BoxDirection ReadingDirection="LeftToRight" FlowDirection="BottomToTop" />
+                    <local:BoxDirection ReadingDirection="RightToLeft" FlowDirection="TopToBottom" />
+                    <local:BoxDirection ReadingDirection="RightToLeft" FlowDirection="BottomToTop" />
+                    <local:BoxDirection ReadingDirection="TopToBottom" FlowDirection="LeftToRight" />
+                    <local:BoxDirection ReadingDirection="TopToBottom" FlowDirection="RightToLeft" />
+                    <local:BoxDirection ReadingDirection="BottomToTop" FlowDirection="LeftToRight" />
+                    <local:BoxDirection ReadingDirection="BottomToTop" FlowDirection="RightToLeft" />
+                </x:Array>
+            </CollectionViewSource.Source>
+        </CollectionViewSource>
     </Window.Resources>
     <Border BorderThickness="0,0,0,5" BorderBrush="{DynamicResource InstanceBrush}">
         <DockPanel Margin="5,5,5,0">
@@ -69,7 +87,7 @@
                 <Button TabIndex="11" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnSetSize" IsDefault="True" ToolTip="Set all existing boxes to this size" Margin="0,0,5,0">Se_t</Button>
                 <DockPanel DockPanel.Dock="Right">
                     <Label DockPanel.Dock="Left" Target="{Binding ElementName=_sizeBox}">_Size:</Label>
-                    <TextBox Name="_sizeBox" TabIndex="10" Width="40" VerticalAlignment="Center" Padding="2" TextAlignment="Center" Text="{Binding AddEmSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}, Mode=TwoWay, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="OnSizeKeyDown" />
+                    <TextBox Name="_sizeBox" TabIndex="10" Width="40" VerticalAlignment="Center" Padding="2" TextAlignment="Center" Text="{Binding AddEmSize, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="OnSizeKeyDown" />
                 </DockPanel>
                 <DockPanel>
                     <Label DockPanel.Dock="Left" Target="{Binding ElementName=_fontSelector}">_Font:</Label>
@@ -138,7 +156,7 @@
             <!--#region Toolbar -->
 
             <ToolBarTray DockPanel.Dock="Bottom" Background="WhiteSmoke">
-                <ToolBar TabIndex="8" Band="2" Background="WhiteSmoke" Header="La_yout">
+                <ToolBar TabIndex="8" BandIndex="0" Background="WhiteSmoke" Header="La_yout">
                     <ToggleButton Name="_groupBy" ToolTip="Group by typographic family" Checked="RefreshItems" Unchecked="RefreshItems" Style="{StaticResource ImageButton}" Content="{StaticResource GroupBy}" />
                     <Button ToolTip="Collapse All" Style="{StaticResource ImageButton}" Content="{StaticResource CollapseAll}" Click="OnCollapseAll" IsEnabled="{Binding IsGrouping, ElementName=_renderings}" />
                     <Button ToolTip="Expand All" Style="{StaticResource ImageButton}" Content="{StaticResource ExpandAll}" Click="OnExpandAll" IsEnabled="{Binding IsGrouping, ElementName=_renderings}" />
@@ -175,11 +193,11 @@
             </ToolBarTray>
 
             <ToolBarTray DockPanel.Dock="Top" Background="WhiteSmoke">
-                <ToolBar TabIndex="3" Background="WhiteSmoke" Header="F_eatures">
+                <ToolBar TabIndex="3" BandIndex="0" Background="WhiteSmoke" Header="F_eatures">
                     <TextBox Name="_boxFeatures" MinWidth="100" ToolTip="Optional OpenType feature tags to apply (such as hlig) separated by space. Feature parameters can be specified using equal sign (e.g. cv01=123)." />
                 </ToolBar>
 
-                <ToolBar TabIndex="4" Background="WhiteSmoke" Header="Lo_cale">
+                <ToolBar TabIndex="4" BandIndex="1" Background="WhiteSmoke" Header="Lo_cale">
                     <ComboBox Name="_boxLocale" IsEditable="True" MinWidth="100" VerticalAlignment="Center" ToolTip="Optional BCP-47 tag to select particular language with set of features." TextSearch.TextPath="Name">
                         <ComboBox.GroupStyle>
                             <GroupStyle>
@@ -206,14 +224,26 @@
                     </ComboBox>
                 </ToolBar>
 
-                <ToolBar TabIndex="5" Band="1" Background="WhiteSmoke" Header="For_mat">
-                    <ComboBox Name="_readingSelector" ToolTip="Reading direction" SelectedIndex="0">
-                        <dw:ReadingDirection>LeftToRight</dw:ReadingDirection>
-                        <dw:ReadingDirection>RightToLeft</dw:ReadingDirection>
-                    </ComboBox>
-                    <ComboBox Name="_flowSelector" ToolTip="Flow directoin" SelectedIndex="0">
-                        <dw:FlowDirection>TopToBottom</dw:FlowDirection>
-                        <dw:FlowDirection>BottomToTop</dw:FlowDirection>
+                <ToolBar TabIndex="5" BandIndex="2" Background="WhiteSmoke">
+                    <Button Click="OnSwitchMode">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{Binding ModeString, Converter={StaticResource ImageSourceConverter}}" Width="16" Height="16" />
+                            <TextBlock Text="{Binding ModeString}" Margin="4,0,2,0" />
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+
+                <ToolBar TabIndex="5" Band="1" BandIndex="0" Background="WhiteSmoke" Header="For_mat">
+                    <ComboBox Name="_directionSelector" ToolTip="Reading direction" SelectedIndex="0" ItemsSource="{Binding Source={StaticResource BoxDirections}}">
+                        <ComboBox.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Items[0].FlowGroup}" FontWeight="Bold" Padding="4" Background="WhiteSmoke" />
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ComboBox.GroupStyle>
                     </ComboBox>
                     <ListBox Name="_textAlignmentSelector" ToolTip="Text alignment" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
                         <dw:TextAlignment>Leading</dw:TextAlignment>
@@ -237,12 +267,13 @@
                     </ComboBox>
                 </ToolBar>
                 
-                <ToolBar TabIndex="6" Band="1" Background="WhiteSmoke" Header="_Rendering">
+                <ToolBar TabIndex="6" Band="1" BandIndex="1" Background="WhiteSmoke" Header="_Rendering" IsEnabled="{Binding IsRasterMode}">
                     <ListBox Name="_aliasingSelector" ToolTip="Text antialias mode" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
                         <dw:TextAntialiasMode>ClearType</dw:TextAntialiasMode>
                         <dw:TextAntialiasMode>Grayscale</dw:TextAntialiasMode>
                     </ListBox>
                 </ToolBar>
+
             </ToolBarTray>
 
             <!--#endregion-->
@@ -254,7 +285,7 @@
                         <Binding Path="IsGrouping" ElementName="_renderings" />
                     </MultiBinding>
                 </ScrollViewer.VerticalScrollBarVisibility>
-                <ItemsControl Name="_renderings" TabIndex="7" IsTabStop="False" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent" ToolTip="You can drag &amp; drop a font file here."
+                <ItemsControl Name="_renderings" TabIndex="7" ItemsSource="{Binding Items.View}" IsTabStop="False" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent" ToolTip="You can drag &amp; drop a font file here."
                               ItemsPanel="{Binding SelectedItem.ItemsPanelTemplate, ElementName=_renderingsPanelSelector}" GroupStyleSelector="SelectRenderingsGroupStyle" KeyboardNavigation.TabNavigation="Local">
                     <ItemsControl.Resources>
                         <GroupStyle x:Key="GroupStyle">
@@ -477,7 +508,7 @@
                                                         <MenuItem Header="Copy _name and version" Click="OnCopyName" ToolTip="Copy the font name and version into clipboard" />
                                                         <MenuItem Header="Copy _file path" Click="OnCopyPath" ToolTip="Copy the font file path into clipboard" />
                                                         <MenuItem Header="Copy _box bitmap" Click="OnCopyBitmap" ToolTip="Copy the whole box bitmap including font name into clipboard" />
-                                                        <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard" />
+                                                        <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard (only available in raster mode)" IsEnabled="{Binding IsRasterMode, Source={x:Static local:App.ViewModel}}" />
                                                         <Separator />
                                                         <MenuItem Header="_Highlight">
                                                             <MenuItem Click="OnHighlight" Tag="X" Header="C_lear" />
@@ -500,22 +531,56 @@
                                             </StackPanel>
                                         </DockPanel>
                                     </Border>
-                                    <local:DirectWriteBitmapElement 
-                                        FontSet="{Binding SingleFontSet}"
-                                        FontFace="{Binding FontFace}" 
-                                        FontSize="{Binding EmSize}"
-                                        FontAxisValues="{Binding FontAxisValues}"
-                                        Text="{Binding Text, ElementName=_boxOutput}" 
-                                        ParagraphReadingDirection="{Binding SelectedItem, ElementName=_readingSelector}" 
-                                        ParagraphFlowDirection="{Binding SelectedItem, ElementName=_flowSelector}" 
-                                        TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
-                                        ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
-                                        WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
-                                        TextAntialiasMode="{Binding SelectedItem, ElementName=_aliasingSelector}"
-                                        FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
-                                        LocaleName="{Binding Text, ElementName=_boxLocale}" 
-                                        local:BoxItem.OwningItem="{Binding}"
-                                        />
+                                    <ContentPresenter Content="{Binding}">
+                                        <ContentPresenter.Resources>
+                                            <DataTemplate x:Key="BitmapElement">
+                                                <local:DirectWriteBitmapElement 
+                                                    FontSet="{Binding SingleFontSet}"
+                                                    FontFace="{Binding FontFace}" 
+                                                    FontSize="{Binding EmSize}"
+                                                    FontAxisValues="{Binding FontAxisValues}"
+                                                    Text="{Binding Text, ElementName=_boxOutput}" 
+                                                    ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}" 
+                                                    ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}" 
+                                                    TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
+                                                    ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
+                                                    WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
+                                                    TextAntialiasMode="{Binding SelectedItem, ElementName=_aliasingSelector}"
+                                                    FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
+                                                    LocaleName="{Binding Text, ElementName=_boxLocale}" 
+                                                    local:BoxItem.OwningItem="{Binding}"
+                                                    />
+                                            </DataTemplate>
+                                            <DataTemplate x:Key="VectorElement">
+                                                <local:DirectWriteVectorElement 
+                                                    FontSet="{Binding SingleFontSet}"
+                                                    FontFace="{Binding FontFace}" 
+                                                    FontSize="{Binding EmSize}"
+                                                    FontAxisValues="{Binding FontAxisValues}"
+                                                    Text="{Binding Text, ElementName=_boxOutput}" 
+                                                    ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}" 
+                                                    ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}" 
+                                                    TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
+                                                    ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
+                                                    WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
+                                                    FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
+                                                    LocaleName="{Binding Text, ElementName=_boxLocale}" 
+                                                    Fill="Black"
+                                                    local:BoxItem.OwningItem="{Binding}"
+                                                    />
+                                            </DataTemplate>
+                                        </ContentPresenter.Resources>
+                                        <ContentPresenter.Style>
+                                            <Style TargetType="ContentPresenter">
+                                                <Setter Property="ContentTemplate" Value="{StaticResource VectorElement}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRasterMode, Source={x:Static local:App.ViewModel}}" Value="True">
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource BitmapElement}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ContentPresenter.Style>
+                                    </ContentPresenter>
                                 </DockPanel>
                             </Border>
                         </DataTemplate>

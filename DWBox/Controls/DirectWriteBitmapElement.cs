@@ -14,7 +14,7 @@ namespace DWBox
 {
     public class DirectWriteBitmapElement : DirectWriteElement
     {
-        public static readonly DependencyProperty TextAntialiasModeProperty = DependencyProperty.Register(nameof(TextAntialiasMode), typeof(TextAntialiasMode), typeof(DirectWriteElement), new FrameworkPropertyMetadata(TextAntialiasMode.ClearType, FrameworkPropertyMetadataOptions.AffectsRender, InvalidateRenderTarget));
+        public static readonly DependencyProperty TextAntialiasModeProperty = DependencyProperty.Register(nameof(TextAntialiasMode), typeof(TextAntialiasMode), typeof(DirectWriteBitmapElement), new FrameworkPropertyMetadata(TextAntialiasMode.ClearType, FrameworkPropertyMetadataOptions.AffectsRender, InvalidateRenderTarget));
 
         public TextAntialiasMode TextAntialiasMode
         {
@@ -35,19 +35,17 @@ namespace DWBox
             _gdiInterop = DWriteFactory.GetGdiInterop();
         }
 
-        #region DPI
-
         private DpiScale _dpiScale = new DpiScale(1, 1);
         public DpiScale DpiScale => _dpiScale;
         protected override void OnDpiChanged(DpiScale oldDpi, DpiScale newDpi) => _dpiScale = newDpi;
 
         protected override void OnVisualParentChanged(DependencyObject oldParent)
         {
+            base.OnVisualParentChanged(oldParent);
+
             if (PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice is System.Windows.Media.Matrix matrix)
                 _dpiScale = new DpiScale(matrix.M11, matrix.M22);
         }
-
-        #endregion
 
         protected override void OnRender(DrawingContext drawingContext)
         {

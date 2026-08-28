@@ -23,17 +23,18 @@ namespace DWBox
 {
     public partial class MainWindow : Window
     {
-        private readonly BoxItemCollection _items = new BoxItemCollection();
+        private AppViewModel _app;
 
         public MainWindow()
         {
             InitializeComponent();
-            _renderings.ItemsSource = _items.View;
+
+            DataContext = _app = App.Current.AppViewModel;
 
             try
             {
                 _boxInput.Text = Settings.Default.LastInput;
-                AddEmSize = Settings.Default.LastAddedSize;
+                _app.AddEmSize = Settings.Default.LastAddedSize;
             }
             catch { }
         }
@@ -140,9 +141,9 @@ namespace DWBox
         {
             if (_fontSelector.SelectedItem is FontSetEntry entry)
             {
-                _items.Add(entry, AddEmSize);
+                _app.Items.Add(entry, _app.AddEmSize);
                 Settings.Default.LastAddedFont = entry.FullName;
-                Settings.Default.LastAddedSize = AddEmSize;
+                Settings.Default.LastAddedSize = _app.AddEmSize;
             }
 
             try { Settings.Default.Save(); }
@@ -173,7 +174,7 @@ namespace DWBox
             else if (entries.Count == 1)
             {
                 if (TaskDialog.Show(this, $"Only single font '{entries[0].FullName}' contains the requested characters.", Title, "Add fonts", TaskDialogButtons.OKCancel, TaskDialogImage.Information) == TaskDialogButtonResult.OK)
-                    _items.Add(entries[0], AddEmSize);
+                    _app.Items.Add(entries[0], _app.AddEmSize);
                 return;
             }
             else
@@ -187,7 +188,7 @@ namespace DWBox
                 {
                     case 0:
                         foreach (var entry in entries)
-                            _items.Add(entry, AddEmSize);
+                            _app.Items.Add(entry, _app.AddEmSize);
                         break;
 
                     case 1:
@@ -196,7 +197,7 @@ namespace DWBox
                                 bestPerFamily[entry.TypographicFamilyName] = entry;
 
                         foreach (var entry in bestPerFamily.Values)
-                            _items.Add(entry, AddEmSize);
+                            _app.Items.Add(entry, _app.AddEmSize);
                         
                         break;
 
@@ -247,7 +248,7 @@ namespace DWBox
                 var fontset = DWriteFactory.Shared.GetSystemFontSet(includeDownloadableFonts: false);
                 foreach (var entry in fontset)
                     if (entry.TypographicFamilyName == familyName)
-                        added |= _items.Add(entry, item.EmSize);
+                        added |= _app.Items.Add(entry, item.EmSize);
 
                 if (!added)
                     TaskDialog.Show(this, "No other fonts of the same typographic family found in the system font set.", Title, "Add font family", TaskDialogButtons.OK, TaskDialogImage.Information);
@@ -302,37 +303,37 @@ namespace DWBox
                             break;
 
                         case "B":
-                            _items.Remove(item => item != removingItem);
+                            _app.Items.Remove(item => item != removingItem);
                             return;
 
                         case "F":
-                            _items.Remove(item => item.TypographicFamilyName == removingItem.TypographicFamilyName);
+                            _app.Items.Remove(item => item.TypographicFamilyName == removingItem.TypographicFamilyName);
                             return;
 
                         case "M":
-                            _items.Remove(item => item.FontSetEntry.FontSourceType == FontSourceType.PerMachine);
+                            _app.Items.Remove(item => item.FontSetEntry.FontSourceType == FontSourceType.PerMachine);
                             return;
 
                         case "U":
-                            _items.Remove(item => item.FontSetEntry.FontSourceType == FontSourceType.PerUser);
+                            _app.Items.Remove(item => item.FontSetEntry.FontSourceType == FontSourceType.PerUser);
                             return;
 
                         case "D":
-                            _items.Remove(item => item.FontSetEntry.FontSourceType == FontSourceType.Unknown);
+                            _app.Items.Remove(item => item.FontSetEntry.FontSourceType == FontSourceType.Unknown);
                             return;
 
                         case "A":
-                            _items.Clear();
+                            _app.Items.Clear();
                             return;
 
                         case "G":
                             int[] codepoints = ToCodepoints(_boxOutput.Text).ToArray();
                             ushort[] glyphs = new ushort[codepoints.Length];
-                            _items.Remove(item => Array.IndexOf(item.FontFace.GetGlyphIndices(codepoints), (ushort)0) >= 0);
+                            _app.Items.Remove(item => Array.IndexOf(item.FontFace.GetGlyphIndices(codepoints), (ushort)0) >= 0);
                             return;
                     }
 
-                _items.Remove(removingItem);
+                _app.Items.Remove(removingItem);
             }
         }
 
@@ -373,7 +374,7 @@ namespace DWBox
                 var set = builder.CreateFontSet();
 
                 foreach (var entry in set)
-                    if (!_items.Add(entry, AddEmSize))
+                    if (!_app.Items.Add(entry, _app.AddEmSize))
                     {
                         string name = entry.FullName;
                         if (entry.CreateFontResource().GetFontFile().TryGetLocalFilePath(out string path))
@@ -535,23 +536,15 @@ namespace DWBox
 
         #region Font Size
 
-        public static readonly DependencyProperty AddEmSizeProperty = DependencyProperty.Register(nameof(AddEmSize), typeof(float), typeof(MainWindow), new PropertyMetadata(48f));
-
-        public float AddEmSize
-        {
-            get { return (float)GetValue(AddEmSizeProperty); }
-            set { SetValue(AddEmSizeProperty, value); }
-        }
-
         private void OnSizeKeyDown(object sender, KeyEventArgs e)
         {
             bool handled = true;
             switch (e.Key)
             {
-                case Key.Up: AddEmSize++; break;
-                case Key.Down: AddEmSize--; break;
-                case Key.PageUp: AddEmSize = (float)Math.Ceiling(AddEmSize * 1.5); break;
-                case Key.PageDown: AddEmSize = (float)Math.Ceiling(AddEmSize / 1.5); break;
+                case Key.Up: _app.AddEmSize++; break;
+                case Key.Down: _app.AddEmSize--; break;
+                case Key.PageUp: _app.AddEmSize = (float)Math.Ceiling(_app.AddEmSize * 1.5); break;
+                case Key.PageDown: _app.AddEmSize = (float)Math.Ceiling(_app.AddEmSize / 1.5); break;
                 default: handled = false; break;
             }
 
@@ -564,7 +557,7 @@ namespace DWBox
         private void OnSetSize(object sender, RoutedEventArgs e)
         {
             if (float.TryParse(_sizeBox.Text, out float em))
-                foreach (BoxItem item in _items)
+                foreach (BoxItem item in _app.Items)
                 {
                     item.EmSize = em;
 
@@ -649,7 +642,7 @@ namespace DWBox
                             return;
 
                         case "XA":
-                            foreach (var item in _items)
+                            foreach (var item in _app.Items)
                             {
                                 item.ClearValue(BoxItem.HeaderBrushProperty);
                                 item.ClearValue(BoxItem.BorderBrushProperty);
@@ -667,6 +660,11 @@ namespace DWBox
                             return;
                     }
             }
+        }
+
+        private void OnSwitchMode(object sender, RoutedEventArgs e)
+        {
+            _app.IsRasterMode = !_app.IsRasterMode;
         }
     }
 }

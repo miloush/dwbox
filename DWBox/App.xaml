@@ -35,15 +35,30 @@
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <!-- draw over white background from disabled trigger of ListBox template -->
+                    <ControlTemplate TargetType="ListBox">
+                        <Border Background="{TemplateBinding Background}">
+                            <ItemsPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <RadioButton Style="{StaticResource {x:Static ToolBar.RadioButtonStyleKey}}" IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" IsTabStop="False">
+                                    <RadioButton Name="_button" Style="{StaticResource {x:Static ToolBar.RadioButtonStyleKey}}" IsChecked="{Binding IsSelected, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" IsTabStop="False">
                                         <ContentPresenter />
                                     </RadioButton>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter TargetName="_button" Property="Opacity" Value="0.4" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
@@ -57,6 +72,11 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="WhiteSmoke" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <DrawingImage x:Key="Remove">
@@ -339,7 +359,39 @@
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
-        
+
+        <DrawingImage x:Key="Raster">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,15L16,15 16,1 0,1z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14,3L2,3 2,9 4,9 4,11 2,11 2,13 8,13 8,11 10,11 10,13 12,13 12,11 14,11z M15,14L1,14 1,2 15,2z M12,4L10,4 10,6 12,6z M10,11L12,11 12,9 10,9z M6,11L8,11 8,9 6,9z M6,9L4,9 4,7 6,7z" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="Vector">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M11,5L16,5 16,0 11,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,16L5,16 5,11 0,11z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,-0.000199999999999534L0,4.9998 3.511,4.9998 0.363,9.0478 11,12.8478 11,15.9998 16,15.9998 16,10.9998 11.452,10.9998 6.518,1.1338 5,3.0848 5,-0.000199999999999534z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M3,3L2,3 2,2 3,2z M1,4L4,4 4,1 1,1z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14,3L13,3 13,2 14,2z M12,4L15,4 15,1 12,1z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M3,14L2,14 2,13 3,13z M1,15L4,15 4,12 1,12z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M14,14L13,14 13,13 14,13z M12,15L15,15 15,12 12,12z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M2,8.5714L10.667,11.6664 6.333,3.0004z" />
+                        <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M2,3L3,3 3,1.999 2,1.999z" />
+                        <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M13,3L14.001,3 14.001,1.999 13,1.999z" />
+                        <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M2,14L3,14 3,13 2,13z" />
+                        <GeometryDrawing Brush="#FFEFEFF0" Geometry="F1M13,14L14.001,14 14.001,13 13,13z" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
 
         
 

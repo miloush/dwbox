@@ -14,6 +14,9 @@ namespace DWBox
     /// </summary>
     public partial class App : Application
     {
+        private AppViewModel _appViewModel = new AppViewModel();
+        public AppViewModel AppViewModel => _appViewModel;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             if (e.Args?.Contains("core") == true)
@@ -21,5 +24,8 @@ namespace DWBox
 
             base.OnStartup(e);
         }
-    }
+
+        public static new App Current => (App)Application.Current;
+        public static AppViewModel ViewModel => Current.AppViewModel;
+    }    
 }

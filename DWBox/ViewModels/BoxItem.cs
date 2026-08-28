@@ -150,7 +150,7 @@ namespace DWBox
         }
         public static void SetOwningItem(DirectWriteElement obj, BoxItem value)
         {
-            value.RenderingElement = obj;
+            value?.RenderingElement = obj;
         }
 
     }

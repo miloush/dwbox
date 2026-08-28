@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DWBox": {
+      "commandName": "Project",
+      "debugEngines": "managed-framework,native"
+    }
+  }
+}

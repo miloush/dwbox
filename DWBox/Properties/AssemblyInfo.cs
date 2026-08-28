@@ -49,9 +49,10 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.6.0.0")]
-[assembly: AssemblyFileVersion("2.6.0.0")]
+[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.0.0.0")]
 
+// 3.0.0.0 vertical text, vector renderer
 // 2.6.0.0 feature parameters, font metrics in tooltip
 // 2.5.0.0 warn when fonts not added on drop, allow surrogate chars, Alt+D/C for Unicode normalization, Alt+U for UTF16/32, drag&drop fonts out of dwbox, live glyph analysis, live text analysis, prefer regular face
 // 2.4.0.0 fixed NBSP, added NNBSP, remeasure after set, remove missing glyphs, add family, copy box bitmap bounds, box highlighting, design units
