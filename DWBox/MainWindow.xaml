@@ -245,6 +245,11 @@
                             </GroupStyle>
                         </ComboBox.GroupStyle>
                     </ComboBox>
+                    <ListBox Name="_verticalOrientationSelector" ToolTip="Vertical glyph orientation" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
+                        <dw:VerticalGlyphOrientation>Default</dw:VerticalGlyphOrientation>
+                        <dw:VerticalGlyphOrientation>Stacked</dw:VerticalGlyphOrientation>
+                    </ListBox>
+                    <Separator />
                     <ListBox Name="_textAlignmentSelector" ToolTip="Text alignment" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
                         <dw:TextAlignment>Leading</dw:TextAlignment>
                         <dw:TextAlignment>Center</dw:TextAlignment>
@@ -264,8 +269,8 @@
                         <dw:WordWrapping>EmergencyBreak</dw:WordWrapping>
                         <dw:WordWrapping>WholeWord</dw:WordWrapping>
                         <dw:WordWrapping>Character</dw:WordWrapping>
-                    </ComboBox>
-                </ToolBar>
+                    </ComboBox>T
+                L</ToolBar>
                 
                 <ToolBar TabIndex="6" Band="1" BandIndex="1" Background="WhiteSmoke" Header="_Rendering" IsEnabled="{Binding IsRasterMode}">
                     <ListBox Name="_aliasingSelector" ToolTip="Text antialias mode" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
@@ -541,7 +546,8 @@
                                                     FontAxisValues="{Binding FontAxisValues}"
                                                     Text="{Binding Text, ElementName=_boxOutput}" 
                                                     ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}" 
-                                                    ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}" 
+                                                    ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}"
+                                                    VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
                                                     TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
                                                     ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
                                                     WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
@@ -560,6 +566,7 @@
                                                     Text="{Binding Text, ElementName=_boxOutput}" 
                                                     ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}" 
                                                     ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}" 
+                                                    VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
                                                     TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
                                                     ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
                                                     WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"

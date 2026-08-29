@@ -22,6 +22,8 @@ namespace DWBox
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(DirectWriteElement), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender));
         public static readonly DependencyProperty FontFeaturesProperty = DependencyProperty.Register(nameof(FontFeatures), typeof(IList<FontFeature>), typeof(DirectWriteElement), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsRender));
         public static readonly DependencyProperty ParagraphReadingDirectionProperty = DependencyProperty.Register(nameof(ParagraphReadingDirection), typeof(ReadingDirection), typeof(DirectWriteElement), new FrameworkPropertyMetadata(ReadingDirection.LeftToRight, InvalidateTextFormat));
+        public static readonly DependencyProperty VerticalGlyphOrientationProperty = DependencyProperty.Register(nameof(VerticalGlyphOrientation), typeof(VerticalGlyphOrientation), typeof(DirectWriteElement), new FrameworkPropertyMetadata(VerticalGlyphOrientation.Default, InvalidateTextFormat));
+
         public static readonly DependencyProperty ParagraphFlowDirectionProperty = DependencyProperty.Register(nameof(ParagraphFlowDirection), typeof(Win32.DWrite.FlowDirection), typeof(DirectWriteElement), new FrameworkPropertyMetadata(Win32.DWrite.FlowDirection.TopToBottom, InvalidateTextFormat));
         public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register(nameof(TextAlignment), typeof(Win32.DWrite.TextAlignment), typeof(DirectWriteElement), new FrameworkPropertyMetadata(Win32.DWrite.TextAlignment.Leading, InvalidateTextFormat));
         public static readonly DependencyProperty ParagraphAlignmentProperty = DependencyProperty.Register(nameof(ParagraphAlignment), typeof(ParagraphAlignment), typeof(DirectWriteElement), new FrameworkPropertyMetadata(ParagraphAlignment.Near, InvalidateTextFormat));
@@ -85,6 +87,12 @@ namespace DWBox
         {
             get { return (ReadingDirection)GetValue(ParagraphReadingDirectionProperty); }
             set { SetValue(ParagraphReadingDirectionProperty, value); }
+        }
+
+        public VerticalGlyphOrientation VerticalGlyphOrientation
+        {
+            get { return (VerticalGlyphOrientation)GetValue(VerticalGlyphOrientationProperty); }
+            set { SetValue(VerticalGlyphOrientationProperty, value); }
         }
 
         public string Text
@@ -202,6 +210,9 @@ namespace DWBox
 
                 textLayout.SetTypography(typography, wholeRange);
             }
+
+            if (textLayout is DWrite.IDWriteTextLayout2 layout2)
+                layout2.SetVerticalGlyphOrientation(VerticalGlyphOrientation);
 
             return new TextLayout(textLayout);
         }

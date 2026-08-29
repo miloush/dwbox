@@ -264,7 +264,7 @@
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
-        
+
         <DrawingImage x:Key="TextAlignmentLeading">
             <DrawingImage.Drawing>
                 <DrawingGroup>
@@ -301,7 +301,7 @@
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
-        
+
         <DrawingImage x:Key="ParagraphAlignmentNear">
             <DrawingImage.Drawing>
                 <DrawingGroup>
@@ -338,7 +338,7 @@
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
-        
+
         <DrawingImage x:Key="TextAntialiasModeClearType">
             <DrawingImage.Drawing>
                 <DrawingGroup>
@@ -356,6 +356,31 @@
                     <GeometryDrawing Brush="#FFFFFF" Geometry="F1 M 1,7  H5 V15 H1Z" />
                     <GeometryDrawing Brush="#808080" Geometry="F1 M 6,4 H10 V12 H6Z" />
                     <GeometryDrawing Brush="#000000" Geometry="F1 M11,1 H15 V9  H11Z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="VerticalGlyphOrientationDefault">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M7.501,16L7.501,13 8.322,13 7.923,12 5.277,12 4.878,13 5.501,13 5.501,16 0.501,16 0.501,13 1.615,13C1.682,12.953,1.788,12.839,1.844,12.699L6.523,1 8.676,1 13.357,12.699C13.411,12.834,13.655,13,13.8,13L15.001,13 15.001,16z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M5.001,10L6.601,6 8.2,10z M13.8,14C13.247,14,12.634,13.584,12.429,13.071L8.001,2 7.999,2 7.2,2 4.001,10 2.772,13.071C2.567,13.584,2.087,14,1.7,14L1.501,14 1.501,15 4.501,15 4.501,14 4.2,14C3.759,14,3.567,13.584,3.772,13.071L4.601,11 8.601,11 9.429,13.071C9.634,13.584,9.397,14,8.901,14L8.501,14 8.501,15 14.001,15 14.001,14z" />
+                    </DrawingGroup.Children>
+                    <DrawingGroup.Transform>
+                        <RotateTransform Angle="90" />
+                    </DrawingGroup.Transform>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="VerticalGlyphOrientationStacked">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M7.501,16L7.501,13 8.322,13 7.923,12 5.277,12 4.878,13 5.501,13 5.501,16 0.501,16 0.501,13 1.615,13C1.682,12.953,1.788,12.839,1.844,12.699L6.523,1 8.676,1 13.357,12.699C13.411,12.834,13.655,13,13.8,13L15.001,13 15.001,16z" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M5.001,10L6.601,6 8.2,10z M13.8,14C13.247,14,12.634,13.584,12.429,13.071L8.001,2 7.999,2 7.2,2 4.001,10 2.772,13.071C2.567,13.584,2.087,14,1.7,14L1.501,14 1.501,15 4.501,15 4.501,14 4.2,14C3.759,14,3.567,13.584,3.772,13.071L4.601,11 8.601,11 9.429,13.071C9.634,13.584,9.397,14,8.901,14L8.501,14 8.501,15 14.001,15 14.001,14z" />
+                    </DrawingGroup.Children>
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
@@ -393,7 +418,7 @@
             </DrawingImage.Drawing>
         </DrawingImage>
 
-        
+
 
     </Application.Resources>
 </Application>
