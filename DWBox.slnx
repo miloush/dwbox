@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="DWBox.png" />
+    <File Path="GlyphRun.png" />
+    <File Path="README.md" />
+    <File Path="Taskbar.png" />
+    <File Path="TextAnalysis.png" />
+  </Folder>
+  <Project Path="DWBox/DWBox.csproj" />
+</Solution>
