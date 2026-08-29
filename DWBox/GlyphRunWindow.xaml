@@ -50,6 +50,8 @@
                 <DataGridTextColumn x:Name="_advance" Header="Advance" Binding="{Binding Advance}" />
                 <DataGridTextColumn x:Name="_advanceOffset" Header="Offset Adv" Binding="{Binding AdvanceOffset}" />
                 <DataGridTextColumn x:Name="_ascenderOffset" Header="Offset Asc" Binding="{Binding AscenderOffset}" />
+                <DataGridTextColumn x:Name="_originX" Header="Origin X" Binding="{Binding OriginX}" />
+                <DataGridTextColumn x:Name="_originY" Header="Origin Y" Binding="{Binding OriginY}" />
             </DataGrid.Columns>
             <DataGrid.GroupStyle>
                 <GroupStyle>

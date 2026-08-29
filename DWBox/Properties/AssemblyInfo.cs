@@ -52,7 +52,7 @@ using System.Windows;
 [assembly: AssemblyVersion("3.0.0.0")]
 [assembly: AssemblyFileVersion("3.0.0.0")]
 
-// 3.0.0.0 vertical text, vector rendering, stacked orientation, glyph run details: use geometry from DWrite, context menu to toolbar, run index and grouping
+// 3.0.0.0 vertical text, vector rendering, stacked orientation, glyph run details: use geometry from DWrite, context menu to toolbar, run index and grouping, glyph origins
 // 2.6.0.0 feature parameters, font metrics in tooltip
 // 2.5.0.0 warn when fonts not added on drop, allow surrogate chars, Alt+D/C for Unicode normalization, Alt+U for UTF16/32, drag&drop fonts out of dwbox, live glyph analysis, live text analysis, prefer regular face
 // 2.4.0.0 fixed NBSP, added NNBSP, remeasure after set, remove missing glyphs, add family, copy box bitmap bounds, box highlighting, design units

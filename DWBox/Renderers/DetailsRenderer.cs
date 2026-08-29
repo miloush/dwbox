@@ -79,6 +79,8 @@ namespace DWBox
                     Advance = advances[i],
                     AdvanceOffset = advanceOffset,
                     AscenderOffset = ascenderOffset,
+                    OriginX = glyphOrigins[i].X - baselineOriginX,
+                    OriginY = glyphOrigins[i].Y - baselineOriginY,
                     TransformedX = origin.X,
                     TransformedY = origin.Y,
                 };

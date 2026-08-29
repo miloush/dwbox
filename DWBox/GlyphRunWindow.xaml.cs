@@ -44,6 +44,8 @@ namespace DWBox
             _advance.Binding = new Binding(prefix + nameof(RenderGlyphDetails.Advance));
             _advanceOffset.Binding = new Binding(prefix + nameof(RenderGlyphDetails.AdvanceOffset));
             _ascenderOffset.Binding = new Binding(prefix + nameof(RenderGlyphDetails.AscenderOffset));
+            _originX.Binding = new Binding(prefix + nameof(RenderGlyphDetails.OriginX));
+            _originY.Binding = new Binding(prefix + nameof(RenderGlyphDetails.OriginY));
 
             if (prefix == "Design")
                 _designScale.IsChecked = true;
