@@ -60,6 +60,13 @@ namespace DWBox
             OnPropertyChanged(nameof(GlyphFill), nameof(GlyphOutline));
         }
 
+        public void Highlight(RenderGlyphDetails details)
+        {
+            foreach (var item in _items)
+                if (item.RenderingElement is DirectWriteElement el)
+                    el.Highlight(details);
+        }
+
         private void OnPropertyChanged(params string[] propertyNames)
         {
             foreach (string propertyName in propertyNames)

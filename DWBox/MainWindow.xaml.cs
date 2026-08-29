@@ -198,7 +198,7 @@ namespace DWBox
 
                         foreach (var entry in bestPerFamily.Values)
                             _app.Items.Add(entry, _app.AddEmSize);
-                        
+
                         break;
 
                     default:
@@ -653,7 +653,7 @@ namespace DWBox
                             targetItem.HeaderBrush = RedHeaderBrush;
                             targetItem.BorderBrush = RedBorderBrush;
                             return;
-                        
+
                         case "G":
                             targetItem.HeaderBrush = GreenHeaderBrush;
                             targetItem.BorderBrush = GreenBorderBrush;
@@ -676,6 +676,16 @@ namespace DWBox
         private void OnFillSolid(object sender, RoutedEventArgs e)
         {
             App.ViewModel.SetGlyphBrushes(Brushes.Black, null);
+        }
+
+        private void OnPathMouseEnter(object sender, MouseEventArgs e)
+        {
+            if (sender is FrameworkElement { DataContext: GlyphItem item })
+                App.ViewModel.Highlight(item.Details);
+        }
+        private void OnElementMouseLeave(object sender, MouseEventArgs e)
+        {
+            App.ViewModel.Highlight(null);
         }
     }
 }

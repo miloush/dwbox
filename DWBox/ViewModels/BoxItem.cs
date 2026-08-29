@@ -152,6 +152,5 @@ namespace DWBox
         {
             value?.RenderingElement = obj;
         }
-
     }
 }

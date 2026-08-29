@@ -36,6 +36,13 @@ namespace DWBox
         public int DesignOriginX => ToDesign(OriginX);
         public int DesignOriginY => ToDesign(OriginY);
 
+        public int ClusterStartIndex { get; set; }
+        public int ClusterLength => Codepoints.Count;
+        public int ClusterGlyphIndex { get; set; } 
+        public int ClusterGlyphCount { get; set; }
+
+        public int RunGlyphIndex { get; set; }
+
         public List<int> Codepoints { get; } = new List<int>();
         public string CodepointsString => string.Join(" ", Codepoints.Select(c => c.ToString("X4")));
         public string String

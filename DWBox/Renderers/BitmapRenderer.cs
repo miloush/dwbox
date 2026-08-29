@@ -25,10 +25,6 @@ namespace DWBox
             DrawGlyphRun(clientDrawingContext, baselineOriginX, baselineOriginY, GlyphOrientationAngle.Degrees0, measuringMode, glyphRun, glyphRunDescription, clientDrawingEffect);
         }
 
-        public void DrawUnderline(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, IntPtr underline, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
-        public void DrawStrikethrough(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, IntPtr strikethrough, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
-        public void DrawInlineObject(IntPtr clientDrawingContext, float originX, float originY, IntPtr inlineObject, bool isSideways, bool isRightToLeft, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
-
         public void DrawGlyphRun(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, GlyphOrientationAngle orientationAngle, MeasuringMode measuringMode, IntPtr glyphRun, IntPtr glyphRunDescription, object clientDrawingEffect)
         {
             GlyphRun run = Marshal.PtrToStructure<GlyphRun>(glyphRun);
@@ -42,8 +38,11 @@ namespace DWBox
             _bitmapRenderTarget.SetCurrentTransform(oldTransform);
         }
 
+        public void DrawUnderline(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, IntPtr underline, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
         public void DrawUnderline(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, GlyphOrientationAngle orientationAngle, IntPtr underline, object clientDrawingEffect) { }
+        public void DrawStrikethrough(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, IntPtr strikethrough, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
         public void DrawStrikethrough(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, GlyphOrientationAngle orientationAngle, IntPtr strikethrough, object clientDrawingEffect) { }
+        public void DrawInlineObject(IntPtr clientDrawingContext, float originX, float originY, IntPtr inlineObject, bool isSideways, bool isRightToLeft, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
         public void DrawInlineObject(IntPtr clientDrawingContext, float originX, float originY, GlyphOrientationAngle orientationAngle, IntPtr inlineObject, bool isSideways, bool isRightToLeft, object clientDrawingEffect) { }
     }
 }

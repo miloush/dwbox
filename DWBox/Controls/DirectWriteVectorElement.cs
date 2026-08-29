@@ -29,19 +29,24 @@ namespace DWBox
             base.OnTextLayoutChanged();
         }
 
-        ItemsControl _items;
+        ItemsControl _container;
+        GlyphItem[] _items;
 
         public DirectWriteVectorElement()
         {
-            _items = new ItemsControl();
-            _items.ItemsPanel = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(Canvas)));
+            var panel = new FrameworkElementFactory(typeof(Canvas));
+            panel.SetValue(ClipToBoundsProperty, true);
+            panel.SetValue(Panel.BackgroundProperty, Brushes.Transparent);
+
+            _container = new ItemsControl();
+            _container.ItemsPanel = new ItemsPanelTemplate(panel);
 
             Style containerStyle = new(typeof(ContentPresenter));
             containerStyle.Setters.Add(new Setter(Canvas.LeftProperty, new Binding(nameof(GlyphItem.Details) + "." + nameof(RenderGlyphDetails.TransformedX))));
             containerStyle.Setters.Add(new Setter(Canvas.TopProperty, new Binding(nameof(GlyphItem.Details) + "." + nameof(RenderGlyphDetails.TransformedY))));
-            _items.ItemContainerStyle = containerStyle;
+            _container.ItemContainerStyle = containerStyle;
 
-            AddVisualChild(_items);
+            AddVisualChild(_container);
         }
 
         private void InvalidateGeometry()
@@ -53,23 +58,51 @@ namespace DWBox
             DetailsRenderer renderer = new(details, isPixelSnappingDisabled: true);
             Render(renderer);
 
-            _items.ItemsSource = details.Select(d => new GlyphItem(d));
+            _container.ItemsSource = _items = details.Select(d => new GlyphItem(d)).ToArray();
         }
 
-        protected override Visual GetVisualChild(int index) => _items;
+        protected override Visual GetVisualChild(int index) => _container;
         protected override int VisualChildrenCount => 1;
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            _items.Measure(availableSize);
+            _container.Measure(availableSize);
             return base.MeasureOverride(availableSize);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
             Size size = base.ArrangeOverride(finalSize); // sets TextLayout
-            _items.Arrange(new Rect(default, finalSize));
+            _container.Arrange(new Rect(default, finalSize));
             return size;
+        }
+
+
+        public override void Highlight(RenderGlyphDetails details)
+        {
+            var items = _items;
+            foreach (var item in items)
+            {
+                if (details == null)
+                {
+                    item.IsRunHighlighted = item.IsClusterHighlighted = item.IsGlyphHighlighted = false;
+                    continue;
+                }
+
+                item.IsRunHighlighted = item.Details.RunDetails.TextPosition == details.RunDetails.TextPosition &&
+                                        item.Details.RunDetails.TextLength == details.RunDetails.TextLength;
+
+                if (item.IsRunHighlighted && item.Details.ClusterStartIndex == details.ClusterStartIndex)
+                {
+                    item.IsClusterHighlighted = true;
+                    item.IsGlyphHighlighted = item.Details.ClusterGlyphCount == details.ClusterGlyphCount && item.Details.ClusterGlyphIndex == details.ClusterGlyphIndex;
+                }
+                else
+                {
+                    item.IsClusterHighlighted = false;
+                    item.IsGlyphHighlighted = false;
+                }
+            }
         }
     }
 }

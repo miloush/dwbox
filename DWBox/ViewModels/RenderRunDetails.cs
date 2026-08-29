@@ -10,6 +10,7 @@ namespace DWBox
         public string LocaleName { get; set; }
         public string Text { get; set; }
         public int TextPosition { get; set; }
+        public int TextLength { get; set; }
 
         public string FontName { get; set; }
         public int BidiLevel { get; set; }

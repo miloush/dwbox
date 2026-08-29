@@ -278,6 +278,18 @@
             </DrawingImage.Drawing>
         </DrawingImage>
 
+        <DrawingImage x:Key="StatusInformationOutline">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M8,0C3.589,0 0,3.589 0,8 0,12.411 3.589,16 8,16 12.411,16 16,12.411 16,8 16,3.589 12.411,0 8,0" />
+                        <GeometryDrawing Brush="#FF424242" Geometry="F1M7.5,4L8.5,4 8.5,5 7.5,5z M7.5,6L8.5,6 8.5,12 7.5,12z M8,14C4.691,14 2,11.309 2,8 2,4.691 4.691,2 8,2 11.309,2 14,4.691 14,8 14,11.309 11.309,14 8,14 M8,1C4.14,1 1,4.14 1,8 1,11.859 4.14,15 8,15 11.859,15 15,11.859 15,8 15,4.14 11.859,1 8,1" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+
         <DrawingImage x:Key="TextAlignmentLeading">
             <DrawingImage.Drawing>
                 <DrawingGroup>

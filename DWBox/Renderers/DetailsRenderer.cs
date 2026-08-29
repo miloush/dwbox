@@ -26,15 +26,11 @@ namespace DWBox
             DrawGlyphRun(clientDrawingContext, baselineOriginX, baselineOriginY, GlyphOrientationAngle.Degrees0, measuringMode, glyphRun, glyphRunDescription, clientDrawingEffect);
         }
 
-        public void DrawUnderline(IntPtr clientDrwaingContext, float baselineOriginX, float baselineOriginY, IntPtr underline, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
-        public void DrawStrikethrough(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, IntPtr strikethrough, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
-        public void DrawInlineObject(IntPtr clientDrawingContext, float originX, float originY, IntPtr inlineObject, bool isSideways, bool isRightToLeft, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
-
         public void DrawGlyphRun(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, GlyphOrientationAngle orientationAngle, MeasuringMode measuringMode, IntPtr glyphRun, IntPtr glyphRunDescription, object clientDrawingEffect)
         {
             GlyphRun run = Marshal.PtrToStructure<GlyphRun>(glyphRun);
             GlyphRunDescription desc = Marshal.PtrToStructure<GlyphRunDescription>(glyphRunDescription);
-            
+
             RenderRunDetails runDetails = new()
             {
                 BaselineOriginX = baselineOriginX,
@@ -43,6 +39,7 @@ namespace DWBox
                 LocaleName = desc.LocaleName,
                 Text = desc.Text,
                 TextPosition = desc.TextPosition,
+                TextLength = desc.TextLength,
                 FontName = run.FontFace.FullName,
                 BidiLevel = run.BidiLevel,
                 OrientationAngle = orientationAngle switch
@@ -61,7 +58,7 @@ namespace DWBox
             Matrix transform = Matrix.Create(orientationAngle, run.IsSideways, baselineOriginX, baselineOriginY);
             Point2F[] glyphOrigins = DWriteFactory.Shared.ComputeGlyphOrigins(glyphRun, run.GlyphCount, measuringMode, baselineOriginX, baselineOriginY, Matrix.Identity);
 
-            RenderGlyphDetails[] items = new RenderGlyphDetails[run.GlyphCount];
+            RenderGlyphDetails[] glyphs = new RenderGlyphDetails[run.GlyphCount];
             System.Windows.Media.RotateTransform wpfTrasform = new(runDetails.OrientationAngle, 0, 0);
             wpfTrasform.Freeze();
 
@@ -72,9 +69,10 @@ namespace DWBox
 
                 Point2F origin = transform.Transform(glyphOrigins[i]);
 
-                items[i] = new RenderGlyphDetails(Details)
+                glyphs[i] = new RenderGlyphDetails(Details)
                 {
                     RunDetails = runDetails,
+                    RunGlyphIndex = i,
                     GlyphID = glyphIndices[i],
                     Advance = advances[i],
                     AdvanceOffset = advanceOffset,
@@ -91,7 +89,7 @@ namespace DWBox
                 StreamGeometrySink sink = new();
                 run.FontFace.GetGlyphRunOutline(run.FontEmSize, new ushort[] { glyphIndices[i] }, null, null, false, false, sink);
                 sink.Geometry.Transform = wpfTrasform;                
-                items[i].GlyphGeometry = sink.Geometry;
+                glyphs[i].GlyphGeometry = sink.Geometry;
             }
 
             short[] clusterMap = desc.GetClusterMap();
@@ -99,29 +97,58 @@ namespace DWBox
             {
                 int index = clusterMap[i];
                 int codepoint = desc.Text[i];
-                items[index].Codepoints.Add(codepoint);
+                glyphs[index].Codepoints.Add(codepoint);
+                glyphs[index].ClusterStartIndex = i;
             }
 
             int clusterIndex = -1;
+            int lastClusterStart = 0;
+            int clusterGlyphIndex = 0;
             if (Details.Count > 0)
-                clusterIndex = Details[Details.Count - 1].ClusterIndex;
-            
-            foreach (var item in items)
             {
-                if (item.Codepoints.Count > 0)
-                    clusterIndex++;
-
-                item.RunIndex = _runIndex;
-                item.Index = Details.Count;
-                item.ClusterIndex = clusterIndex;
-                Details.Add(item);
+                // continue from last recorded run details
+                var lastDetail = Details[Details.Count - 1];
+                clusterIndex = lastDetail.ClusterIndex;
+                lastClusterStart = lastDetail.ClusterStartIndex;
+                clusterGlyphIndex = lastDetail.ClusterGlyphIndex + 1;
             }
+
+            int firstClusterGlyph = -1;
+            for (int i = 0; i < glyphs.Length; i++)
+            {
+                RenderGlyphDetails glyph = glyphs[i];
+                if (glyph.Codepoints.Count > 0)
+                {
+                    if (firstClusterGlyph >= 0)
+                        for (int j = firstClusterGlyph; j < i; j++)
+                            glyphs[j].ClusterGlyphCount = i - firstClusterGlyph;
+
+                    clusterIndex++;
+                    clusterGlyphIndex = 0;
+                    lastClusterStart = glyph.ClusterStartIndex;
+                    firstClusterGlyph = i;
+                }
+
+                glyph.RunIndex = _runIndex;
+                glyph.Index = Details.Count;
+                glyph.ClusterIndex = clusterIndex;
+                glyph.ClusterStartIndex = lastClusterStart;
+                glyph.ClusterGlyphIndex = clusterGlyphIndex++;
+                Details.Add(glyph);
+            }
+
+            if (firstClusterGlyph > 0)
+                for (int j = firstClusterGlyph; j < glyphs.Length; j++)
+                    glyphs[j].ClusterGlyphCount = glyphs.Length - firstClusterGlyph;
 
             _runIndex++;
         }
 
+        public void DrawUnderline(IntPtr clientDrwaingContext, float baselineOriginX, float baselineOriginY, IntPtr underline, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
         public void DrawUnderline(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, GlyphOrientationAngle orientationAngle, IntPtr underline, object clientDrawingEffect) { }
+        public void DrawStrikethrough(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, IntPtr strikethrough, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
         public void DrawStrikethrough(IntPtr clientDrawingContext, float baselineOriginX, float baselineOriginY, GlyphOrientationAngle orientationAngle, IntPtr strikethrough, object clientDrawingEffect) { }
+        public void DrawInlineObject(IntPtr clientDrawingContext, float originX, float originY, IntPtr inlineObject, bool isSideways, bool isRightToLeft, [In, MarshalAs(UnmanagedType.IUnknown)] object clientDrawingEffect) { }
         public void DrawInlineObject(IntPtr clientDrawingContext, float originX, float originY, GlyphOrientationAngle orientationAngle, IntPtr inlineObject, bool isSideways, bool isRightToLeft, object clientDrawingEffect) { }
     }
 }

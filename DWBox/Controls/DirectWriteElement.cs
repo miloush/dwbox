@@ -257,5 +257,7 @@ namespace DWBox
             TextLayout = null;
             return base.ArrangeOverride(finalSize);
         }
+
+        public virtual void Highlight(RenderGlyphDetails details) { }
     }
 }

@@ -21,6 +21,14 @@
             </Setter>
         </Style>
 
+        <Style x:Key="TransparentlyDisabled" TargetType="Control">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.4" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <Rectangle x:Key="RedIcon" x:Shared="False" Width="16" Height="16" Fill="#FFF0F0" Stroke="DarkRed" RadiusX="2" RadiusY="2" />
         <Rectangle x:Key="GreenIcon" x:Shared="False" Width="16" Height="16" Fill="#F0FFF0" Stroke="DarkGreen" RadiusX="2" RadiusY="2" />
 
@@ -50,29 +58,29 @@
             <ItemsControl Name="_modules" DockPanel.Dock="Bottom" Margin="5" IsTabStop="False">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock  TextTrimming="CharacterEllipsis">
+                        <TextBlock TextTrimming="CharacterEllipsis">
                             <TextBlock.ToolTip>
                                 <StackPanel>
                                     <TextBlock>
-                                    <Run Text="File name:"  />
-                                    <Run Text="{Binding FileInfo.FullName, Mode=OneTime}" />
+                                        <Run Text="File name:" />
+                                        <Run Text="{Binding FileInfo.FullName, Mode=OneTime}" />
                                     </TextBlock>
                                     <TextBlock>
-                                    <Run Text="File size:" />
-                                    <Run Text="{Binding FileInfo.Length, Mode=OneTime}" />
+                                        <Run Text="File size:" />
+                                        <Run Text="{Binding FileInfo.Length, Mode=OneTime}" />
                                     </TextBlock>
                                     <TextBlock>
-                                    <Run Text="Last modified:" />
-                                    <Run Text="{Binding FileInfo.LastWriteTime, Mode=OneTime}" />
+                                        <Run Text="Last modified:" />
+                                        <Run Text="{Binding FileInfo.LastWriteTime, Mode=OneTime}" />
                                     </TextBlock>
                                 </StackPanel>
                             </TextBlock.ToolTip>
-                        <Run Text="Loaded" />
-                        <Run Text="{Binding ModuleName, Mode=OneTime}" FontWeight="Bold" />
-                        <Run Text="{Binding FileVersionInfo.FileVersion, Mode=OneTime}" />
-                        <Run Text="from" />
-                        <Run Text="{Binding FileInfo.DirectoryName, Mode=OneTime}" />
-                    </TextBlock>
+                            <Run Text="Loaded" />
+                            <Run Text="{Binding ModuleName, Mode=OneTime}" FontWeight="Bold" />
+                            <Run Text="{Binding FileVersionInfo.FileVersion, Mode=OneTime}" />
+                            <Run Text="from" />
+                            <Run Text="{Binding FileInfo.DirectoryName, Mode=OneTime}" />
+                        </TextBlock>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -136,8 +144,11 @@
                 </Grid.RowDefinitions>
 
                 <Label Grid.Row="0" Target="{Binding ElementName=_boxInput}">_Input:</Label>
-                <DockPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" >
-                    <ToggleButton Name="_decode" TabIndex="14" DockPanel.Dock="Right"  Margin="5,0,0,0" IsChecked="True" VerticalAlignment="Center" ToolTip="Check to allow hexadecimal codepoints (with or without U+ prefix) and acronyms (ZWJ RLM etc.) separated by space. Use two spaces to insert a space into the output text. Backslash escaping (\u \n etc.) also recognized inside text.&#xD;&#xA;&#xD;&#xA;Uncheck to map characters 1:1 including spaces and no decoding." Checked="InvalidateOutput" Unchecked="InvalidateOutput">
+                <DockPanel Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
+                    <ToggleButton Name="_decode" TabIndex="14" DockPanel.Dock="Right" Margin="5,0,0,0" IsChecked="True" VerticalAlignment="Center" ToolTip="Check to allow hexadecimal codepoints (with or without U+ prefix) and acronyms (ZWJ RLM etc.) separated by space. Use two spaces to insert a space into the output text. Backslash escaping (\u \n etc.) also recognized inside text.
+
+Uncheck to map characters 1:1 including spaces and no decoding."
+                                  Checked="InvalidateOutput" Unchecked="InvalidateOutput">
                         <Image Source="{StaticResource DecreaseHorizontalSpacing}" Width="16" Height="16" />
                     </ToggleButton>
                     <TextBox Name="_boxInput" TabIndex="0" VerticalAlignment="Center" TextChanged="InvalidateOutput" KeyDown="OnInputKeyDown" />
@@ -271,14 +282,14 @@
                         <dw:WordWrapping>Character</dw:WordWrapping>
                     </ComboBox>
                 </ToolBar>
-                
+
                 <ToolBar TabIndex="6" Band="1" BandIndex="1" Background="WhiteSmoke" Header="_Rendering">
                     <ListBox Name="_aliasingSelector" ToolTip="Text antialias mode" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0" IsEnabled="{Binding IsRasterMode}">
                         <dw:TextAntialiasMode>ClearType</dw:TextAntialiasMode>
                         <dw:TextAntialiasMode>Grayscale</dw:TextAntialiasMode>
                     </ListBox>
                     <Separator />
-                    <CheckBox ToolTip="Transparent fill (see outlines)" IsEnabled="{Binding IsVectorMode}" Checked="OnFillOutline" Unchecked="OnFillSolid">
+                    <CheckBox ToolTip="Transparent fill (see outlines)" IsEnabled="{Binding IsVectorMode}" Checked="OnFillOutline" Unchecked="OnFillSolid" Style="{StaticResource TransparentlyDisabled}">
                         <Image Source="{StaticResource TransparentBackground}" />
                     </CheckBox>
                 </ToolBar>
@@ -321,11 +332,6 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1" Margin="5">
-                                <Border.ToolTip>
-                                    <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
-                                        <local:FontFaceInfo />
-                                    </ToolTip>
-                                </Border.ToolTip>
                                 <DockPanel>
                                     <Border DockPanel.Dock="Top" Background="{Binding HeaderBrush}" Padding="2,2,0,2" MouseMove="OnItemMouseMove">
                                         <DockPanel>
@@ -346,6 +352,13 @@
                                                     </ContextMenu>
                                                 </Button.ContextMenu>
                                             </Button>
+                                            <Image DockPanel.Dock="Right" Source="{StaticResource StatusInformationOutline}" Width="16" Height="16" Margin="0,0,2,0">
+                                                <Image.ToolTip>
+                                                    <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
+                                                        <local:FontFaceInfo />
+                                                    </ToolTip>
+                                                </Image.ToolTip>
+                                            </Image>
                                             <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource More}" Click="OpenContextMenu">
                                                 <Button.ContextMenu>
                                                     <ContextMenu>
@@ -378,48 +391,56 @@
                                     <ContentPresenter Content="{Binding}">
                                         <ContentPresenter.Resources>
                                             <DataTemplate x:Key="BitmapElement">
-                                                <local:DirectWriteBitmapElement 
-                                                    FontSet="{Binding SingleFontSet}"
-                                                    FontFace="{Binding FontFace}" 
-                                                    FontSize="{Binding EmSize}"
-                                                    FontAxisValues="{Binding FontAxisValues}"
-                                                    Text="{Binding Text, ElementName=_boxOutput}" 
-                                                    ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}" 
-                                                    ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}"
-                                                    VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
-                                                    TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
-                                                    ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
-                                                    WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
-                                                    TextAntialiasMode="{Binding SelectedItem, ElementName=_aliasingSelector}"
-                                                    FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
-                                                    LocaleName="{Binding Text, ElementName=_boxLocale}" 
-                                                    local:BoxItem.OwningItem="{Binding}"
-                                                    />
+                                                <local:DirectWriteBitmapElement FontSet="{Binding SingleFontSet}"
+                                                                                FontFace="{Binding FontFace}"
+                                                                                FontSize="{Binding EmSize}"
+                                                                                FontAxisValues="{Binding FontAxisValues}"
+                                                                                Text="{Binding Text, ElementName=_boxOutput}"
+                                                                                ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}"
+                                                                                ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}"
+                                                                                VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
+                                                                                TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
+                                                                                ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
+                                                                                WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
+                                                                                TextAntialiasMode="{Binding SelectedItem, ElementName=_aliasingSelector}"
+                                                                                FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}"
+                                                                                LocaleName="{Binding Text, ElementName=_boxLocale}"
+                                                                                local:BoxItem.OwningItem="{Binding}" />
                                             </DataTemplate>
                                             <DataTemplate x:Key="VectorElement">
-                                                <local:DirectWriteVectorElement 
-                                                    FontSet="{Binding SingleFontSet}"
-                                                    FontFace="{Binding FontFace}" 
-                                                    FontSize="{Binding EmSize}"
-                                                    FontAxisValues="{Binding FontAxisValues}"
-                                                    Text="{Binding Text, ElementName=_boxOutput}" 
-                                                    ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}" 
-                                                    ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}" 
-                                                    VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
-                                                    TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
-                                                    ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
-                                                    WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
-                                                    FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
-                                                    LocaleName="{Binding Text, ElementName=_boxLocale}" 
-                                                    Fill="Black"
-                                                    local:BoxItem.OwningItem="{Binding}">
-                                                <local:DirectWriteVectorElement.Resources>
-                                                    <DataTemplate DataType="{x:Type local:GlyphItem}">
-                                                        <Path Data="{Binding Details.GlyphGeometry}"
-                                                              Fill="{Binding GlyphFill, Source={x:Static local:App.ViewModel}}" 
-                                                              Stroke="{Binding GlyphOutline, Source={x:Static local:App.ViewModel}}" />
-                                                    </DataTemplate>
-                                                </local:DirectWriteVectorElement.Resources>
+                                                <local:DirectWriteVectorElement FontSet="{Binding SingleFontSet}"
+                                                                                FontFace="{Binding FontFace}"
+                                                                                FontSize="{Binding EmSize}"
+                                                                                FontAxisValues="{Binding FontAxisValues}"
+                                                                                Text="{Binding Text, ElementName=_boxOutput}"
+                                                                                ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}"
+                                                                                ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}"
+                                                                                VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
+                                                                                TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
+                                                                                ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
+                                                                                WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
+                                                                                FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}"
+                                                                                LocaleName="{Binding Text, ElementName=_boxLocale}"
+                                                                                MouseLeave="OnElementMouseLeave"
+                                                                                local:BoxItem.OwningItem="{Binding}">
+                                                    <local:DirectWriteVectorElement.Resources>
+                                                        <DataTemplate DataType="{x:Type local:GlyphItem}">
+                                                            <Path Name="path" Data="{Binding Details.GlyphGeometry}"
+                                                                  Fill="{Binding GlyphFill, Source={x:Static local:App.ViewModel}}"
+                                                                  Stroke="{Binding GlyphOutline, Source={x:Static local:App.ViewModel}}" MouseEnter="OnPathMouseEnter" />
+                                                            <DataTemplate.Triggers>
+                                                                <DataTrigger Binding="{Binding IsRunHighlighted}" Value="True">
+                                                                    <Setter TargetName="path" Property="Fill" Value="Gray" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsClusterHighlighted}" Value="True">
+                                                                    <Setter TargetName="path" Property="Fill" Value="Orange" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding IsGlyphHighlighted}" Value="True">
+                                                                    <Setter TargetName="path" Property="Fill" Value="Red" />
+                                                                </DataTrigger>
+                                                            </DataTemplate.Triggers>
+                                                        </DataTemplate>
+                                                    </local:DirectWriteVectorElement.Resources>
                                                 </local:DirectWriteVectorElement>
                                             </DataTemplate>
                                         </ContentPresenter.Resources>
