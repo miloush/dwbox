@@ -1,17 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace DWBox
 {
     public class AppViewModel : INotifyPropertyChanged
     {
-        private readonly BoxItemCollection _items = new BoxItemCollection();
+        private readonly BoxItemCollection _items;
         public BoxItemCollection Items => _items;
+
+        public AppViewModel()
+        {
+            _items = new BoxItemCollection();
+            _items.CollectionChanged += OnItemsChanged;
+        }
+
+        private void OnItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            HasItems = _items.Count > 0;
+        }
+
+        private bool _hasItems = false;
+        public bool HasItems
+        {
+            get { return _hasItems; }
+            set
+            {
+                if (_hasItems != value)
+                {
+                    _hasItems = value;
+                    OnPropertyChanged(nameof(HasItems), nameof(NoItemsVisibility));
+                }
+            }
+        }
+
+        public Visibility NoItemsVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
 
         private bool _isRasterMode = false;
         public bool IsRasterMode

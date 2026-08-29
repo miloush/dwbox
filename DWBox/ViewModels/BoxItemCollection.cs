@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -10,7 +11,7 @@ using Win32.DWrite;
 
 namespace DWBox
 {
-    public class BoxItemCollection : IEnumerable<BoxItem>
+    public class BoxItemCollection : IReadOnlyCollection<BoxItem>
     {
         private readonly Dictionary<string, List<BoxItem>> _itemsDictionary = new Dictionary<string, List<BoxItem>>();
         private readonly ObservableCollection<BoxItem> _items = new ObservableCollection<BoxItem>();
@@ -66,7 +67,15 @@ namespace DWBox
             }
         }
 
+        public int Count => _items.Count;
+
         public IEnumerator<BoxItem> GetEnumerator() => _items.GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged
+        {
+            add { _items.CollectionChanged += value; }
+            remove { _items.CollectionChanged -= value; }
+        }
     }
 }

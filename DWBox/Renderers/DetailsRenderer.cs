@@ -88,7 +88,7 @@ namespace DWBox
                 // we want the glyph geometry to start at 0,0
                 StreamGeometrySink sink = new();
                 run.FontFace.GetGlyphRunOutline(run.FontEmSize, new ushort[] { glyphIndices[i] }, null, null, false, false, sink);
-                sink.Geometry.Transform = wpfTrasform;                
+                sink.Geometry.Transform = wpfTrasform;
                 glyphs[i].GlyphGeometry = sink.Geometry;
             }
 

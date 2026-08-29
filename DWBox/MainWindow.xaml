@@ -298,100 +298,102 @@ Uncheck to map characters 1:1 including spaces and no decoding."
 
             <!--#endregion-->
 
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
-                <ScrollViewer.VerticalScrollBarVisibility>
-                    <MultiBinding Converter="{StaticResource ScrollBarVisibilityConverter}">
-                        <Binding Path="SelectedItem.VerticalScrollBarVisibility" ElementName="_renderingsPanelSelector" />
-                        <Binding Path="IsGrouping" ElementName="_renderings" />
-                    </MultiBinding>
-                </ScrollViewer.VerticalScrollBarVisibility>
-                <ItemsControl Name="_renderings" TabIndex="7" ItemsSource="{Binding Items.View}" IsTabStop="False" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent" ToolTip="You can drag &amp; drop a font file here."
+            <Grid>
+                <TextBlock Name="_dragTip" Text="You can drag &amp; drop a font file here." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" Visibility="{Binding NoItemsVisibility, Source={x:Static local:App.ViewModel}}" />
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <ScrollViewer.VerticalScrollBarVisibility>
+                        <MultiBinding Converter="{StaticResource ScrollBarVisibilityConverter}">
+                            <Binding Path="SelectedItem.VerticalScrollBarVisibility" ElementName="_renderingsPanelSelector" />
+                            <Binding Path="IsGrouping" ElementName="_renderings" />
+                        </MultiBinding>
+                    </ScrollViewer.VerticalScrollBarVisibility>
+                    <ItemsControl Name="_renderings" TabIndex="7" ItemsSource="{Binding Items.View}" IsTabStop="False" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent"
                               ItemsPanel="{Binding SelectedItem.ItemsPanelTemplate, ElementName=_renderingsPanelSelector}" GroupStyleSelector="SelectRenderingsGroupStyle" KeyboardNavigation.TabNavigation="Local">
-                    <ItemsControl.Resources>
-                        <GroupStyle x:Key="GroupStyle">
-                            <GroupStyle.ContainerStyle>
-                                <Style TargetType="GroupItem">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="GroupItem">
-                                                <Expander IsExpanded="True">
-                                                    <Expander.Header>
-                                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" />
-                                                    </Expander.Header>
-                                                    <Expander.Content>
-                                                        <ItemsPresenter />
-                                                    </Expander.Content>
-                                                </Expander>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </GroupStyle.ContainerStyle>
-                        </GroupStyle>
-                    </ItemsControl.Resources>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1" Margin="5">
-                                <DockPanel>
-                                    <Border DockPanel.Dock="Top" Background="{Binding HeaderBrush}" Padding="2,2,0,2" MouseMove="OnItemMouseMove">
-                                        <DockPanel>
-                                            <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove" Click="OpenContextMenu">
-                                                <Button.ContextMenu>
-                                                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                                                        <MenuItem Click="OnRemove" Tag="T" Header="Remove _this one" />
-                                                        <MenuItem Click="OnRemove" Tag="F" Header="Remove this _family" />
-                                                        <Separator />
-                                                        <MenuItem Click="OnRemove" Tag="G" Header="Remove fonts with missing _glyphs" />
-                                                        <Separator />
-                                                        <MenuItem Click="OnRemove" Tag="M" Header="Remove all _machine ones" />
-                                                        <MenuItem Click="OnRemove" Tag="U" Header="Remove all _user ones" />
-                                                        <MenuItem Click="OnRemove" Tag="D" Header="Remove all _dropped ones" />
-                                                        <Separator />
-                                                        <MenuItem Click="OnRemove" Tag="B" Header="Remove all _except this one" />
-                                                        <MenuItem Click="OnRemove" Tag="A" Header="Remove _all" />
-                                                    </ContextMenu>
-                                                </Button.ContextMenu>
-                                            </Button>
-                                            <Image DockPanel.Dock="Right" Source="{StaticResource StatusInformationOutline}" Width="16" Height="16" Margin="0,0,2,0">
-                                                <Image.ToolTip>
-                                                    <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
-                                                        <local:FontFaceInfo />
-                                                    </ToolTip>
-                                                </Image.ToolTip>
-                                            </Image>
-                                            <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource More}" Click="OpenContextMenu">
-                                                <Button.ContextMenu>
-                                                    <ContextMenu>
-                                                        <MenuItem Header="Copy _name and version" Click="OnCopyName" ToolTip="Copy the font name and version into clipboard" />
-                                                        <MenuItem Header="Copy _file path" Click="OnCopyPath" ToolTip="Copy the font file path into clipboard" />
-                                                        <MenuItem Header="Copy _box bitmap" Click="OnCopyBitmap" ToolTip="Copy the whole box bitmap including font name into clipboard" />
-                                                        <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard (only available in raster mode)" IsEnabled="{Binding IsRasterMode, Source={x:Static local:App.ViewModel}}" />
-                                                        <Separator />
-                                                        <MenuItem Header="_Highlight">
-                                                            <MenuItem Click="OnHighlight" Tag="X" Header="C_lear" />
-                                                            <MenuItem Click="OnHighlight" Tag="XA" Header="Clear _All" />
+                        <ItemsControl.Resources>
+                            <GroupStyle x:Key="GroupStyle">
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="GroupItem">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="GroupItem">
+                                                    <Expander IsExpanded="True">
+                                                        <Expander.Header>
+                                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                                        </Expander.Header>
+                                                        <Expander.Content>
+                                                            <ItemsPresenter />
+                                                        </Expander.Content>
+                                                    </Expander>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+                        </ItemsControl.Resources>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1" Margin="5">
+                                    <DockPanel>
+                                        <Border DockPanel.Dock="Top" Background="{Binding HeaderBrush}" Padding="2,2,0,2" MouseMove="OnItemMouseMove">
+                                            <DockPanel>
+                                                <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove" Click="OpenContextMenu">
+                                                    <Button.ContextMenu>
+                                                        <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                                            <MenuItem Click="OnRemove" Tag="T" Header="Remove _this one" />
+                                                            <MenuItem Click="OnRemove" Tag="F" Header="Remove this _family" />
                                                             <Separator />
-                                                            <MenuItem Click="OnHighlight" Tag="R" Header="Red" Icon="{StaticResource RedIcon}" />
-                                                            <MenuItem Click="OnHighlight" Tag="G" Header="Green" Icon="{StaticResource GreenIcon}" />
-                                                        </MenuItem>
-                                                        <Separator />
-                                                        <MenuItem Header="Add whole f_amily" Click="OnAddFamily" ToolTip="Add all fonts from the same typographical family" />
-                                                        <Separator />
-                                                        <MenuItem Header="_Text analysis" Click="OnTextAnalysis" ToolTip="Open text analysis" />
-                                                        <MenuItem Header="_GlyphRun details" Click="OnGlyphRunDetails" ToolTip="Open glyph run details" />
-                                                    </ContextMenu>
-                                                </Button.ContextMenu>
-                                            </Button>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Image Source="{Binding SourceTypeImage}" Width="16" Height="16" Margin="0,0,2,0" />
-                                                <TextBlock Text="{Binding NameVersion}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                            </StackPanel>
-                                        </DockPanel>
-                                    </Border>
-                                    <ContentPresenter Content="{Binding}">
-                                        <ContentPresenter.Resources>
-                                            <DataTemplate x:Key="BitmapElement">
-                                                <local:DirectWriteBitmapElement FontSet="{Binding SingleFontSet}"
+                                                            <MenuItem Click="OnRemove" Tag="G" Header="Remove fonts with missing _glyphs" />
+                                                            <Separator />
+                                                            <MenuItem Click="OnRemove" Tag="M" Header="Remove all _machine ones" />
+                                                            <MenuItem Click="OnRemove" Tag="U" Header="Remove all _user ones" />
+                                                            <MenuItem Click="OnRemove" Tag="D" Header="Remove all _dropped ones" />
+                                                            <Separator />
+                                                            <MenuItem Click="OnRemove" Tag="B" Header="Remove all _except this one" />
+                                                            <MenuItem Click="OnRemove" Tag="A" Header="Remove _all" />
+                                                        </ContextMenu>
+                                                    </Button.ContextMenu>
+                                                </Button>
+                                                <Image DockPanel.Dock="Right" Source="{StaticResource StatusInformationOutline}" Width="16" Height="16" Margin="0,0,2,0">
+                                                    <Image.ToolTip>
+                                                        <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
+                                                            <local:FontFaceInfo />
+                                                        </ToolTip>
+                                                    </Image.ToolTip>
+                                                </Image>
+                                                <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource More}" Click="OpenContextMenu">
+                                                    <Button.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="Copy _name and version" Click="OnCopyName" ToolTip="Copy the font name and version into clipboard" />
+                                                            <MenuItem Header="Copy _file path" Click="OnCopyPath" ToolTip="Copy the font file path into clipboard" />
+                                                            <MenuItem Header="Copy _box bitmap" Click="OnCopyBitmap" ToolTip="Copy the whole box bitmap including font name into clipboard" />
+                                                            <MenuItem Header="_Copy GlyphRun bitmap" Click="OnCopyGlyphRunBitmap" ToolTip="Copy bitmap with glyphs only into clipboard (only available in raster mode)" IsEnabled="{Binding IsRasterMode, Source={x:Static local:App.ViewModel}}" />
+                                                            <Separator />
+                                                            <MenuItem Header="_Highlight">
+                                                                <MenuItem Click="OnHighlight" Tag="X" Header="C_lear" />
+                                                                <MenuItem Click="OnHighlight" Tag="XA" Header="Clear _All" />
+                                                                <Separator />
+                                                                <MenuItem Click="OnHighlight" Tag="R" Header="Red" Icon="{StaticResource RedIcon}" />
+                                                                <MenuItem Click="OnHighlight" Tag="G" Header="Green" Icon="{StaticResource GreenIcon}" />
+                                                            </MenuItem>
+                                                            <Separator />
+                                                            <MenuItem Header="Add whole f_amily" Click="OnAddFamily" ToolTip="Add all fonts from the same typographical family" />
+                                                            <Separator />
+                                                            <MenuItem Header="_Text analysis" Click="OnTextAnalysis" ToolTip="Open text analysis" />
+                                                            <MenuItem Header="_GlyphRun details" Click="OnGlyphRunDetails" ToolTip="Open glyph run details" />
+                                                        </ContextMenu>
+                                                    </Button.ContextMenu>
+                                                </Button>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Source="{Binding SourceTypeImage}" Width="16" Height="16" Margin="0,0,2,0" />
+                                                    <TextBlock Text="{Binding NameVersion}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Border>
+                                        <ContentPresenter Content="{Binding}">
+                                            <ContentPresenter.Resources>
+                                                <DataTemplate x:Key="BitmapElement">
+                                                    <local:DirectWriteBitmapElement FontSet="{Binding SingleFontSet}"
                                                                                 FontFace="{Binding FontFace}"
                                                                                 FontSize="{Binding EmSize}"
                                                                                 FontAxisValues="{Binding FontAxisValues}"
@@ -406,9 +408,9 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                                                                 FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}"
                                                                                 LocaleName="{Binding Text, ElementName=_boxLocale}"
                                                                                 local:BoxItem.OwningItem="{Binding}" />
-                                            </DataTemplate>
-                                            <DataTemplate x:Key="VectorElement">
-                                                <local:DirectWriteVectorElement FontSet="{Binding SingleFontSet}"
+                                                </DataTemplate>
+                                                <DataTemplate x:Key="VectorElement">
+                                                    <local:DirectWriteVectorElement FontSet="{Binding SingleFontSet}"
                                                                                 FontFace="{Binding FontFace}"
                                                                                 FontSize="{Binding EmSize}"
                                                                                 FontAxisValues="{Binding FontAxisValues}"
@@ -423,44 +425,45 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                                                                 LocaleName="{Binding Text, ElementName=_boxLocale}"
                                                                                 MouseLeave="OnElementMouseLeave"
                                                                                 local:BoxItem.OwningItem="{Binding}">
-                                                    <local:DirectWriteVectorElement.Resources>
-                                                        <DataTemplate DataType="{x:Type local:GlyphItem}">
-                                                            <Path Name="path" Data="{Binding Details.GlyphGeometry}"
+                                                        <local:DirectWriteVectorElement.Resources>
+                                                            <DataTemplate DataType="{x:Type local:GlyphItem}">
+                                                                <Path Name="path" Data="{Binding Details.GlyphGeometry}"
                                                                   Fill="{Binding GlyphFill, Source={x:Static local:App.ViewModel}}"
                                                                   Stroke="{Binding GlyphOutline, Source={x:Static local:App.ViewModel}}" MouseEnter="OnPathMouseEnter" />
-                                                            <DataTemplate.Triggers>
-                                                                <DataTrigger Binding="{Binding IsRunHighlighted}" Value="True">
-                                                                    <Setter TargetName="path" Property="Fill" Value="Gray" />
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding IsClusterHighlighted}" Value="True">
-                                                                    <Setter TargetName="path" Property="Fill" Value="Orange" />
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding IsGlyphHighlighted}" Value="True">
-                                                                    <Setter TargetName="path" Property="Fill" Value="Red" />
-                                                                </DataTrigger>
-                                                            </DataTemplate.Triggers>
-                                                        </DataTemplate>
-                                                    </local:DirectWriteVectorElement.Resources>
-                                                </local:DirectWriteVectorElement>
-                                            </DataTemplate>
-                                        </ContentPresenter.Resources>
-                                        <ContentPresenter.Style>
-                                            <Style TargetType="ContentPresenter">
-                                                <Setter Property="ContentTemplate" Value="{StaticResource VectorElement}" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsRasterMode, Source={x:Static local:App.ViewModel}}" Value="True">
-                                                        <Setter Property="ContentTemplate" Value="{StaticResource BitmapElement}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </ContentPresenter.Style>
-                                    </ContentPresenter>
-                                </DockPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                                                <DataTemplate.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsRunHighlighted}" Value="True">
+                                                                        <Setter TargetName="path" Property="Fill" Value="Gray" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding IsClusterHighlighted}" Value="True">
+                                                                        <Setter TargetName="path" Property="Fill" Value="Orange" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding IsGlyphHighlighted}" Value="True">
+                                                                        <Setter TargetName="path" Property="Fill" Value="Red" />
+                                                                    </DataTrigger>
+                                                                </DataTemplate.Triggers>
+                                                            </DataTemplate>
+                                                        </local:DirectWriteVectorElement.Resources>
+                                                    </local:DirectWriteVectorElement>
+                                                </DataTemplate>
+                                            </ContentPresenter.Resources>
+                                            <ContentPresenter.Style>
+                                                <Style TargetType="ContentPresenter">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource VectorElement}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsRasterMode, Source={x:Static local:App.ViewModel}}" Value="True">
+                                                            <Setter Property="ContentTemplate" Value="{StaticResource BitmapElement}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ContentPresenter.Style>
+                                        </ContentPresenter>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
         </DockPanel>
     </Border>
 </Window>
