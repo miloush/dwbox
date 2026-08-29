@@ -24,12 +24,17 @@ namespace DWBox
         public float AdvanceOffset { get; set; }
         public float AscenderOffset { get; set; }
 
-        public int DesignAdvance => (int)(Advance / _details.EmSize * _details.DesignUnitsPerEm);
-        public int DesignAdvanceOffset => (int)(AdvanceOffset / _details.EmSize * _details.DesignUnitsPerEm);
-        public int DesignAscenderOffset => (int)(AscenderOffset / _details.EmSize * _details.DesignUnitsPerEm);
+        public float OriginX { get; set; }
+        public float OriginY { get; set; }
+        public float TransformedX { get; set; }
+        public float TransformedY { get; set; }
 
-        public float X { get; set; }
-        public float Y { get; set; }
+        private int ToDesign(float x) => (int)(x / _details.EmSize * _details.DesignUnitsPerEm);
+        public int DesignAdvance => ToDesign(Advance);
+        public int DesignAdvanceOffset => ToDesign(AdvanceOffset);
+        public int DesignAscenderOffset => ToDesign(AscenderOffset);
+        public int DesignOriginX => ToDesign(OriginX);
+        public int DesignOriginY => ToDesign(OriginY);
 
         public List<int> Codepoints { get; } = new List<int>();
         public string CodepointsString => string.Join(" ", Codepoints.Select(c => c.ToString("X4")));
@@ -48,7 +53,7 @@ namespace DWBox
         {
             get
             {
-                Geometry geometry = GlyphGeometry ?? _details?.GlyphTypeface?.GetGlyphOutline(GlyphID, _details.EmSize, _details.EmSize);
+                Geometry geometry = GlyphGeometry; // ?? _details?.GlyphTypeface?.GetGlyphOutline(GlyphID, _details.EmSize, _details.EmSize);
                 if (geometry == null)
                     return null;
 
@@ -57,5 +62,6 @@ namespace DWBox
         }
 
         public PathGeometry GlyphGeometry { get; set; }
+
     }
 }

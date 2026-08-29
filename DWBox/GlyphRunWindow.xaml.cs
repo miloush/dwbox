@@ -70,7 +70,7 @@ namespace DWBox
 
         private void OnLiveUpdate(object sender = null, EventArgs e = null)
         {
-            RenderDetails details = new RenderDetails(_item, _item.FontFace.Metrics.DesignUnitsPerEm);
+            RenderDetails details = new RenderDetails(_item.FontFace, _item.EmSize);
             DetailsRenderer renderer = new DetailsRenderer(details, App.ViewModel.IsVectorMode);
             _item.RenderingElement.Render(renderer);
 

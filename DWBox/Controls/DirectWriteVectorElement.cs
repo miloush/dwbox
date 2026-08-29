@@ -1,5 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Win32.DWrite;
@@ -16,7 +19,7 @@ namespace DWBox
             set { SetValue(FillProperty, value); }
         }
 
-        private List<Path> _paths = new();
+        public RenderDetails Details { get; private set; }
 
         protected override void OnTextLayoutChanged()
         {
@@ -25,57 +28,55 @@ namespace DWBox
             base.OnTextLayoutChanged();
         }
 
+        ItemsControl _items;
+
+        public DirectWriteVectorElement()
+        {
+            _items = new ItemsControl();
+            _items.ItemsPanel = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(Grid)));
+
+            AddVisualChild(_items);
+        }
+
         private void InvalidateGeometry()
         {
             if (TextLayout is not TextLayout layout)
                 return;
 
-            VectorRenderer renderer = new();
+            RenderDetails details = new(FontFace, FontSize);
+            DetailsRenderer renderer = new(details, isPixelSnappingDisabled: true);
             Render(renderer);
 
-            for (int i = _paths.Count - 1; i >= 0; i--)
-            {
-                Path path = _paths[i];
-                _paths.RemoveAt(i); // Remove queries current count
-                RemoveVisualChild(path);
-            }
-
-            foreach (var geometry in renderer.RunGeometries)
-            {
-                Path path = new()
-                {
-                    Data = geometry,
-                    Fill = Fill
-                };
-
-                _paths.Add(path);
-                AddVisualChild(path);
-            }
+            _items.ItemsSource = details.Select(d => new GlyphItem(d));
         }
 
-        protected override Visual GetVisualChild(int index)
-        {
-            return _paths[index];
-        }
-
-        protected override int VisualChildrenCount => _paths.Count;
+        protected override Visual GetVisualChild(int index) => _items;
+        protected override int VisualChildrenCount => 1;
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            foreach (var path in _paths)
-                path.Measure(availableSize);
-            
+            _items.Measure(availableSize);
             return base.MeasureOverride(availableSize);
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
             Size size = base.ArrangeOverride(finalSize); // sets TextLayout
-            
-            foreach (var path in _paths)
-                path.Arrange(new Rect(default, finalSize));
-
+            _items.Arrange(new Rect(default, finalSize));
             return size;
         }
+    }
+
+    public class GlyphItem : DependencyObject
+    {
+        private RenderGlyphDetails _details;
+        public RenderGlyphDetails Details => _details;
+
+        public GlyphItem(RenderGlyphDetails details)
+        {
+            _details = details;
+        }
+
+        public Thickness OriginMargin => new Thickness(_details.TransformedX, _details.TransformedY, 0, 0);
     }
 }

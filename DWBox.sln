@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.6.33417.168
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12128.29 main
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DWBox", "DWBox\DWBox.csproj", "{12AA4F14-7A34-40F6-B94F-5CADD8D5A95D}"
 EndProject

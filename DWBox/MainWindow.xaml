@@ -566,8 +566,13 @@
                                                     FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}" 
                                                     LocaleName="{Binding Text, ElementName=_boxLocale}" 
                                                     Fill="Black"
-                                                    local:BoxItem.OwningItem="{Binding}"
-                                                    />
+                                                    local:BoxItem.OwningItem="{Binding}">
+                                                <local:DirectWriteVectorElement.Resources>
+                                                    <DataTemplate DataType="{x:Type local:GlyphItem}">
+                                                        <Path Fill="Black" Margin="{Binding OriginMargin}" Data="{Binding Details.GlyphGeometry}" />
+                                                    </DataTemplate>
+                                                </local:DirectWriteVectorElement.Resources>
+                                                </local:DirectWriteVectorElement>
                                             </DataTemplate>
                                         </ContentPresenter.Resources>
                                         <ContentPresenter.Style>

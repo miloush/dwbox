@@ -1,40 +1,50 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows.Media;
+using Win32.DWrite;
 
 namespace DWBox
 {
     public class RenderDetails : Collection<RenderGlyphDetails>
     {
-        private BoxItem _item;
         private ushort _designUnitsPerEm;
+        private float _emSize;
+        private string _name;
 
-        public RenderDetails(BoxItem item, ushort designUnitsPerEm)
+        public RenderDetails(FontFace fontFace, float emSize)
         {
-            _item = item;
-            _designUnitsPerEm = designUnitsPerEm;
+            _emSize = emSize;
+            _designUnitsPerEm = fontFace.Metrics.DesignUnitsPerEm;
+            
+            _name = fontFace.FullName;
+
+            // imitating BoxItem.NameVersion
+            if (fontFace.Version is string version)
+                if (version.StartsWith("Version ", System.StringComparison.OrdinalIgnoreCase))
+                    _name = string.Join(" ", fontFace.FullName, version.Substring("Version ".Length));
         }
 
-        public string Name => _item.NameVersion;
-        public float EmSize => _item.RenderingElement?.FontSize ?? 48f;
+        public string Name => _name;
+        public float EmSize => _emSize;
         public ushort DesignUnitsPerEm => _designUnitsPerEm;
 
-        private bool _noTypeface;
-        private GlyphTypeface _typeface;
-        public GlyphTypeface GlyphTypeface
-        {
-            get
-            {
-                if (_noTypeface) 
-                    return null;
+        //private bool _noTypeface;
+        //private GlyphTypeface _typeface;
+        //public GlyphTypeface GlyphTypeface
+        //{
+        //    get
+        //    {
+        //        if (_noTypeface) 
+        //            return null;
 
-                if (_typeface == null && _item.FilePath is string path)
-                {
-                    try { _typeface = new GlyphTypeface(new System.Uri(path)); }
-                    catch { _noTypeface = true; }
-                }
+        //        if (_typeface == null && _item.FilePath is string path)
+        //        {
+        //            try { _typeface = new GlyphTypeface(new System.Uri(path)); }
+        //            catch { _noTypeface = true; }
+        //        }
 
-                return _typeface;
-            }
-        }
+        //        return _typeface;
+        //    }
+        //}
     }
 }
