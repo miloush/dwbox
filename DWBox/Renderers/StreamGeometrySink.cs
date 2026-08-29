@@ -11,7 +11,7 @@ namespace DWBox
     {
         private PathGeometry _geometry = new();
         private PathFigure _figure;
-        private bool _stroked;
+        private bool _stroked = true;
 
         public PathGeometry Geometry => _geometry;
 

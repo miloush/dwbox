@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace DWBox
 {
@@ -43,6 +44,20 @@ namespace DWBox
                     OnPropertyChanged(nameof(AddEmSize));
                 }
             }
+        }
+
+        private Brush _glyphFill = Brushes.Black;
+        private Brush _glyphOutline = null;
+
+        public Brush GlyphFill => _glyphFill;
+        public Brush GlyphOutline => _glyphOutline;
+
+        public void SetGlyphBrushes(Brush fill, Brush outline)
+        {
+            _glyphFill = fill;
+            _glyphOutline = outline;
+
+            OnPropertyChanged(nameof(GlyphFill), nameof(GlyphOutline));
         }
 
         private void OnPropertyChanged(params string[] propertyNames)

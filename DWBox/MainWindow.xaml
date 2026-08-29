@@ -269,14 +269,18 @@
                         <dw:WordWrapping>EmergencyBreak</dw:WordWrapping>
                         <dw:WordWrapping>WholeWord</dw:WordWrapping>
                         <dw:WordWrapping>Character</dw:WordWrapping>
-                    </ComboBox>T
-                L</ToolBar>
+                    </ComboBox>
+                </ToolBar>
                 
-                <ToolBar TabIndex="6" Band="1" BandIndex="1" Background="WhiteSmoke" Header="_Rendering" IsEnabled="{Binding IsRasterMode}">
-                    <ListBox Name="_aliasingSelector" ToolTip="Text antialias mode" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0">
+                <ToolBar TabIndex="6" Band="1" BandIndex="1" Background="WhiteSmoke" Header="_Rendering">
+                    <ListBox Name="_aliasingSelector" ToolTip="Text antialias mode" Style="{StaticResource ToolbarButtonGroup}" SelectedIndex="0" IsEnabled="{Binding IsRasterMode}">
                         <dw:TextAntialiasMode>ClearType</dw:TextAntialiasMode>
                         <dw:TextAntialiasMode>Grayscale</dw:TextAntialiasMode>
                     </ListBox>
+                    <Separator />
+                    <CheckBox ToolTip="Transparent fill (see outlines)" IsEnabled="{Binding IsVectorMode}" Checked="OnFillOutline" Unchecked="OnFillSolid">
+                        <Image Source="{StaticResource TransparentBackground}" />
+                    </CheckBox>
                 </ToolBar>
 
             </ToolBarTray>
@@ -576,7 +580,9 @@
                                                     local:BoxItem.OwningItem="{Binding}">
                                                 <local:DirectWriteVectorElement.Resources>
                                                     <DataTemplate DataType="{x:Type local:GlyphItem}">
-                                                        <Path Fill="Black" Margin="{Binding OriginMargin}" Data="{Binding Details.GlyphGeometry}" />
+                                                        <Path Data="{Binding Details.GlyphGeometry}"
+                                                              Fill="{Binding GlyphFill, Source={x:Static local:App.ViewModel}}" 
+                                                              Stroke="{Binding GlyphOutline, Source={x:Static local:App.ViewModel}}" />
                                                     </DataTemplate>
                                                 </local:DirectWriteVectorElement.Resources>
                                                 </local:DirectWriteVectorElement>

@@ -666,5 +666,16 @@ namespace DWBox
         {
             _app.IsRasterMode = !_app.IsRasterMode;
         }
+
+        private void OnFillOutline(object sender, RoutedEventArgs e)
+        {
+            Brush transparent = new SolidColorBrush(Colors.Black) { Opacity = 0.1 };
+            transparent.Freeze();
+            App.ViewModel.SetGlyphBrushes(transparent, Brushes.Black);
+        }
+        private void OnFillSolid(object sender, RoutedEventArgs e)
+        {
+            App.ViewModel.SetGlyphBrushes(Brushes.Black, null);
+        }
     }
 }

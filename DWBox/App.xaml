@@ -265,6 +265,19 @@
             </DrawingImage.Drawing>
         </DrawingImage>
 
+        <DrawingImage x:Key="TransparentBackground">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <DrawingGroup.Children>
+                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                        <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M2.9997,0.000700000000000145L2.9997,4.0007 -0.000300000000000189,4.0007 -0.000300000000000189,15.9997 11.9997,15.9997 11.9997,13.0007 16.0007,13.0007 16.0007,0.000700000000000145z" />
+                        <GeometryDrawing Brush="#FF414141" Geometry="F1M4,9L5,9 5,8 4,8z M7,10L8,10 8,9 7,9z M7,12L8,12 8,11 7,11z M6,9L5,9 5,10 6,10z M4,11L5,11 5,10 4,10z M5,12L6,12 6,11 5,11z M7,8L6,8 6,9 7,9z M2,14L10,14 10,12 9,12 9,11 10,11 10,10 9,10 9,9 10,9 10,8 9,8 9,7 10,7 10,6 9,6 9,7 8,7 8,6 7,6 7,7 6,7 6,6 5,6 5,7 4,7 4,6 2,6z M1,5L11,5 11,15 1,15z M4,1L4,4 12,4 12,12 15,12 15,1z M6,11L7,11 7,10 6,10z M6,7L5,7 5,8 6,8z M8,11L9,11 9,10 8,10z M8,9L9,9 9,8 8,8z M7,7L8,7 8,8 7,8z" />
+                        <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M10,6L9,6 9,7 10,7z M6,6L5,6 5,7 6,7z M8,6L7,6 7,7 8,7z M10,12L9,12 9,11 8,11 8,12 7,12 7,11 6,11 6,12 5,12 5,11 4,11 4,10 5,10 5,9 4,9 4,8 5,8 5,7 4,7 4,6 2,6 2,14 10,14z M9,11L10,11 10,10 9,10z M9,7L8,7 8,8 9,8z M8,8L7,8 7,9 8,9z M6,10L7,10 7,9 6,9z M7,7L6,7 6,8 7,8z M8,10L9,10 9,9 8,9z M9,9L10,9 10,8 9,8z M6,8L5,8 5,9 6,9z M5,11L6,11 6,10 5,10z M8,11L7,11 7,10 8,10z" />
+                    </DrawingGroup.Children>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+
         <DrawingImage x:Key="TextAlignmentLeading">
             <DrawingImage.Drawing>
                 <DrawingGroup>

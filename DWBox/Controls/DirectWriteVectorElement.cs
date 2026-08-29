@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Win32.DWrite;
@@ -33,7 +34,12 @@ namespace DWBox
         public DirectWriteVectorElement()
         {
             _items = new ItemsControl();
-            _items.ItemsPanel = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(Grid)));
+            _items.ItemsPanel = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(Canvas)));
+
+            Style containerStyle = new(typeof(ContentPresenter));
+            containerStyle.Setters.Add(new Setter(Canvas.LeftProperty, new Binding(nameof(GlyphItem.Details) + "." + nameof(RenderGlyphDetails.TransformedX))));
+            containerStyle.Setters.Add(new Setter(Canvas.TopProperty, new Binding(nameof(GlyphItem.Details) + "." + nameof(RenderGlyphDetails.TransformedY))));
+            _items.ItemContainerStyle = containerStyle;
 
             AddVisualChild(_items);
         }
@@ -65,18 +71,5 @@ namespace DWBox
             _items.Arrange(new Rect(default, finalSize));
             return size;
         }
-    }
-
-    public class GlyphItem : DependencyObject
-    {
-        private RenderGlyphDetails _details;
-        public RenderGlyphDetails Details => _details;
-
-        public GlyphItem(RenderGlyphDetails details)
-        {
-            _details = details;
-        }
-
-        public Thickness OriginMargin => new Thickness(_details.TransformedX, _details.TransformedY, 0, 0);
     }
 }
