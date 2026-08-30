@@ -139,7 +139,7 @@ namespace DWBox
                 Details.Add(glyph);
             }
 
-            if (firstClusterGlyph > 0)
+            if (firstClusterGlyph >= 0)
                 for (int j = firstClusterGlyph; j < glyphs.Length; j++)
                     glyphs[j].ClusterGlyphCount = glyphs.Length - firstClusterGlyph;
 
