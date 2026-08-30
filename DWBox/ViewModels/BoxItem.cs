@@ -13,6 +13,14 @@ namespace DWBox
         public static readonly DependencyProperty HeaderBrushProperty = DependencyProperty.Register(nameof(HeaderBrush), typeof(Brush), typeof(BoxItem), new PropertyMetadata(Brushes.WhiteSmoke));
         public static readonly DependencyProperty BorderBrushProperty = DependencyProperty.Register(nameof(BorderBrush), typeof(Brush), typeof(BoxItem), new PropertyMetadata(Brushes.Silver));
 
+        public static readonly DependencyProperty HighlightedGlyphProperty = DependencyProperty.Register(nameof(HighlightedGlyph), typeof(GlyphItem), typeof(BoxItem), new PropertyMetadata(null));
+
+        public GlyphItem HighlightedGlyph
+        {
+            get { return (GlyphItem)GetValue(HighlightedGlyphProperty); }
+            set { SetValue(HighlightedGlyphProperty, value); }
+        }
+
         public float EmSize
         {
             get { return (float)GetValue(EmSizeProperty); }

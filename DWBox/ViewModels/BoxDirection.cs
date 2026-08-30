@@ -1,4 +1,5 @@
-﻿using Win32.DWrite;
+﻿using System.Windows.Controls;
+using Win32.DWrite;
 
 namespace DWBox
 {
@@ -8,7 +9,12 @@ namespace DWBox
         public FlowDirection FlowDirection { get; set; }
 
         public bool IsVertical => ReadingDirection is ReadingDirection.TopToBottom or ReadingDirection.BottomToTop;
-        public string FlowGroup => IsVertical ? "Vertical" : "Horizontal";
+        public string ReadingGroup => IsVertical ? "Vertical" : "Horizontal";
+        public Orientation ReadingOrientation => IsVertical ? Orientation.Vertical : Orientation.Horizontal;
+        public Orientation FlowOrientation => IsVertical ? Orientation.Horizontal : Orientation.Vertical;
+
+        public ScrollBarVisibility HorizontalScrollBarVisibility => IsVertical ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
+        public ScrollBarVisibility VerticalScrollBarVisibility => IsVertical ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
 
         public override string ToString()
         {

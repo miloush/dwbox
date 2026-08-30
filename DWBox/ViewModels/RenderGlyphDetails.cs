@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Windows.Media;
+using Win32.DWrite;
 
 namespace DWBox
 {
@@ -15,6 +16,7 @@ namespace DWBox
         }
 
         public RenderRunDetails RunDetails { get; set; }
+        public GlyphMetrics DesignMetrics { get; set; }
 
         public int Index { get; set; }
         public int RunIndex { get; set; }
@@ -69,6 +71,5 @@ namespace DWBox
         }
 
         public PathGeometry GlyphGeometry { get; set; }
-
     }
 }

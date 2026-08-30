@@ -258,6 +258,10 @@ namespace DWBox
             return base.ArrangeOverride(finalSize);
         }
 
-        public virtual void Highlight(RenderGlyphDetails details) { }
+        // TODO: DirectWriteElement shouldn't have dependency on RenderGlyphDetails
+        public virtual void Highlight(RenderGlyphDetails details)
+        {
+
+        }
     }
 }

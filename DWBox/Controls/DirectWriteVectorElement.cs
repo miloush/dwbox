@@ -77,10 +77,11 @@ namespace DWBox
             return size;
         }
 
-
         public override void Highlight(RenderGlyphDetails details)
         {
             var items = _items;
+            GlyphItem highlightedGlyph = null;
+
             foreach (var item in items)
             {
                 if (details == null)
@@ -96,6 +97,9 @@ namespace DWBox
                 {
                     item.IsClusterHighlighted = true;
                     item.IsGlyphHighlighted = item.Details.ClusterGlyphCount == details.ClusterGlyphCount && item.Details.ClusterGlyphIndex == details.ClusterGlyphIndex;
+
+                    if (item.IsGlyphHighlighted)
+                        highlightedGlyph = item;
                 }
                 else
                 {
@@ -103,6 +107,10 @@ namespace DWBox
                     item.IsGlyphHighlighted = false;
                 }
             }
+
+            // TODO: DirectWriteElement shouldn't have dependency on BoxItem, maybe have a GlyphHighlighted event
+            if (DataContext is BoxItem boxItem)
+                boxItem.HighlightedGlyph = highlightedGlyph;
         }
     }
 }

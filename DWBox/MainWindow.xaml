@@ -181,21 +181,21 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                         <local:RenderingsLayoutViewModel Name="Uniform grid" Icon="{StaticResource GridPane}">
                             <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                                 <ItemsPanelTemplate>
-                                    <local:VerticalGrid />
+                                    <local:UniformLazyGrid Orientation="{Binding SelectedItem.FlowOrientation, ElementName=_directionSelector}" />
                                 </ItemsPanelTemplate>
                             </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                         </local:RenderingsLayoutViewModel>
                         <local:RenderingsLayoutViewModel Name="Stacking" Icon="{StaticResource StackPane}" VerticalScrollBarVisibility="Auto">
                             <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                                 <ItemsPanelTemplate>
-                                    <StackPanel />
+                                    <StackPanel Orientation="{Binding SelectedItem.FlowOrientation, ElementName=_directionSelector}" />
                                 </ItemsPanelTemplate>
                             </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                         </local:RenderingsLayoutViewModel>
                         <local:RenderingsLayoutViewModel Name="Wrapping" Icon="{StaticResource WrapPane}" VerticalScrollBarVisibility="Auto">
                             <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel />
+                                    <WrapPanel Orientation="{Binding SelectedItem.ReadingOrientation, ElementName=_directionSelector}" />
                                 </ItemsPanelTemplate>
                             </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                         </local:RenderingsLayoutViewModel>
@@ -250,7 +250,7 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                             <GroupStyle>
                                 <GroupStyle.HeaderTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Items[0].FlowGroup}" FontWeight="Bold" Padding="4" Background="WhiteSmoke" />
+                                        <TextBlock Text="{Binding Items[0].ReadingGroup}" FontWeight="Bold" Padding="4" Background="WhiteSmoke" />
                                     </DataTemplate>
                                 </GroupStyle.HeaderTemplate>
                             </GroupStyle>
@@ -390,73 +390,111 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                                 </StackPanel>
                                             </DockPanel>
                                         </Border>
-                                        <ContentPresenter Content="{Binding}">
-                                            <ContentPresenter.Resources>
-                                                <DataTemplate x:Key="BitmapElement">
-                                                    <local:DirectWriteBitmapElement FontSet="{Binding SingleFontSet}"
-                                                                                FontFace="{Binding FontFace}"
-                                                                                FontSize="{Binding EmSize}"
-                                                                                FontAxisValues="{Binding FontAxisValues}"
-                                                                                Text="{Binding Text, ElementName=_boxOutput}"
-                                                                                ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}"
-                                                                                ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}"
-                                                                                VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
-                                                                                TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
-                                                                                ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
-                                                                                WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
-                                                                                TextAntialiasMode="{Binding SelectedItem, ElementName=_aliasingSelector}"
-                                                                                FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}"
-                                                                                LocaleName="{Binding Text, ElementName=_boxLocale}"
-                                                                                local:BoxItem.OwningItem="{Binding}" />
-                                                </DataTemplate>
-                                                <DataTemplate x:Key="VectorElement">
-                                                    <local:DirectWriteVectorElement FontSet="{Binding SingleFontSet}"
-                                                                                FontFace="{Binding FontFace}"
-                                                                                FontSize="{Binding EmSize}"
-                                                                                FontAxisValues="{Binding FontAxisValues}"
-                                                                                Text="{Binding Text, ElementName=_boxOutput}"
-                                                                                ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}"
-                                                                                ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}"
-                                                                                VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
-                                                                                TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
-                                                                                ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
-                                                                                WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
-                                                                                FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}"
-                                                                                LocaleName="{Binding Text, ElementName=_boxLocale}"
-                                                                                MouseLeave="OnElementMouseLeave"
-                                                                                local:BoxItem.OwningItem="{Binding}">
-                                                        <local:DirectWriteVectorElement.Resources>
-                                                            <DataTemplate DataType="{x:Type local:GlyphItem}">
-                                                                <Path Name="path" Data="{Binding Details.GlyphGeometry}"
-                                                                  Fill="{Binding GlyphFill, Source={x:Static local:App.ViewModel}}"
-                                                                  Stroke="{Binding GlyphOutline, Source={x:Static local:App.ViewModel}}" MouseEnter="OnPathMouseEnter" />
-                                                                <DataTemplate.Triggers>
-                                                                    <DataTrigger Binding="{Binding IsRunHighlighted}" Value="True">
-                                                                        <Setter TargetName="path" Property="Fill" Value="Gray" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding IsClusterHighlighted}" Value="True">
-                                                                        <Setter TargetName="path" Property="Fill" Value="Orange" />
-                                                                    </DataTrigger>
-                                                                    <DataTrigger Binding="{Binding IsGlyphHighlighted}" Value="True">
-                                                                        <Setter TargetName="path" Property="Fill" Value="Red" />
-                                                                    </DataTrigger>
-                                                                </DataTemplate.Triggers>
-                                                            </DataTemplate>
-                                                        </local:DirectWriteVectorElement.Resources>
-                                                    </local:DirectWriteVectorElement>
-                                                </DataTemplate>
-                                            </ContentPresenter.Resources>
-                                            <ContentPresenter.Style>
-                                                <Style TargetType="ContentPresenter">
-                                                    <Setter Property="ContentTemplate" Value="{StaticResource VectorElement}" />
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding IsRasterMode, Source={x:Static local:App.ViewModel}}" Value="True">
-                                                            <Setter Property="ContentTemplate" Value="{StaticResource BitmapElement}" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </ContentPresenter.Style>
-                                        </ContentPresenter>
+                                        <Grid>
+                                            <ContentPresenter Name="dwelement" Content="{Binding}">
+                                                <ContentPresenter.Resources>
+                                                    <DataTemplate x:Key="BitmapElement">
+                                                        <local:DirectWriteBitmapElement FontSet="{Binding SingleFontSet}"
+                                                                                    FontFace="{Binding FontFace}"
+                                                                                    FontSize="{Binding EmSize}"
+                                                                                    FontAxisValues="{Binding FontAxisValues}"
+                                                                                    Text="{Binding Text, ElementName=_boxOutput}"
+                                                                                    ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}"
+                                                                                    ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}"
+                                                                                    VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
+                                                                                    TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
+                                                                                    ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
+                                                                                    WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
+                                                                                    TextAntialiasMode="{Binding SelectedItem, ElementName=_aliasingSelector}"
+                                                                                    FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}"
+                                                                                    LocaleName="{Binding Text, ElementName=_boxLocale}"
+                                                                                    local:BoxItem.OwningItem="{Binding}" />
+                                                    </DataTemplate>
+                                                    <DataTemplate x:Key="VectorElement">
+                                                        <local:DirectWriteVectorElement FontSet="{Binding SingleFontSet}"
+                                                                                    FontFace="{Binding FontFace}"
+                                                                                    FontSize="{Binding EmSize}"
+                                                                                    FontAxisValues="{Binding FontAxisValues}"
+                                                                                    Text="{Binding Text, ElementName=_boxOutput}"
+                                                                                    ParagraphReadingDirection="{Binding SelectedItem.ReadingDirection, ElementName=_directionSelector}"
+                                                                                    ParagraphFlowDirection="{Binding SelectedItem.FlowDirection, ElementName=_directionSelector}"
+                                                                                    VerticalGlyphOrientation="{Binding SelectedItem, ElementName=_verticalOrientationSelector}"
+                                                                                    TextAlignment="{Binding SelectedItem, ElementName=_textAlignmentSelector}"
+                                                                                    ParagraphAlignment="{Binding SelectedItem, ElementName=_paragraphAlignmentSelector}"
+                                                                                    WordWrapping="{Binding SelectedItem, ElementName=_wordWrappingSelector}"
+                                                                                    FontFeatures="{Binding Text, ElementName=_boxFeatures, Converter={StaticResource FeaturesConverter}}"
+                                                                                    LocaleName="{Binding Text, ElementName=_boxLocale}"
+                                                                                    MouseLeave="OnElementMouseLeave"
+                                                                                    local:BoxItem.OwningItem="{Binding}">
+                                                            <local:DirectWriteVectorElement.Resources>
+                                                                <DataTemplate DataType="{x:Type local:GlyphItem}">
+                                                                    <Path Name="path" Data="{Binding Details.GlyphGeometry}"
+                                                                      Fill="{Binding GlyphFill, Source={x:Static local:App.ViewModel}}"
+                                                                      Stroke="{Binding GlyphOutline, Source={x:Static local:App.ViewModel}}" MouseEnter="OnPathMouseEnter" />
+                                                                    <DataTemplate.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsRunHighlighted}" Value="True">
+                                                                            <Setter TargetName="path" Property="Fill" Value="Gray" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding IsClusterHighlighted}" Value="True">
+                                                                            <Setter TargetName="path" Property="Fill" Value="Orange" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding IsGlyphHighlighted}" Value="True">
+                                                                            <Setter TargetName="path" Property="Fill" Value="Red" />
+                                                                        </DataTrigger>
+                                                                    </DataTemplate.Triggers>
+                                                                </DataTemplate>
+                                                            </local:DirectWriteVectorElement.Resources>
+                                                        </local:DirectWriteVectorElement>
+                                                    </DataTemplate>
+                                                </ContentPresenter.Resources>
+                                                <ContentPresenter.Style>
+                                                    <Style TargetType="ContentPresenter">
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource VectorElement}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsRasterMode, Source={x:Static local:App.ViewModel}}" Value="True">
+                                                                <Setter Property="ContentTemplate" Value="{StaticResource BitmapElement}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ContentPresenter.Style>
+                                            </ContentPresenter>
+
+                                            <!-- Highlighted Glyph -->
+
+                                            <Border VerticalAlignment="Bottom" Background="WhiteSmoke" Padding="2,0" IsHitTestVisible="False">
+                                                <local:ProportionalPanel Orientation="{Binding SelectedItem.ReadingOrientation, ElementName=_directionSelector}">
+                                                     <TextBlock Margin="2" TextWrapping="Wrap">
+                                                         <Run Text="GID:" />
+                                                         <Run Text="{Binding HighlightedGlyph.Details.GlyphID, Mode=OneWay}" />
+                                                     </TextBlock>
+                                                    <TextBlock Margin="2" TextWrapping="Wrap">
+                                                        <Run Text="Adv:" />
+                                                        <Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.AdvanceWidth, Mode=OneWay}" /><Run Text="W" />
+                                                        <Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.AdvanceHeight, Mode=OneWay}" /><Run Text="H" />
+                                                    </TextBlock>
+                                                    <TextBlock Margin="2" TextWrapping="Wrap">
+                                                        <Run Text="Bear:" />
+                                                        <Run Text="L" /><Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.LeftSideBearing, Mode=OneWay}" />
+                                                        <Run Text="T" /><Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.TopSideBearing, Mode=OneWay}" />
+                                                        <Run Text="R" /><Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.RightSideBearing, Mode=OneWay}" />
+                                                        <Run Text="B" /><Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.BottomSideBearing, Mode=OneWay}" />
+                                                    </TextBlock>
+                                                    <TextBlock Margin="2" TextWrapping="Wrap">
+                                                        <Run Text="VY:" />
+                                                        <Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.VerticalOriginY, Mode=OneWay}" />
+                                                    </TextBlock>
+                                                </local:ProportionalPanel>
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HighlightedGlyph}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+                                        </Grid>
                                     </DockPanel>
                                 </Border>
                             </DataTemplate>

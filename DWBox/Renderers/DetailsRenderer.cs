@@ -68,6 +68,7 @@ namespace DWBox
                 float ascenderOffset = glyphOffsets[i].AscenderOffset;
 
                 Point2F origin = transform.Transform(glyphOrigins[i]);
+                GlyphMetrics metrics = run.FontFace.GetDesignGlyphMetrics(glyphIndices[i], run.IsSideways);
 
                 glyphs[i] = new RenderGlyphDetails(Details)
                 {
@@ -81,6 +82,7 @@ namespace DWBox
                     OriginY = glyphOrigins[i].Y - baselineOriginY,
                     TransformedX = origin.X,
                     TransformedY = origin.Y,
+                    DesignMetrics = metrics
                 };
 
                 // since we are using ComputeGlyphOrigins, all layout is taken into account

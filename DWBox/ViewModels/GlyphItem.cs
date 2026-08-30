@@ -15,6 +15,8 @@ namespace DWBox
         }
 
         public Thickness OriginMargin => new Thickness(_details.TransformedX, _details.TransformedY, 0, 0);
+        public Rect GeometryRect => Rect.Offset(_details.GlyphGeometry.Bounds, _details.TransformedX, _details.TransformedY);
+        public Rect GeometryRectWithOffset => Rect.Offset(_details.GlyphGeometry.Bounds, _details.TransformedX, _details.TransformedY + 10);
 
         private bool _isRunHighlited; 
         private bool _isClusterHighlited;
