@@ -29,7 +29,7 @@
 
 	<ItemGroup>
 		<None Update="Properties\Settings.settings">
-			<Generator>SettingsSingleFileGenerator</Generator>
+			<Generator>PublicSettingsSingleFileGenerator</Generator>
 			<LastGenOutput>Settings.designer.cs</LastGenOutput>
 		</None>
 	</ItemGroup>

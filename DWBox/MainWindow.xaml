@@ -5,6 +5,7 @@
         xmlns:uiwc="clr-namespace:UAM.InformatiX.Windows.Controls"
         xmlns:dw="clr-namespace:Win32.DWrite;assembly=UAM.Interop.DirectWrite"
         xmlns:local="clr-namespace:DWBox"
+        xmlns:props="clr-namespace:DWBox.Properties"
         Title="DirectWrite Box" Height="600" Width="620" Loaded="OnLoaded">
     <Window.Resources>
         <local:FeaturesConverter x:Key="FeaturesConverter" />
@@ -289,10 +290,10 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                         <dw:TextAntialiasMode>Grayscale</dw:TextAntialiasMode>
                     </ListBox>
                     <Separator />
-                    <CheckBox ToolTip="Transparent fill (see outlines)" IsEnabled="{Binding IsVectorMode}" Checked="OnFillOutline" Unchecked="OnFillSolid" Style="{StaticResource TransparentlyDisabled}">
+                    <CheckBox ToolTip="Transparent fill (see outlines)" IsChecked="{Binding IsOutlinesOn, Source={x:Static props:Settings.Default}, Mode=TwoWay}"  IsEnabled="{Binding IsVectorMode}" Checked="OnFillOutline" Unchecked="OnFillSolid" Style="{StaticResource TransparentlyDisabled}">
                         <Image Source="{StaticResource TransparentBackground}" />
                     </CheckBox>
-                    <CheckBox Name="_gidOverlay" ToolTip="Highlighted glyph overlay" IsChecked="True" IsEnabled="{Binding IsVectorMode}" Style="{StaticResource TransparentlyDisabled}" Content="GID" /> 
+                    <CheckBox Name="_gidOverlay" ToolTip="Highlighted glyph overlay" IsChecked="{Binding IsGidOverlayOn, Source={x:Static props:Settings.Default}, Mode=TwoWay}" IsEnabled="{Binding IsVectorMode}" Style="{StaticResource TransparentlyDisabled}" Content="GID" /> 
                 </ToolBar>
 
             </ToolBarTray>

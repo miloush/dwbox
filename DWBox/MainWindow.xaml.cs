@@ -47,7 +47,14 @@ namespace DWBox
             {
                 _boxInput.Text = Settings.Default.LastInput;
                 _app.AddEmSize = Settings.Default.LastAddedSize;
+                _app.IsRasterMode = Settings.Default.IsRasterMode;
             }
+            catch { }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            try { Settings.Default.Save(); }
             catch { }
         }
 
@@ -198,16 +205,10 @@ namespace DWBox
                 Settings.Default.LastAddedFont = entry.FullName;
                 Settings.Default.LastAddedSize = _app.AddEmSize;
             }
-
-            try { Settings.Default.Save(); }
-            catch { }
         }
 
         private async void OnAddInput(object sender, RoutedEventArgs e)
         {
-            try { Settings.Default.Save(); }
-            catch { }
-
             List<FontSetEntry> entries = new List<FontSetEntry>();
             try
             {
@@ -413,9 +414,6 @@ namespace DWBox
         {
             if (e.Data.GetData(DataFormats.FileDrop, false) is string[] paths)
             {
-                try { Settings.Default.Save(); }
-                catch { }
-
                 SortedList<string, DWrite.Result> errors = new();
                 SortedSet<string> duplicates = new();
 
@@ -615,8 +613,6 @@ namespace DWBox
                     item.EmSize = em;
 
                     Settings.Default.LastAddedSize = em;
-                    try { Settings.Default.Save(); }
-                    catch { }
                 }
         }
 
@@ -718,6 +714,7 @@ namespace DWBox
         private void OnSwitchMode(object sender, RoutedEventArgs e)
         {
             _app.IsRasterMode = !_app.IsRasterMode;
+            Settings.Default.IsRasterMode = _app.IsRasterMode;
         }
 
         private void OnFillOutline(object sender, RoutedEventArgs e)
