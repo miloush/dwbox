@@ -121,7 +121,7 @@ namespace DWBox
             else
             {
                 _rows = (int)Math.Sqrt(nonCollapsedCount);
-                _columns = nonCollapsedCount / _columns;
+                _columns = nonCollapsedCount / _rows;
                 if ((_rows * _columns) < nonCollapsedCount)
                     _columns++;
             }

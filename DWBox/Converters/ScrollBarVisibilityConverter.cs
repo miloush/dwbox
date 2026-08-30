@@ -14,6 +14,12 @@ namespace DWBox
 
             foreach (object value in values)
             {
+                if (value is Orientation o)
+                {
+                    if ((Orientation)parameter != o)
+                        return ScrollBarVisibility.Disabled;
+                }
+
                 ScrollBarVisibility valueVisibility = ScrollBarVisibility.Disabled;
                 if (value is true)
                     valueVisibility = ScrollBarVisibility.Auto;

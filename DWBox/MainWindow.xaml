@@ -185,14 +185,14 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                 </ItemsPanelTemplate>
                             </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                         </local:RenderingsLayoutViewModel>
-                        <local:RenderingsLayoutViewModel Name="Stacking" Icon="{StaticResource StackPane}" VerticalScrollBarVisibility="Auto">
+                        <local:RenderingsLayoutViewModel Name="Stacking" Icon="{StaticResource StackPane}" ScrollBarVisibility="Auto">
                             <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="{Binding SelectedItem.FlowOrientation, ElementName=_directionSelector}" />
                                 </ItemsPanelTemplate>
                             </local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                         </local:RenderingsLayoutViewModel>
-                        <local:RenderingsLayoutViewModel Name="Wrapping" Icon="{StaticResource WrapPane}" VerticalScrollBarVisibility="Auto">
+                        <local:RenderingsLayoutViewModel Name="Wrapping" Icon="{StaticResource WrapPane}" ScrollBarVisibility="Auto">
                             <local:RenderingsLayoutViewModel.ItemsPanelTemplate>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="{Binding SelectedItem.ReadingOrientation, ElementName=_directionSelector}" />
@@ -300,13 +300,27 @@ Uncheck to map characters 1:1 including spaces and no decoding."
 
             <Grid>
                 <TextBlock Name="_dragTip" Text="You can drag &amp; drop a font file here." HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" Visibility="{Binding NoItemsVisibility, Source={x:Static local:App.ViewModel}}" />
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer>
                     <ScrollViewer.VerticalScrollBarVisibility>
                         <MultiBinding Converter="{StaticResource ScrollBarVisibilityConverter}">
-                            <Binding Path="SelectedItem.VerticalScrollBarVisibility" ElementName="_renderingsPanelSelector" />
+                            <MultiBinding.ConverterParameter>
+                                <Orientation>Vertical</Orientation>
+                            </MultiBinding.ConverterParameter>
+                            <Binding Path="SelectedItem.FlowOrientation" ElementName="_directionSelector" />
+                            <Binding Path="SelectedItem.ScrollBarVisibility" ElementName="_renderingsPanelSelector" />
                             <Binding Path="IsGrouping" ElementName="_renderings" />
                         </MultiBinding>
                     </ScrollViewer.VerticalScrollBarVisibility>
+                    <ScrollViewer.HorizontalScrollBarVisibility>
+                        <MultiBinding Converter="{StaticResource ScrollBarVisibilityConverter}">
+                            <MultiBinding.ConverterParameter>
+                                <Orientation>Horizontal</Orientation>
+                            </MultiBinding.ConverterParameter>
+                            <Binding Path="SelectedItem.FlowOrientation" ElementName="_directionSelector" />
+                            <Binding Path="SelectedItem.ScrollBarVisibility" ElementName="_renderingsPanelSelector" />
+                            <Binding Path="IsGrouping" ElementName="_renderings" />
+                        </MultiBinding>
+                    </ScrollViewer.HorizontalScrollBarVisibility>
                     <ItemsControl Name="_renderings" TabIndex="7" ItemsSource="{Binding Items.View}" IsTabStop="False" AllowDrop="True" DragOver="OnRenderingsDragOver" Drop="OnRenderingsDrop" Background="Transparent"
                               ItemsPanel="{Binding SelectedItem.ItemsPanelTemplate, ElementName=_renderingsPanelSelector}" GroupStyleSelector="SelectRenderingsGroupStyle" KeyboardNavigation.TabNavigation="Local">
                         <ItemsControl.Resources>
@@ -316,9 +330,13 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="GroupItem">
-                                                    <Expander IsExpanded="True">
+                                                    <Expander IsExpanded="True" ExpandDirection="{Binding SelectedItem.ExpandDirection, ElementName=_directionSelector, Mode=OneWay}">
                                                         <Expander.Header>
-                                                            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                                            <TextBlock Text="{Binding Name}" FontWeight="Bold">
+                                                                <TextBlock.LayoutTransform>
+                                                                    <RotateTransform Angle="{Binding SelectedItem.BoxHeaderAngle, ElementName=_directionSelector}" />
+                                                                </TextBlock.LayoutTransform>
+                                                            </TextBlock>
                                                         </Expander.Header>
                                                         <Expander.Content>
                                                             <ItemsPresenter />
@@ -329,14 +347,22 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                         </Setter>
                                     </Style>
                                 </GroupStyle.ContainerStyle>
+                                <GroupStyle.Panel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="{Binding SelectedItem.FlowOrientation, ElementName=_directionSelector}" />
+                                    </ItemsPanelTemplate>
+                                </GroupStyle.Panel>
                             </GroupStyle>
                         </ItemsControl.Resources>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border BorderBrush="{Binding BorderBrush}" BorderThickness="1" Margin="5">
                                     <DockPanel>
-                                        <Border DockPanel.Dock="Top" Background="{Binding HeaderBrush}" Padding="2,2,0,2" MouseMove="OnItemMouseMove">
+                                        <Border DockPanel.Dock="{Binding SelectedItem.BoxHeaderDock, ElementName=_directionSelector}" Background="{Binding HeaderBrush}" Padding="2,2,0,2" MouseMove="OnItemMouseMove">
                                             <DockPanel>
+                                                <DockPanel.LayoutTransform>
+                                                    <RotateTransform Angle="{Binding SelectedItem.BoxHeaderAngle, ElementName=_directionSelector}" />
+                                                </DockPanel.LayoutTransform>
                                                 <Button DockPanel.Dock="Right" Style="{StaticResource ImageButton}" Content="{StaticResource Close}" ToolTip="Remove" Click="OpenContextMenu">
                                                     <Button.ContextMenu>
                                                         <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
@@ -355,6 +381,9 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                                     </Button.ContextMenu>
                                                 </Button>
                                                 <Image DockPanel.Dock="Right" Source="{StaticResource StatusInformationOutline}" Width="16" Height="16" Margin="0,0,2,0">
+                                                    <Image.LayoutTransform>
+                                                        <RotateTransform Angle="{Binding SelectedItem.BoxHeaderStackedAngle, ElementName=_directionSelector}" />
+                                                    </Image.LayoutTransform>
                                                     <Image.ToolTip>
                                                         <ToolTip Background="White" Placement="Bottom" MaxWidth="500">
                                                             <local:FontFaceInfo />
@@ -461,9 +490,12 @@ Uncheck to map characters 1:1 including spaces and no decoding."
 
                                             <!-- Highlighted Glyph -->
 
-                                            <Border VerticalAlignment="Bottom" Background="WhiteSmoke" Padding="2,0" IsHitTestVisible="False">
-                                                <local:ProportionalPanel Orientation="{Binding SelectedItem.ReadingOrientation, ElementName=_directionSelector}">
-                                                     <TextBlock Margin="2" TextWrapping="Wrap">
+                                            <Border VerticalAlignment="{Binding SelectedItem.BoxOverlayVerticalAlignment, ElementName=_directionSelector}" HorizontalAlignment="{Binding SelectedItem.BoxOverlayHorizontalAlignment, ElementName=_directionSelector}" Background="WhiteSmoke" Padding="2,0" IsHitTestVisible="False">
+                                                <local:ProportionalPanel>
+                                                    <local:ProportionalPanel.LayoutTransform>
+                                                        <RotateTransform Angle="{Binding SelectedItem.BoxHeaderAngle, ElementName=_directionSelector}" />
+                                                    </local:ProportionalPanel.LayoutTransform>
+                                                    <TextBlock Margin="2" TextWrapping="Wrap">
                                                          <Run Text="GID:" />
                                                          <Run Text="{Binding HighlightedGlyph.Details.GlyphID, Mode=OneWay}" />
                                                      </TextBlock>

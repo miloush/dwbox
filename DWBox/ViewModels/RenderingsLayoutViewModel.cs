@@ -13,7 +13,6 @@ namespace DWBox
         public string Name { get; set; }
         public ImageSource Icon { get; set;  }
         public ItemsPanelTemplate ItemsPanelTemplate { get; set; }
-        public ScrollBarVisibility HorizontalScrollBarVisibility { get; set; }
-        public ScrollBarVisibility VerticalScrollBarVisibility { get; set; }
+        public ScrollBarVisibility ScrollBarVisibility { get; set; }
     }
 }

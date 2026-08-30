@@ -1,5 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using Win32.DWrite;
+using FlowDirection = Win32.DWrite.FlowDirection;
 
 namespace DWBox
 {
@@ -13,8 +15,14 @@ namespace DWBox
         public Orientation ReadingOrientation => IsVertical ? Orientation.Vertical : Orientation.Horizontal;
         public Orientation FlowOrientation => IsVertical ? Orientation.Horizontal : Orientation.Vertical;
 
-        public ScrollBarVisibility HorizontalScrollBarVisibility => IsVertical ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
-        public ScrollBarVisibility VerticalScrollBarVisibility => IsVertical ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
+        public Dock BoxHeaderDock => IsVertical ? Dock.Left : Dock.Top;
+        public double BoxHeaderAngle => IsVertical ? 90 : 0;
+        public double BoxHeaderStackedAngle => IsVertical ? -90 : 0;
+
+        public VerticalAlignment BoxOverlayVerticalAlignment => IsVertical ? VerticalAlignment.Stretch : VerticalAlignment.Bottom;
+        public HorizontalAlignment BoxOverlayHorizontalAlignment => IsVertical ? HorizontalAlignment.Right : HorizontalAlignment.Stretch;
+
+        public ExpandDirection ExpandDirection => IsVertical ? ExpandDirection.Right : ExpandDirection.Down;
 
         public override string ToString()
         {

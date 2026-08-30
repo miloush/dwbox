@@ -6,13 +6,16 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
@@ -23,7 +26,16 @@ namespace DWBox
 {
     public partial class MainWindow : Window
     {
+        public static readonly RoutedEvent MouseHorizontalWheelEvent = EventManager.RegisterRoutedEvent("MouseHorizontalWheel", RoutingStrategy.Bubble, typeof(MouseWheelEventHandler), typeof(Mouse));
+        public static readonly PropertyInfo _ScrollInfo;
+
         private AppViewModel _app;
+
+        static MainWindow()
+        {
+            _ScrollInfo = typeof(ScrollViewer).GetProperty("ScrollInfo", BindingFlags.Instance | BindingFlags.NonPublic);
+            EventManager.RegisterClassHandler(typeof(ScrollViewer), MouseHorizontalWheelEvent, new MouseWheelEventHandler(OnScrollViewerHorizontalWheel));
+        }
 
         public MainWindow()
         {
@@ -38,6 +50,47 @@ namespace DWBox
             }
             catch { }
         }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            ((HwndSource)PresentationSource.FromVisual(this)).AddHook(OnWindowMessage);
+        }
+
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        internal static extern int GetMessageTime();
+
+        private IntPtr OnWindowMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == 0x020E) // WM_MOUSEHWEEL
+            {
+                int wheel = SignedHIWORD(wParam);
+                int timestamp = 0;
+                try { timestamp = GetMessageTime(); }
+                catch (Win32Exception) { }
+                handled = InputManager.Current.ProcessInput(new MouseWheelEventArgs(Mouse.PrimaryDevice, timestamp, wheel)
+                {
+                    RoutedEvent = MouseHorizontalWheelEvent
+                });
+            }
+
+            return default;
+        }
+
+        private static void OnScrollViewerHorizontalWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is ScrollViewer viewer)
+            {
+                IScrollInfo scrollInfo = (IScrollInfo)_ScrollInfo.GetValue(sender);
+                if (e.Delta < 0)
+                    scrollInfo.MouseWheelLeft();
+                else
+                    scrollInfo.MouseWheelRight();
+            }
+        }
+
+        public static int IntPtrToInt32(IntPtr intPtr) => unchecked((int)intPtr.ToInt64());
+        public static int SignedHIWORD(IntPtr intPtr) => SignedHIWORD(IntPtrToInt32(intPtr));
+        private static int SignedHIWORD(int n) => (int)(short)((n >> 16) & 0xffff);
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
