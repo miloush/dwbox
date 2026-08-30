@@ -32,6 +32,10 @@
 
         <Rectangle x:Key="RedIcon" x:Shared="False" Width="16" Height="16" Fill="#FFF0F0" Stroke="DarkRed" RadiusX="2" RadiusY="2" />
         <Rectangle x:Key="GreenIcon" x:Shared="False" Width="16" Height="16" Fill="#F0FFF0" Stroke="DarkGreen" RadiusX="2" RadiusY="2" />
+        <Rectangle x:Key="BlueIcon" x:Shared="False" Width="16" Height="16" Fill="#F0F0FF" Stroke="DarkBlue" RadiusX="2" RadiusY="2" />
+        <Rectangle x:Key="CyanIcon" x:Shared="False" Width="16" Height="16" Fill="#F0FFFF" Stroke="DarkCyan" RadiusX="2" RadiusY="2" />
+        <Rectangle x:Key="MagentaIcon" x:Shared="False" Width="16" Height="16" Fill="#FFF0FF" Stroke="DarkMagenta" RadiusX="2" RadiusY="2" />
+        <Rectangle x:Key="YellowIcon" x:Shared="False" Width="16" Height="16" Fill="#FFFFF0" Stroke="DarkKhaki" RadiusX="2" RadiusY="2" />
 
         <CollectionViewSource x:Key="BoxDirections">
             <CollectionViewSource.GroupDescriptions>
@@ -91,13 +95,14 @@
             <!--#region Font Selection -->
 
             <DockPanel DockPanel.Dock="Bottom" Background="WhiteSmoke">
-                <Button TabIndex="13" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAddInput" ToolTip="Add all installed fonts that map all the required characters">Add a_ll</Button>
-                <Button TabIndex="12" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAdd" IsDefault="True" ToolTip="Add the selected font">_Add</Button>
-                <Button TabIndex="11" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnSetSize" IsDefault="True" ToolTip="Set all existing boxes to this size" Margin="0,0,5,0">Se_t</Button>
+                <Button TabIndex="14" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAddInput" ToolTip="Add all installed fonts that map all the required characters">Add a_ll</Button>
+                <Button TabIndex="13" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnAdd" IsDefault="True" ToolTip="Add the selected font">_Add</Button>
+                <Button TabIndex="12" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnSetSize" IsDefault="True" ToolTip="Set all existing boxes to this size" Margin="0,0,5,0">Se_t</Button>
                 <DockPanel DockPanel.Dock="Right">
                     <Label DockPanel.Dock="Left" Target="{Binding ElementName=_sizeBox}">_Size:</Label>
-                    <TextBox Name="_sizeBox" TabIndex="10" Width="40" VerticalAlignment="Center" Padding="2" TextAlignment="Center" Text="{Binding AddEmSize, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="OnSizeKeyDown" />
+                    <TextBox Name="_sizeBox" TabIndex="11" Width="40" VerticalAlignment="Center" Padding="2" TextAlignment="Center" Text="{Binding AddEmSize, ValidatesOnExceptions=True, UpdateSourceTrigger=PropertyChanged}" PreviewKeyDown="OnSizeKeyDown" />
                 </DockPanel>
+                <Button TabIndex="10" DockPanel.Dock="Right" Padding="5,2" VerticalAlignment="Center" Click="OnOpen" ToolTip="Browse for file..." Margin="0,0,5,0">...</Button>
                 <DockPanel>
                     <Label DockPanel.Dock="Left" Target="{Binding ElementName=_fontSelector}">_Font:</Label>
                     <ComboBox Name="_fontSelector" TabIndex="9" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" IsEditable="True" VirtualizingPanel.IsVirtualizingWhenGrouping="True">
@@ -404,8 +409,14 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                                                 <MenuItem Click="OnHighlight" Tag="X" Header="C_lear" />
                                                                 <MenuItem Click="OnHighlight" Tag="XA" Header="Clear _All" />
                                                                 <Separator />
+                                                                <MenuItem Click="OnHighlight" Tag="XG" Header="All with missing _glyphs" />
+                                                                <Separator />
                                                                 <MenuItem Click="OnHighlight" Tag="R" Header="Red" Icon="{StaticResource RedIcon}" />
                                                                 <MenuItem Click="OnHighlight" Tag="G" Header="Green" Icon="{StaticResource GreenIcon}" />
+                                                                <MenuItem Click="OnHighlight" Tag="B" Header="Blue" Icon="{StaticResource BlueIcon}" />
+                                                                <MenuItem Click="OnHighlight" Tag="C" Header="Cyan" Icon="{StaticResource CyanIcon}" />
+                                                                <MenuItem Click="OnHighlight" Tag="M" Header="Magenta" Icon="{StaticResource MagentaIcon}" />
+                                                                <MenuItem Click="OnHighlight" Tag="Y" Header="Yellow" Icon="{StaticResource YellowIcon}" />
                                                             </MenuItem>
                                                             <Separator />
                                                             <MenuItem Header="Add whole f_amily" Click="OnAddFamily" ToolTip="Add all fonts from the same typographical family" />

@@ -20,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 using DWBox.Properties;
+using Microsoft.Win32;
 using Win32.DWrite;
 
 namespace DWBox
@@ -382,13 +383,23 @@ namespace DWBox
 
                         case "G":
                             int[] codepoints = ToCodepoints(_boxOutput.Text).ToArray();
-                            ushort[] glyphs = new ushort[codepoints.Length];
                             _app.Items.Remove(item => Array.IndexOf(item.FontFace.GetGlyphIndices(codepoints), (ushort)0) >= 0);
                             return;
                     }
 
                 _app.Items.Remove(removingItem);
             }
+        }
+
+        private void OnOpen(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "All supported font formats (*.ttf;*.otf;*.ttc)|*.ttf;*.otf;*.ttc|OpenType Font (*.otf)|*.otf|TrueType Font (*.ttf)|*.ttf|TrueType Collection (*.ttc)|*.ttc|All Files (*.*)|*.*";
+            dialog.Title = "Add Font Files";
+            dialog.Multiselect = true;
+
+            if (dialog.ShowDialog() == true)
+                AddFromPaths(dialog.FileNames);
         }
 
         private void InvalidateOutput(object sender, RoutedEventArgs e)
@@ -414,47 +425,55 @@ namespace DWBox
         {
             if (e.Data.GetData(DataFormats.FileDrop, false) is string[] paths)
             {
-                SortedList<string, DWrite.Result> errors = new();
-                SortedSet<string> duplicates = new();
+                try { Settings.Default.Save(); }
+                catch { }
 
-                var builder = DWriteFactory.Shared.CreateFontSetBuilder();
-                foreach (string path in paths)
-                    if (!builder.TryAdd(path, out var result))
-                        errors[path] = result;
+                AddFromPaths(paths);
+            }
+        }
 
-                var set = builder.CreateFontSet();
+        private void AddFromPaths(params string[] paths)
+        {
+            SortedList<string, DWrite.Result> errors = new();
+            SortedSet<string> duplicates = new();
 
-                foreach (var entry in set)
-                    if (!_app.Items.Add(entry, _app.AddEmSize))
-                    {
-                        string name = entry.FullName;
-                        if (entry.CreateFontResource().GetFontFile().TryGetLocalFilePath(out string path))
-                            name += $" [{path}]";
+            var builder = DWriteFactory.Shared.CreateFontSetBuilder();
+            foreach (string path in paths)
+                if (!builder.TryAdd(path, out var result))
+                    errors[path] = result;
 
-                        duplicates.Add(name);
-                    }
+            var set = builder.CreateFontSet();
 
-                if (errors.Count > 0 || duplicates.Count > 0)
+            foreach (var entry in set)
+                if (!_app.Items.Add(entry, _app.AddEmSize))
                 {
-                    StringBuilder msg = new StringBuilder();
-                    if (errors.Count > 0)
-                    {
-                        msg.AppendLine("The following files could not be loaded:");
-                        foreach (var error in errors)
-                            msg.AppendLine($"\u00a0-\u00a0{error.Key} [{error.Value}]");
+                    string name = entry.FullName;
+                    if (entry.CreateFontResource().GetFontFile().TryGetLocalFilePath(out string path))
+                        name += $" [{path}]";
 
-                        msg.AppendLine();
-                    }
-
-                    if (duplicates.Count > 0)
-                    {
-                        msg.AppendLine("The following font faces are already present:");
-                        foreach (var duplicate in duplicates)
-                            msg.AppendLine("\u00a0-\u00a0" + duplicate);
-                    }
-
-                    TaskDialog.Show(this, msg.ToString(), Title, "Some fonts were not added.", null, TaskDialogButtons.OK, TaskDialogImage.Warning, null, TaskDialogOptions.SizeToContent);
+                    duplicates.Add(name);
                 }
+
+            if (errors.Count > 0 || duplicates.Count > 0)
+            {
+                StringBuilder msg = new StringBuilder();
+                if (errors.Count > 0)
+                {
+                    msg.AppendLine("The following files could not be loaded:");
+                    foreach (var error in errors)
+                        msg.AppendLine($"\u00a0-\u00a0{error.Key} [{error.Value}]");
+
+                    msg.AppendLine();
+                }
+
+                if (duplicates.Count > 0)
+                {
+                    msg.AppendLine("The following font faces are already present:");
+                    foreach (var duplicate in duplicates)
+                        msg.AppendLine("\u00a0-\u00a0" + duplicate);
+                }
+
+                TaskDialog.Show(this, msg.ToString(), Title, "Some fonts were not added.", null, TaskDialogButtons.OK, TaskDialogImage.Warning, null, TaskDialogOptions.SizeToContent);
             }
         }
 
@@ -670,11 +689,25 @@ namespace DWBox
             }
         }
 
+        #region Highlights
+
         private static readonly Brush RedHeaderBrush = new SolidColorBrush(Color.FromRgb(0xFF, 0xF0, 0xF0));
         private static readonly Brush RedBorderBrush = Brushes.DarkRed;
 
         private static readonly Brush GreenHeaderBrush = new SolidColorBrush(Color.FromRgb(0xF0, 0xFF, 0xF0));
         private static readonly Brush GreenBorderBrush = Brushes.DarkGreen;
+
+        private static readonly Brush BlueHeaderBrush = new SolidColorBrush(Color.FromRgb(0xF0, 0xF0, 0xFF));
+        private static readonly Brush BlueBorderBrush = Brushes.DarkBlue;
+
+        private static readonly Brush CyanHeaderBrush = new SolidColorBrush(Color.FromRgb(0xF0, 0xFF, 0xFF));
+        private static readonly Brush CyanBorderBrush = Brushes.DarkCyan;
+
+        private static readonly Brush MagentaHeaderBrush = new SolidColorBrush(Color.FromRgb(0xFF, 0xF0, 0xFF));
+        private static readonly Brush MagentaBorderBrush = Brushes.DarkMagenta;
+
+        private static readonly Brush YellowHeaderBrush = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xF0));
+        private static readonly Brush YellowBorderBrush = Brushes.DarkKhaki;
 
         private void OnHighlight(object sender, RoutedEventArgs e)
         {
@@ -682,8 +715,7 @@ namespace DWBox
             {
                 BoxItem targetItem = (BoxItem)el.DataContext;
 
-                if (el.Tag is string tag)
-                    switch (tag)
+                if (el.Tag is string tag) switch (tag)
                     {
                         case "X":
                             targetItem.ClearValue(BoxItem.HeaderBrushProperty);
@@ -698,6 +730,16 @@ namespace DWBox
                             }
                             return;
 
+                        case "XG":
+                            int[] codepoints = ToCodepoints(_boxOutput.Text).ToArray();
+                            foreach (var item in _app.Items)
+                                if (Array.IndexOf(item.FontFace.GetGlyphIndices(codepoints), (ushort)0) >= 0)
+                                {
+                                    item.HeaderBrush = RedHeaderBrush;
+                                    item.BorderBrush = RedBorderBrush;
+                                }
+                            return;
+
                         case "R":
                             targetItem.HeaderBrush = RedHeaderBrush;
                             targetItem.BorderBrush = RedBorderBrush;
@@ -707,9 +749,31 @@ namespace DWBox
                             targetItem.HeaderBrush = GreenHeaderBrush;
                             targetItem.BorderBrush = GreenBorderBrush;
                             return;
+
+                        case "B":
+                            targetItem.HeaderBrush = BlueHeaderBrush;
+                            targetItem.BorderBrush = BlueBorderBrush;
+                            return;
+
+                        case "C":
+                            targetItem.HeaderBrush = CyanHeaderBrush;
+                            targetItem.BorderBrush = CyanBorderBrush;
+                            return;
+
+                        case "M":
+                            targetItem.HeaderBrush = MagentaHeaderBrush;
+                            targetItem.BorderBrush = MagentaBorderBrush;
+                            return;
+
+                        case "Y":
+                            targetItem.HeaderBrush = YellowHeaderBrush;
+                            targetItem.BorderBrush = YellowBorderBrush;
+                            return;
                     }
             }
         }
+
+        #endregion
 
         private void OnSwitchMode(object sender, RoutedEventArgs e)
         {
