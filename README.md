@@ -8,6 +8,10 @@ Requires at least Windows 10 build 20348 (in practice that means Windows 11)
 
 ![DWBox](DWBox.png)
 
+Vertical mode and parallel run, cluster and glyph highlighting:
+
+![Vertical](Vertical.png)
+
 ### Text Analysis
 
 ![Text Analysis](TextAnalysis.png)
