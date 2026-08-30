@@ -292,6 +292,7 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                     <CheckBox ToolTip="Transparent fill (see outlines)" IsEnabled="{Binding IsVectorMode}" Checked="OnFillOutline" Unchecked="OnFillSolid" Style="{StaticResource TransparentlyDisabled}">
                         <Image Source="{StaticResource TransparentBackground}" />
                     </CheckBox>
+                    <CheckBox Name="_gidOverlay" ToolTip="Highlighted glyph overlay" IsChecked="True" IsEnabled="{Binding IsVectorMode}" Style="{StaticResource TransparentlyDisabled}" Content="GID" /> 
                 </ToolBar>
 
             </ToolBarTray>
@@ -520,12 +521,15 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                                             <DataTrigger Binding="{Binding HighlightedGlyph}" Value="{x:Null}">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                             </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsChecked, ElementName=_gidOverlay}" Value="False">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
                                                         </Style.Triggers>
                                                     </Style>
                                                 </Border.Style>
                                             </Border>
 
-                                            <Border HorizontalAlignment="Right" Background="WhiteSmoke" Padding="2,0" IsHitTestVisible="False">
+                                            <Border HorizontalAlignment="Right" Background="WhiteSmoke" Padding="5,2" IsHitTestVisible="False">
                                                 <WrapPanel Orientation="Vertical">
                                                     <TextBlock Text="GID:" ToolTip="Glyph ID" />
                                                     <TextBlock Text="{Binding HighlightedGlyph.Details.GlyphID}" ToolTip="Glyph ID" TextAlignment="Right" Margin="0,0,0,10" />
@@ -563,6 +567,9 @@ Uncheck to map characters 1:1 including spaces and no decoding."
                                                         <Setter Property="Visibility" Value="{Binding SelectedItem.VerticalVisibility, ElementName=_directionSelector}" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding HighlightedGlyph}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsChecked, ElementName=_gidOverlay}" Value="False">
                                                                 <Setter Property="Visibility" Value="Collapsed" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
