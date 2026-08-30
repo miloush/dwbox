@@ -19,6 +19,7 @@ namespace DWBox
         public GlyphRunWindow(BoxItem item) : this()
         {
             _item = item;
+            Title = item.NameVersion;
             OnLiveUpdate();
         }
 
