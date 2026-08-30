@@ -24,6 +24,9 @@ namespace DWBox
 
         public ExpandDirection ExpandDirection => IsVertical ? ExpandDirection.Right : ExpandDirection.Down;
 
+        public Visibility HorizontalVisibility => IsVertical ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility VerticalVisibility => IsVertical ? Visibility.Visible : Visibility.Collapsed;
+
         public override string ToString()
         {
             return ToString(ReadingDirection) + ", " + ToString(FlowDirection);

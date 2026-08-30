@@ -490,34 +490,77 @@ Uncheck to map characters 1:1 including spaces and no decoding."
 
                                             <!-- Highlighted Glyph -->
 
-                                            <Border VerticalAlignment="{Binding SelectedItem.BoxOverlayVerticalAlignment, ElementName=_directionSelector}" HorizontalAlignment="{Binding SelectedItem.BoxOverlayHorizontalAlignment, ElementName=_directionSelector}" Background="WhiteSmoke" Padding="2,0" IsHitTestVisible="False">
+                                            <Border VerticalAlignment="Bottom" Background="WhiteSmoke" Padding="2,0" IsHitTestVisible="False">
                                                 <local:ProportionalPanel>
-                                                    <local:ProportionalPanel.LayoutTransform>
-                                                        <RotateTransform Angle="{Binding SelectedItem.BoxHeaderAngle, ElementName=_directionSelector}" />
-                                                    </local:ProportionalPanel.LayoutTransform>
-                                                    <TextBlock Margin="2" TextWrapping="Wrap">
-                                                         <Run Text="GID:" />
-                                                         <Run Text="{Binding HighlightedGlyph.Details.GlyphID, Mode=OneWay}" />
-                                                     </TextBlock>
-                                                    <TextBlock Margin="2" TextWrapping="Wrap">
+                                                    <TextBlock Margin="2" TextWrapping="Wrap" ToolTip="Glyph ID">
+                                                            <Run Text="GID:" />
+                                                            <Run Text="{Binding HighlightedGlyph.Details.GlyphID, Mode=OneWay}" />
+                                                        </TextBlock>
+                                                    <TextBlock Margin="2" TextWrapping="Wrap" ToolTip="Advance">
                                                         <Run Text="Adv:" />
                                                         <Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.AdvanceWidth, Mode=OneWay}" /><Run Text="W" />
                                                         <Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.AdvanceHeight, Mode=OneWay}" /><Run Text="H" />
                                                     </TextBlock>
-                                                    <TextBlock Margin="2" TextWrapping="Wrap">
+                                                    <TextBlock Margin="2" TextWrapping="Wrap" ToolTip="Bearing">
                                                         <Run Text="Bear:" />
                                                         <Run Text="L" /><Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.LeftSideBearing, Mode=OneWay}" />
                                                         <Run Text="T" /><Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.TopSideBearing, Mode=OneWay}" />
                                                         <Run Text="R" /><Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.RightSideBearing, Mode=OneWay}" />
                                                         <Run Text="B" /><Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.BottomSideBearing, Mode=OneWay}" />
                                                     </TextBlock>
-                                                    <TextBlock Margin="2" TextWrapping="Wrap">
+                                                    <TextBlock Margin="2" TextWrapping="Wrap" ToolTip="Vertical Origin Y">
                                                         <Run Text="VY:" />
                                                         <Run Text="{Binding HighlightedGlyph.Details.DesignMetrics.VerticalOriginY, Mode=OneWay}" />
                                                     </TextBlock>
                                                 </local:ProportionalPanel>
                                                 <Border.Style>
                                                     <Style TargetType="Border">
+                                                        <Setter Property="Visibility" Value="{Binding SelectedItem.HorizontalVisibility, ElementName=_directionSelector}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HighlightedGlyph}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+
+                                            <Border HorizontalAlignment="Right" Background="WhiteSmoke" Padding="2,0" IsHitTestVisible="False">
+                                                <WrapPanel Orientation="Vertical">
+                                                    <TextBlock Text="GID:" ToolTip="Glyph ID" />
+                                                    <TextBlock Text="{Binding HighlightedGlyph.Details.GlyphID}" ToolTip="Glyph ID" TextAlignment="Right" Margin="0,0,0,10" />
+                                                    <TextBlock Text="Adv:" ToolTip="Advance" />
+                                                    <DockPanel ToolTip="Advance Width">
+                                                        <TextBlock Text="W" />
+                                                        <TextBlock Text="{Binding HighlightedGlyph.Details.DesignMetrics.AdvanceWidth}" TextAlignment="Right" />
+                                                    </DockPanel>
+                                                    <DockPanel ToolTip="Advance Height" Margin="0,0,0,10">
+                                                        <TextBlock Text="H" />
+                                                        <TextBlock Text="{Binding HighlightedGlyph.Details.DesignMetrics.AdvanceHeight}" TextAlignment="Right" />
+                                                    </DockPanel>
+                                                    <TextBlock Text="Bear:" ToolTip="Bearing" />
+                                                    <DockPanel ToolTip="Left Bearing">
+                                                        <TextBlock Text="L" />
+                                                        <TextBlock Text="{Binding HighlightedGlyph.Details.DesignMetrics.LeftSideBearing}" TextAlignment="Right" />
+                                                    </DockPanel>
+                                                    <DockPanel ToolTip="Top Bearing">
+                                                        <TextBlock Text="T" />
+                                                        <TextBlock Text="{Binding HighlightedGlyph.Details.DesignMetrics.TopSideBearing}" TextAlignment="Right" />
+                                                    </DockPanel>
+                                                    <DockPanel ToolTip="Right Bearing">
+                                                        <TextBlock Text="R" />
+                                                        <TextBlock Text="{Binding HighlightedGlyph.Details.DesignMetrics.RightSideBearing}" TextAlignment="Right" />
+                                                    </DockPanel>
+                                                    <DockPanel ToolTip="Bottom Bearing" Margin="0,0,0,10">
+                                                        <TextBlock Text="B" />
+                                                        <TextBlock Text="{Binding HighlightedGlyph.Details.DesignMetrics.BottomSideBearing}" TextAlignment="Right" />
+                                                    </DockPanel>
+                                                    <TextBlock Text="VY:" ToolTip="Vertical Origin Y" />
+                                                    <TextBlock Text="{Binding HighlightedGlyph.Details.DesignMetrics.VerticalOriginY}" TextAlignment="Right" ToolTip="Vertical Origin Y" />
+                                                </WrapPanel>
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Visibility" Value="{Binding SelectedItem.VerticalVisibility, ElementName=_directionSelector}" />
                                                         <Style.Triggers>
                                                             <DataTrigger Binding="{Binding HighlightedGlyph}" Value="{x:Null}">
                                                                 <Setter Property="Visibility" Value="Collapsed" />

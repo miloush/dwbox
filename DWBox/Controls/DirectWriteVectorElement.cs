@@ -97,15 +97,15 @@ namespace DWBox
                 {
                     item.IsClusterHighlighted = true;
                     item.IsGlyphHighlighted = item.Details.ClusterGlyphCount == details.ClusterGlyphCount && item.Details.ClusterGlyphIndex == details.ClusterGlyphIndex;
-
-                    if (item.IsGlyphHighlighted)
-                        highlightedGlyph = item;
                 }
                 else
                 {
                     item.IsClusterHighlighted = false;
-                    item.IsGlyphHighlighted = false;
+                    item.IsGlyphHighlighted = item.Details.ClusterLength == 1 && item.Details.ClusterLength == 1 && item.Details.RunDetails.TextPosition + item.Details.ClusterStartIndex == details.RunDetails.TextPosition + details.ClusterStartIndex;
                 }
+
+                if (item.IsGlyphHighlighted)
+                    highlightedGlyph = item;
             }
 
             // TODO: DirectWriteElement shouldn't have dependency on BoxItem, maybe have a GlyphHighlighted event
